@@ -1,0 +1,25 @@
+:root {
+  --ink: #241b18;
+  --paper: #fffaf5;
+  --surface: #ffffff;
+  --coral: #ff6f59;
+  --blue: #3186ca;
+  --lime: #9ed455;
+  --yellow: #f0ca38;
+  --purple: #8c6bdd;
+  --muted: #76655e;
+  --line: 1.5px solid var(--ink);
+  --radius-sm: 0.75rem;
+  --radius-md: 1rem;
+  --shadow-hard: 4px 4px 0 var(--ink);
+  --focus-ring: 0 0 0 3px #ffffff, 0 0 0 6px #236da6;
+  --content-width: 76rem;
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+  --space-6: 2rem;
+  --space-7: 3rem;
+  --space-8: 4.5rem;
+}
