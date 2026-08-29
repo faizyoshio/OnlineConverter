@@ -1,3 +1,4 @@
+import "client-only";
 import type { CapabilityManifest } from "@/features/capabilities/schema";
 import type { LocalWorkerResult, LocalValuePayload } from "@/features/workers/protocol";
 import type { JobResultMetadata } from "@/features/jobs/types";

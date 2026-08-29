@@ -1,3 +1,4 @@
+import "client-only";
 import type { ProbeAndValidateAdapter } from "@/features/validation/types";
 import type { WorkerRequest, WorkerResponse } from "./protocol";
 

@@ -1,3 +1,4 @@
+import "client-only";
 import type { JobResultMetadata } from "@/features/jobs/types";
 
 export type WorkerRequest =

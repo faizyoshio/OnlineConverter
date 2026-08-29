@@ -428,6 +428,135 @@ h3 {
   margin: 0;
 }
 
+.tool-workspace {
+  display: grid;
+  gap: var(--space-5);
+  max-width: 52rem;
+  border: var(--line);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  box-shadow: var(--shadow-hard);
+  padding: var(--space-6);
+}
+
+.tool-workspace header > p:not(.workspace-eyebrow) {
+  max-width: 46rem;
+  margin-bottom: 0;
+  color: var(--muted);
+}
+
+.workspace-eyebrow {
+  margin-bottom: var(--space-2);
+  color: var(--muted);
+  font-size: 0.75rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.tool-workspace h1 {
+  max-width: none;
+  margin-bottom: var(--space-3);
+  font-size: clamp(2.2rem, 6vw, 4rem);
+}
+
+.workspace-drop-zone {
+  display: grid;
+  gap: var(--space-3);
+  border: 2px dashed var(--ink);
+  border-radius: var(--radius-md);
+  background: #fffdf8;
+  padding: var(--space-5);
+}
+
+.workspace-drop-zone__label {
+  display: inline-flex;
+  width: fit-content;
+  min-height: 2.75rem;
+  align-items: center;
+  border: var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--yellow);
+  box-shadow: 3px 3px 0 var(--ink);
+  padding: 0.5rem 0.9rem;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.workspace-drop-zone input[type="file"] {
+  width: 100%;
+  max-width: 100%;
+}
+
+.workspace-drop-zone__hint {
+  margin-bottom: 0;
+  color: var(--muted);
+}
+
+.workspace-options,
+.workspace-warnings,
+.workspace-error,
+.workspace-progress,
+.workspace-result {
+  border: var(--line);
+  border-radius: var(--radius-sm);
+  padding: var(--space-4);
+}
+
+.workspace-warnings {
+  background: #fff1b8;
+}
+
+.workspace-error {
+  background: #ffe0da;
+}
+
+.workspace-error ul,
+.workspace-result ul,
+.workspace-palette {
+  display: grid;
+  gap: var(--space-2);
+  margin: var(--space-3) 0 0;
+  padding-left: 1.25rem;
+}
+
+.workspace-progress {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  background: #e8f5ff;
+  font-weight: 800;
+}
+
+.workspace-progress[role="status"] {
+  display: block;
+}
+
+.workspace-result {
+  background: #effadf;
+}
+
+.workspace-result output {
+  display: block;
+  overflow-wrap: anywhere;
+  font-size: 1.15rem;
+  font-weight: 800;
+}
+
+.workspace-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+}
+
+.workspace-actions .button[disabled] {
+  cursor: not-allowed;
+  opacity: 0.55;
+  transform: none;
+  box-shadow: none;
+}
+
 @media (max-width: 56rem) {
   .hero,
   .catalog-heading {
@@ -467,6 +596,11 @@ h3 {
 
   .tool-grid {
     grid-template-columns: 1fr;
+  }
+
+  .tool-workspace {
+    box-shadow: 3px 3px 0 var(--ink);
+    padding: var(--space-5);
   }
 
   .site-footer {

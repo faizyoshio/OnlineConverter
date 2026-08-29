@@ -1,3 +1,4 @@
+import "client-only";
 import { normalizeJobError } from "@/features/jobs/errors";
 import type { EngineAdapter } from "./adapter";
 

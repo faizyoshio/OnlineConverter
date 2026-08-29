@@ -1,3 +1,4 @@
+import "client-only";
 import type { CapabilityManifest } from "@/features/capabilities/schema";
 import type { CapabilityValidator, ValidationIssue } from "@/features/validation/types";
 import type { EngineRouter } from "@/features/workers/router";

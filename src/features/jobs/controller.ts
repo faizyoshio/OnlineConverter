@@ -1,3 +1,4 @@
+import "client-only";
 import { normalizeJobError } from "./errors";
 import type { JobAction, JobPhase, NormalizedJobError } from "./types";
 import type { EngineAdapter, WorkerMessageListener } from "@/features/workers/adapter";
