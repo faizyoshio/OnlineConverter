@@ -1,30 +1,30 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-/**
- * PDF Merge Engine Adapter – stub implementing EngineAdapter interface.
- * Will be replaced with real pdf-lib implementation in a later step.
- */
+import "client-only";
 import type { FileProbe, ValidationIssue } from "@/features/validation/types";
-import type { WorkerLike } from "@/features/workers/adapter";
-import type { WorkerRequest, WorkerResponse } from "@/features/workers/protocol";
+import type { EngineAdapter, WorkerLike } from "@/features/workers/adapter";
+import { BrowserWorkerBridge } from "@/features/workers/browser-worker";
+import { probePdf } from "./pdf/probe";
 
-class StubWorker implements WorkerLike {
-  postMessage(_message: WorkerRequest): void {}
-  addEventListener(_type: "message", _listener: (event: MessageEvent<WorkerResponse>) => void): void {}
-  removeEventListener(_type: "message", _listener: (event: MessageEvent<WorkerResponse>) => void): void {}
-  terminate(): void {}
+function isPdfFile(input: File): boolean {
+  if (input.type === "application/pdf") return true;
+  const probe = String(input.name ?? "").toLowerCase();
+  return probe.endsWith(".pdf");
 }
 
-export function createPdfMergeAdapter() {
+export function createPdfMergeAdapter(): EngineAdapter<Readonly<Record<string, unknown>>> {
   return {
-    async probe(_input: File): Promise<FileProbe> {
-      return { kind: "pdf" as const, probeRule: "pdf-header" as const, bytes: 0 };
+    async probe(input: File): Promise<FileProbe> {
+      if (!isPdfFile(input)) {
+        return { kind: "unknown", probeRule: "unknown", bytes: 0 };
+      }
+      return probePdf(input);
     },
-    async validate(_inputs: readonly File[], _options: Readonly<Record<string, unknown>>): Promise<readonly ValidationIssue[]> {
+    async validate(): Promise<readonly ValidationIssue[]> {
       return [];
     },
     createWorker(): WorkerLike {
-      return new StubWorker();
+      return new BrowserWorkerBridge(
+        new Worker(new URL("../workers/pdf.worker.ts", import.meta.url), { type: "module" }),
+      );
     },
   };
 }
-
