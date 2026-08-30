@@ -1,15 +1,25 @@
-import { describe, test, expect } from "vitest";
+import { describe, expect, test } from "vitest";
+import { createValidPdfFile } from "@/test/fixtures/pdf";
 import { createPdfWatermarkAdapter } from "./pdf-watermark";
 
-describe("PDF Watermark Adapter", () => {
-  test("probe returns expected kind", async () => {
+describe("PDF Watermark adapter", () => {
+  test("probes a valid PDF", async () => {
     const adapter = createPdfWatermarkAdapter();
-    const probe = await adapter.probe(new File([], "test", { type: "application/octet-stream" }));
-    expect(probe.kind).toBe("pdf");
+    const probe = await adapter.probe(await createValidPdfFile());
+
+    expect(probe).toEqual(expect.objectContaining({ kind: "pdf", probeRule: "pdf-header" }));
   });
-  test("validate returns empty", async () => {
+
+  test("accepts a text watermark with the manifest defaults", async () => {
     const adapter = createPdfWatermarkAdapter();
-    const issues = await adapter.validate([], {});
+    const issues = await adapter.validate([await createValidPdfFile()], {
+      watermarkType: "text",
+      watermarkText: "WATERMARK",
+      position: "center",
+      opacity: 30,
+      pages: "all",
+    });
+
     expect(issues).toEqual([]);
   });
 });

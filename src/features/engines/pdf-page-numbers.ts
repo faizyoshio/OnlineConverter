@@ -1,26 +1,33 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
+import "client-only";
 import type { FileProbe, ValidationIssue } from "@/features/validation/types";
-import type { WorkerLike } from "@/features/workers/adapter";
-import type { WorkerRequest, WorkerResponse } from "@/features/workers/protocol";
+import type { EngineAdapter, WorkerLike } from "@/features/workers/adapter";
+import { BrowserWorkerBridge } from "@/features/workers/browser-worker";
+import { probePdf } from "./pdf/probe";
 
-class StubWorker implements WorkerLike {
-  postMessage(_message: WorkerRequest): void {}
-  addEventListener(_type: "message", _listener: (event: MessageEvent<WorkerResponse>) => void): void {}
-  removeEventListener(_type: "message", _listener: (event: MessageEvent<WorkerResponse>) => void): void {}
-  terminate(): void {}
+function isPdfFile(input: File): boolean {
+  return input.type === "application/pdf" || String(input.name ?? "").toLowerCase().endsWith(".pdf");
 }
 
-export function createPdfPageNumbersAdapter() {
+export function createPdfPageNumbersAdapter(): EngineAdapter<Readonly<Record<string, unknown>>> {
   return {
-    async probe(_input: File): Promise<FileProbe> {
-      return { kind: "pdf" as const, probeRule: "pdf-header" as const, bytes: 0 };
+    async probe(input: File): Promise<FileProbe> {
+      return isPdfFile(input) ? probePdf(input) : { kind: "unknown", probeRule: "unknown", bytes: 0 };
     },
-    async validate(_inputs: readonly File[], _options: Readonly<Record<string, unknown>>): Promise<readonly ValidationIssue[]> {
+    async validate(_inputs, options): Promise<readonly ValidationIssue[]> {
+      const start = options.start;
+      if (typeof start !== "number" || start < 1 || start > 100000) {
+        return [{ code: "malformed-input", field: "start", message: "Start number must be between 1 and 100000." }];
+      }
+      if (!["bottom-center"].includes(String(options.position))) {
+        return [{ code: "malformed-input", field: "position", message: "Position must be bottom-center." }];
+      }
+      if (!["arabic"].includes(String(options.style))) {
+        return [{ code: "malformed-input", field: "style", message: "Style must be arabic." }];
+      }
       return [];
     },
     createWorker(): WorkerLike {
-      return new StubWorker();
+      return new BrowserWorkerBridge(new Worker(new URL("../workers/pdf.worker.ts", import.meta.url), { type: "module" }));
     },
   };
 }
-

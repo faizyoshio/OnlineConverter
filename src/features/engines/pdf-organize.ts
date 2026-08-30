@@ -1,26 +1,30 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
+import "client-only";
 import type { FileProbe, ValidationIssue } from "@/features/validation/types";
-import type { WorkerLike } from "@/features/workers/adapter";
-import type { WorkerRequest, WorkerResponse } from "@/features/workers/protocol";
+import type { EngineAdapter, WorkerLike } from "@/features/workers/adapter";
+import { BrowserWorkerBridge } from "@/features/workers/browser-worker";
+import { probePdf } from "./pdf/probe";
 
-class StubWorker implements WorkerLike {
-  postMessage(_message: WorkerRequest): void {}
-  addEventListener(_type: "message", _listener: (event: MessageEvent<WorkerResponse>) => void): void {}
-  removeEventListener(_type: "message", _listener: (event: MessageEvent<WorkerResponse>) => void): void {}
-  terminate(): void {}
+function isPdfFile(input: File): boolean {
+  return input.type === "application/pdf" || String(input.name ?? "").toLowerCase().endsWith(".pdf");
 }
 
-export function createPdfOrganizeAdapter() {
+export function createPdfOrganizeAdapter(): EngineAdapter<Readonly<Record<string, unknown>>> {
   return {
-    async probe(_input: File): Promise<FileProbe> {
-      return { kind: "pdf" as const, probeRule: "pdf-header" as const, bytes: 0 };
+    async probe(input: File): Promise<FileProbe> {
+      return isPdfFile(input) ? probePdf(input) : { kind: "unknown", probeRule: "unknown", bytes: 0 };
     },
-    async validate(_inputs: readonly File[], _options: Readonly<Record<string, unknown>>): Promise<readonly ValidationIssue[]> {
+    async validate(_inputs, options): Promise<readonly ValidationIssue[]> {
+      const ops = options.operations;
+      if (!ops || typeof ops !== "string" || ops.trim() === "none") {
+        return [];
+      }
+      if (!ops.split(",").every((part) => /^\s*\d+\s*$/.test(part))) {
+        return [{ code: "malformed-input", field: "operations", message: "Operations must be comma-separated page numbers like 3,1,2." }];
+      }
       return [];
     },
     createWorker(): WorkerLike {
-      return new StubWorker();
+      return new BrowserWorkerBridge(new Worker(new URL("../workers/pdf.worker.ts", import.meta.url), { type: "module" }));
     },
   };
 }
-

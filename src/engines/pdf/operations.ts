@@ -152,15 +152,17 @@ export async function addPageNumbers(
 export async function watermarkPdf(
   pdfBuffer: Uint8Array,
   watermarkText: string,
-  options: { opacity?: number; fontSize?: number } = {},
+  options: { opacity?: number; fontSize?: number; pageIndices?: readonly number[] } = {},
 ): Promise<Uint8Array> {
   const pdf = await PDFDocument.load(pdfBuffer);
   const font = await pdf.embedFont(StandardFonts.HelveticaBold);
   const opacity = options.opacity ?? 0.3;
   const fontSize = options.fontSize ?? 48;
   const totalPages = pdf.getPageCount();
+  const selectedPages = options.pageIndices ? new Set(options.pageIndices) : null;
 
   for (let i = 0; i < totalPages; i++) {
+    if (selectedPages && !selectedPages.has(i)) continue;
     const page = pdf.getPage(i);
     const { width, height } = page.getSize();
     const textWidth = font.widthOfTextAtSize(watermarkText, fontSize);
@@ -178,14 +180,52 @@ export async function watermarkPdf(
   return pdf.save();
 }
 
-export async function textToPdf(text: string): Promise<Uint8Array> {
+export async function imageWatermarkPdf(
+  pdfBuffer: Uint8Array,
+  watermark: { bytes: Uint8Array; format: "jpeg" | "png" },
+  options: { opacity?: number; pageIndices?: readonly number[] } = {},
+): Promise<Uint8Array> {
+  const pdf = await PDFDocument.load(pdfBuffer);
+  const embedded = watermark.format === "jpeg"
+    ? await pdf.embedJpg(watermark.bytes)
+    : await pdf.embedPng(watermark.bytes);
+  const selectedPages = options.pageIndices ? new Set(options.pageIndices) : null;
+
+  for (let index = 0; index < pdf.getPageCount(); index += 1) {
+    if (selectedPages && !selectedPages.has(index)) continue;
+    const page = pdf.getPage(index);
+    const pageSize = page.getSize();
+    const scale = Math.min(
+      (pageSize.width * 0.5) / embedded.width,
+      (pageSize.height * 0.5) / embedded.height,
+    );
+    const width = embedded.width * scale;
+    const height = embedded.height * scale;
+    page.drawImage(embedded, {
+      x: (pageSize.width - width) / 2,
+      y: (pageSize.height - height) / 2,
+      width,
+      height,
+      opacity: options.opacity ?? 0.3,
+    });
+  }
+
+  return pdf.save();
+}
+
+export async function textToPdf(
+  text: string,
+  options: { fontSize?: number; orientation?: "portrait" | "landscape"; wrap?: boolean } = {},
+): Promise<Uint8Array> {
   const pdf = await PDFDocument.create();
   const font = await pdf.embedFont(StandardFonts.Helvetica);
-  const fontSize = 12;
-  const lineHeight = 16;
+  const fontSize = options.fontSize ?? 12;
+  const lineHeight = fontSize * 1.35;
   const margin = 50;
-  const pageWidth = 595.28; // A4 width
-  const pageHeight = 841.89; // A4 height
+  const portrait = [595.28, 841.89] as const;
+  const [pageWidth, pageHeight] = options.orientation === "landscape"
+    ? [portrait[1], portrait[0]]
+    : portrait;
   const maxLineWidth = pageWidth - 2 * margin;
 
   const lines = text.split(/\r?\n/);
@@ -193,33 +233,31 @@ export async function textToPdf(text: string): Promise<Uint8Array> {
   let y = pageHeight - margin;
 
   for (const rawLine of lines) {
-    // Simple line wrap
-    const words = rawLine.split(" ");
-    let currentLine = "";
-
-    for (const word of words) {
-      const testLine = currentLine ? `${currentLine} ${word}` : word;
-      const testWidth = font.widthOfTextAtSize(testLine, fontSize);
-
-      if (testWidth > maxLineWidth && currentLine) {
-        if (y < margin + lineHeight) {
-          page = pdf.addPage([pageWidth, pageHeight]);
-          y = pageHeight - margin;
+    const wrappedLines: string[] = [];
+    if (options.wrap === false) {
+      wrappedLines.push(rawLine);
+    } else {
+      const words = rawLine.split(" ");
+      let currentLine = "";
+      for (const word of words) {
+        const testLine = currentLine ? `${currentLine} ${word}` : word;
+        const testWidth = font.widthOfTextAtSize(testLine, fontSize);
+        if (testWidth > maxLineWidth && currentLine) {
+          wrappedLines.push(currentLine);
+          currentLine = word;
+        } else {
+          currentLine = testLine;
         }
-        page.drawText(currentLine, { x: margin, y, size: fontSize, font });
-        y -= lineHeight;
-        currentLine = word;
-      } else {
-        currentLine = testLine;
       }
+      wrappedLines.push(currentLine);
     }
 
-    if (currentLine || words.length === 0) {
+    for (const line of wrappedLines) {
       if (y < margin + lineHeight) {
         page = pdf.addPage([pageWidth, pageHeight]);
         y = pageHeight - margin;
       }
-      page.drawText(currentLine, { x: margin, y, size: fontSize, font });
+      page.drawText(line, { x: margin, y, size: fontSize, font });
       y -= lineHeight;
     }
   }
@@ -229,8 +267,14 @@ export async function textToPdf(text: string): Promise<Uint8Array> {
 
 export async function imagesToPdf(
   images: readonly { bytes: Uint8Array; format: "jpeg" | "png" }[],
+  options: { fit?: "contain" | "cover" | "fill"; marginMm?: number } = {},
 ): Promise<Uint8Array> {
   const pdf = await PDFDocument.create();
+  const pageWidth = 595.28;
+  const pageHeight = 841.89;
+  const margin = (options.marginMm ?? 12) * (72 / 25.4);
+  const availableWidth = pageWidth - 2 * margin;
+  const availableHeight = pageHeight - 2 * margin;
 
   for (const img of images) {
     const embedded =
@@ -238,11 +282,19 @@ export async function imagesToPdf(
         ? await pdf.embedJpg(img.bytes)
         : await pdf.embedPng(img.bytes);
 
-    const { width, height } = embedded.scale(1);
-    const page = pdf.addPage([width, height]);
+    const page = pdf.addPage([pageWidth, pageHeight]);
+    let width = availableWidth;
+    let height = availableHeight;
+    if (options.fit !== "fill") {
+      const scale = options.fit === "cover"
+        ? Math.max(availableWidth / embedded.width, availableHeight / embedded.height)
+        : Math.min(availableWidth / embedded.width, availableHeight / embedded.height);
+      width = embedded.width * scale;
+      height = embedded.height * scale;
+    }
     page.drawImage(embedded, {
-      x: 0,
-      y: 0,
+      x: (pageWidth - width) / 2,
+      y: (pageHeight - height) / 2,
       width,
       height,
     });

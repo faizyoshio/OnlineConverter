@@ -1,26 +1,43 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
+﻿import "client-only";
 import type { FileProbe, ValidationIssue } from "@/features/validation/types";
-import type { WorkerLike } from "@/features/workers/adapter";
-import type { WorkerRequest, WorkerResponse } from "@/features/workers/protocol";
+import type { EngineAdapter, WorkerLike } from "@/features/workers/adapter";
+import { BrowserWorkerBridge } from "@/features/workers/browser-worker";
 
-class StubWorker implements WorkerLike {
-  postMessage(_message: WorkerRequest): void {}
-  addEventListener(_type: "message", _listener: (event: MessageEvent<WorkerResponse>) => void): void {}
-  removeEventListener(_type: "message", _listener: (event: MessageEvent<WorkerResponse>) => void): void {}
-  terminate(): void {}
+function isTextFile(input: File): boolean {
+  return input.type === "text/plain" || String(input.name ?? "").toLowerCase().endsWith(".txt");
 }
 
-export function createTextToPdfAdapter() {
+export function createTextToPdfAdapter(): EngineAdapter<Readonly<Record<string, unknown>>> {
   return {
-    async probe(_input: File): Promise<FileProbe> {
-      return { kind: "text" as const, probeRule: "utf8-text" as const, bytes: 0 };
+    async probe(input: File): Promise<FileProbe> {
+      if (isTextFile(input)) {
+        const bytes = await input.arrayBuffer();
+        return { kind: "text", probeRule: "utf8-text", bytes: bytes.byteLength };
+      }
+      return { kind: "unknown", probeRule: "unknown", bytes: 0 };
     },
-    async validate(_inputs: readonly File[], _options: Readonly<Record<string, unknown>>): Promise<readonly ValidationIssue[]> {
-      return [];
+    async validate(_inputs: readonly File[], options: Readonly<Record<string, unknown>>): Promise<readonly ValidationIssue[]> {
+      const issues: ValidationIssue[] = [];
+      const pageSize = options.pageSize;
+      if (!["a4"].includes(String(pageSize))) {
+        issues.push({ code: "malformed-input", field: "pageSize", message: "Page size must be a4." });
+      }
+      const orientation = options.orientation;
+      if (!["portrait", "landscape"].includes(String(orientation))) {
+        issues.push({ code: "malformed-input", field: "orientation", message: "Orientation must be portrait or landscape." });
+      }
+      const fontSize = options.fontSizePt;
+      if (typeof fontSize !== "number" || fontSize < 6 || fontSize > 72) {
+        issues.push({ code: "malformed-input", field: "fontSizePt", message: "Font size must be between 6 and 72." });
+      }
+      const wrap = options.wrap;
+      if (typeof wrap !== "boolean") {
+        issues.push({ code: "malformed-input", field: "wrap", message: "Wrap must be a boolean." });
+      }
+      return issues;
     },
     createWorker(): WorkerLike {
-      return new StubWorker();
+      return new BrowserWorkerBridge(new Worker(new URL("../workers/pdf.worker.ts", import.meta.url), { type: "module" }));
     },
   };
 }
-

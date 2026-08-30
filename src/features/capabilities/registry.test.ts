@@ -40,11 +40,23 @@ function capability(id: string) {
   return manifest!;
 }
 
-test("declares 90 unique planned launch capabilities", () => {
+test("declares 90 unique launch capabilities with only release-gated PDF tools active", () => {
   expect(capabilityRegistry).toHaveLength(90);
   expect(new Set(capabilityRegistry.map((item) => item.id)).size).toBe(90);
   expect(new Set(capabilityRegistry.map((item) => item.slug)).size).toBe(90);
-  expect(capabilityRegistry.every((item) => item.releaseStatus === "planned")).toBe(true);
+  expect(capabilityRegistry.filter((item) => item.releaseStatus === "active").map((item) => item.id)).toEqual([
+    "pdf.merge",
+    "pdf.split",
+    "pdf.organize",
+    "pdf.rotate",
+    "pdf.delete-pages",
+    "pdf.extract-pages",
+    "pdf.page-numbers",
+    "pdf.watermark",
+    "pdf.image-to-pdf",
+    "pdf.text-to-pdf",
+  ]);
+  expect(capabilityRegistry.filter((item) => item.releaseStatus === "planned")).toHaveLength(80);
 });
 
 test("keeps the approved manifest order", () => {

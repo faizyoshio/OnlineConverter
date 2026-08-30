@@ -9,9 +9,16 @@ describe("PDF Split Adapter", () => {
     expect(probe.kind).toBe("pdf");
   });
 
-  test("validate returns empty for any inputs", async () => {
+  test("validates accepted page ranges", async () => {
     const adapter = createPdfSplitAdapter();
     const issues = await adapter.validate([await createValidPdfFile(1)], { ranges: "1" });
     expect(issues).toEqual([]);
+  });
+
+  test("rejects malformed page ranges", async () => {
+    const adapter = createPdfSplitAdapter();
+    await expect(adapter.validate([await createValidPdfFile(1)], { ranges: "one-two" })).resolves.toEqual([
+      expect.objectContaining({ code: "malformed-input", field: "ranges" }),
+    ]);
   });
 });

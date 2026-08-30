@@ -1,15 +1,24 @@
-import { describe, test, expect } from "vitest";
+import { describe, expect, test } from "vitest";
+import { createValidPngFile } from "@/test/fixtures/pdf-inputs";
 import { createImageToPdfAdapter } from "./image-to-pdf";
 
-describe("Image to PDF Adapter", () => {
-  test("probe returns expected kind", async () => {
+describe("Image to PDF adapter", () => {
+  test("probes a valid PNG as PNG", async () => {
     const adapter = createImageToPdfAdapter();
-    const probe = await adapter.probe(new File([], "test", { type: "application/octet-stream" }));
-    expect(probe.kind).toBe("jpeg");
+    const probe = await adapter.probe(createValidPngFile());
+
+    expect(probe).toEqual(expect.objectContaining({ kind: "png", probeRule: "png-signature" }));
   });
-  test("validate returns empty", async () => {
+
+  test("accepts valid files with the manifest defaults", async () => {
     const adapter = createImageToPdfAdapter();
-    const issues = await adapter.validate([], {});
+    const issues = await adapter.validate([createValidPngFile()], {
+      pageSize: "a4",
+      fit: "contain",
+      marginMm: 12,
+      order: "input-order",
+    });
+
     expect(issues).toEqual([]);
   });
 });

@@ -265,7 +265,7 @@ type CommonManifestFields =
   | "unsupportedCodes" | "unsupportedMessage" | "browserRequirements" | "fixturePlan";
 
 export type CapabilityDefinition = Omit<CapabilityManifestInput, CommonManifestFields> &
-  Partial<Pick<CapabilityManifestInput, "aliases" | "warningCodes" | "unsupportedCodes" | "unsupportedMessage">> & {
+  Partial<Pick<CapabilityManifestInput, "aliases" | "releaseStatus" | "warningCodes" | "unsupportedCodes" | "unsupportedMessage">> & {
     browserRequirements?: readonly Exclude<BrowserRequirement, "worker">[];
   };
 
@@ -276,7 +276,7 @@ export function capability(definition: CapabilityDefinition): CapabilityManifest
     aliases: definition.aliases ?? [],
     execution: "browser-worker",
     adapterKey: definition.id,
-    releaseStatus: "planned",
+    releaseStatus: definition.releaseStatus ?? "planned",
     warningCodes: definition.warningCodes ?? [],
     unsupportedCodes: definition.unsupportedCodes ?? ["browser-worker-unavailable"],
     unsupportedMessage: definition.unsupportedMessage ??

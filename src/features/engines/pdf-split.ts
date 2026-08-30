@@ -18,7 +18,16 @@ export function createPdfSplitAdapter(): EngineAdapter<Readonly<Record<string, u
       }
       return probePdf(input);
     },
-    async validate(): Promise<readonly ValidationIssue[]> {
+    async validate(_inputs, options): Promise<readonly ValidationIssue[]> {
+      const ranges = options.ranges;
+      if (ranges === null || ranges === undefined || ranges === "") return [];
+      if (typeof ranges !== "string" || !ranges.split(",").every((part) => /^\s*\d+(?:-\d+)?\s*$/.test(part))) {
+        return [{
+          code: "malformed-input",
+          field: "ranges",
+          message: "Page ranges must use numbers or ranges such as 1, 3-5.",
+        }];
+      }
       return [];
     },
     createWorker(): WorkerLike {

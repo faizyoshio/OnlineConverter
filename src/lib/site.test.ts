@@ -5,9 +5,22 @@ import { getActiveCapabilities, getActiveCapabilityBySlug, resolveSiteUrl, toolM
 const active = { ...capabilityRegistry[0]!, releaseStatus: "active" as const };
 
 describe("site helpers", () => {
-  test("keeps planned capabilities out of active route lookup", () => {
-    expect(getActiveCapabilities(capabilityRegistry)).toEqual([]);
-    expect(getActiveCapabilityBySlug(capabilityRegistry[0]!.slug, capabilityRegistry)).toBeUndefined();
+  test("returns only active capabilities for route lookup", () => {
+    const activeCapabilities = getActiveCapabilities(capabilityRegistry);
+    expect(activeCapabilities.map((capability) => capability.id)).toEqual([
+      "pdf.merge",
+      "pdf.split",
+      "pdf.organize",
+      "pdf.rotate",
+      "pdf.delete-pages",
+      "pdf.extract-pages",
+      "pdf.page-numbers",
+      "pdf.watermark",
+      "pdf.image-to-pdf",
+      "pdf.text-to-pdf",
+    ]);
+    expect(getActiveCapabilityBySlug("merge-pdf", capabilityRegistry)?.id).toBe("pdf.merge");
+    expect(getActiveCapabilityBySlug("compress-pdf", capabilityRegistry)).toBeUndefined();
   });
 
   test("builds canonical metadata only from active manifest fields", () => {

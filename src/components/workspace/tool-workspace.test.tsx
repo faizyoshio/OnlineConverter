@@ -70,6 +70,20 @@ describe("ToolWorkspace", () => {
     expect(screen.getByRole("button", { name: /run conversion/i })).toBeDisabled();
   });
 
+  test("passes changed page-range options to split validation", async () => {
+    const user = userEvent.setup();
+    const harness = createRunnerHarness();
+    render(<ToolWorkspace capability={capability("pdf.split")} runner={harness.runner} />);
+
+    await user.type(screen.getByLabelText(/page ranges/i), "1-2");
+    await user.upload(screen.getByLabelText(/choose files/i), new File(["%PDF"], "source.pdf", { type: "application/pdf" }));
+
+    await waitFor(() => expect(harness.runner.validateInputs).toHaveBeenCalledWith(
+      expect.any(Array),
+      expect.objectContaining({ ranges: "1-2", onePerRange: true }),
+    ));
+  });
+
   test("shows determinate and indeterminate local progress plus cancel only while busy", () => {
     const harness = createRunnerHarness();
     render(<ToolWorkspace capability={capability("pdf.merge")} runner={harness.runner} />);
