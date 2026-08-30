@@ -1,0 +1,1 @@
+export const VALID_JPEG_BYTES = new Uint8Array([0xFF, 0xD8, 0xFF, 0xE0]);
