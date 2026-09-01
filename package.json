@@ -19,6 +19,7 @@
     "verify": "npm run lint && npm run typecheck && npm run test && npm run check:privacy && npm run build"
   },
   "dependencies": {
+    "@bwip-js/browser": "4.11.4",
     "client-only": "^0.0.1",
     "jszip": "^3.10.1",
     "next": "16.3.3",
