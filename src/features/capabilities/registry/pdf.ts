@@ -95,13 +95,15 @@ export const pdfCapabilities = Object.freeze([
   }),
   definePdf({
     id: "pdf.crop", slug: "crop-pdf", title: "Crop PDF",
+    releaseStatus: "active",
     description: "Apply a visible crop box to the current PDF page or optionally to every page.",
     resultContract: "exact-structural", inputMode: "files", inputs: [pdfFile()], result: pdfResult(),
-    optionFields: [cropBoxOption("cropBox", "Visible crop box", "visible"), pageRangeOption("pages", "Pages", "current"), toggleOption("applyToAll", "Apply to all pages", false)],
+    optionFields: [cropBoxOption("cropBox", "Crop margins in mm (left, top, right, bottom)", "10,10,10,10"), pageRangeOption("pages", "Pages", "1"), toggleOption("applyToAll", "Apply to all pages", false)],
     limits: limits(["pdf"], 1, 1), browserRequirements: ["canvas"],
   }),
   definePdf({
     id: "pdf.resize", slug: "resize-pdf", title: "Resize PDF",
+    releaseStatus: "active",
     description: "Resize PDF pages to A4 by default with fitted content centered on each page.",
     resultContract: "exact-structural", inputMode: "files", inputs: [pdfFile()], result: pdfResult(),
     optionFields: [selectOption("pageSize", "Page size", "a4", ["a4"]), selectOption("fit", "Content fit", "fit", ["fit"]), selectOption("alignment", "Alignment", "center", ["center"])],

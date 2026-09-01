@@ -7,6 +7,8 @@ test("generates static routes for active tools only", () => {
     { slug: "split-pdf" },
     { slug: "organize-pdf" },
     { slug: "rotate-pdf" },
+    { slug: "crop-pdf" },
+    { slug: "resize-pdf" },
     { slug: "delete-pdf-pages" },
     { slug: "extract-pdf-pages" },
     { slug: "page-numbers" },

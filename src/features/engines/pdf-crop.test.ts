@@ -1,15 +1,18 @@
 import { describe, test, expect } from "vitest";
+import { createValidPdfFile } from "@/test/fixtures/pdf";
 import { createPdfCropAdapter } from "./pdf-crop";
 
 describe("PDF Crop Adapter", () => {
-  test("probe returns expected kind", async () => {
+  test("probes actual PDF metadata", async () => {
     const adapter = createPdfCropAdapter();
-    const probe = await adapter.probe(new File([], "test", { type: "application/octet-stream" }));
-    expect(probe.kind).toBe("pdf");
+    const probe = await adapter.probe(await createValidPdfFile(2));
+    expect(probe).toEqual(expect.objectContaining({ kind: "pdf", pages: 2 }));
   });
-  test("validate returns empty", async () => {
+  test("validates the four bounded crop margins", async () => {
     const adapter = createPdfCropAdapter();
-    const issues = await adapter.validate([], {});
-    expect(issues).toEqual([]);
+    await expect(adapter.validate([], { cropBox: "10,10,10,10", pages: "1", applyToAll: false })).resolves.toEqual([]);
+    await expect(adapter.validate([], { cropBox: "10,not-a-number,10,10", pages: "1", applyToAll: false })).resolves.toEqual([
+      expect.objectContaining({ code: "malformed-input", field: "options.cropBox" }),
+    ]);
   });
 });

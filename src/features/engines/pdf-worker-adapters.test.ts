@@ -10,6 +10,8 @@ import { createPdfPageNumbersAdapter } from "./pdf-page-numbers";
 import { createPdfWatermarkAdapter } from "./pdf-watermark";
 import { createImageToPdfAdapter } from "./image-to-pdf";
 import { createTextToPdfAdapter } from "./text-to-pdf";
+import { createPdfCropAdapter } from "./pdf-crop";
+import { createPdfResizeAdapter } from "./pdf-resize";
 
 class NativeWorkerDouble {
   static latest: NativeWorkerDouble | undefined;
@@ -45,6 +47,8 @@ describe("PDF worker adapters", () => {
     ["watermark", createPdfWatermarkAdapter],
     ["image-to-pdf", createImageToPdfAdapter],
     ["text-to-pdf", createTextToPdfAdapter],
+    ["crop", createPdfCropAdapter],
+    ["resize", createPdfResizeAdapter],
   ])("%s uses a module browser worker", (_name, createAdapter) => {
     vi.stubGlobal("Worker", NativeWorkerDouble);
 

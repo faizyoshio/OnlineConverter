@@ -7,6 +7,8 @@ export function createActiveEngineRouter(): EngineRouter {
   router.register("pdf.merge", async () => (await import("@/features/engines/pdf-merge")).createPdfMergeAdapter());
   router.register("pdf.split", async () => (await import("@/features/engines/pdf-split")).createPdfSplitAdapter());
   router.register("pdf.rotate", async () => (await import("@/features/engines/pdf-rotate")).createPdfRotateAdapter());
+  router.register("pdf.crop", async () => (await import("@/features/engines/pdf-crop")).createPdfCropAdapter());
+  router.register("pdf.resize", async () => (await import("@/features/engines/pdf-resize")).createPdfResizeAdapter());
   router.register("pdf.delete-pages", async () => (await import("@/features/engines/pdf-delete-pages")).createPdfDeletePagesAdapter());
   router.register("pdf.extract-pages", async () => (await import("@/features/engines/pdf-extract-pages")).createPdfExtractPagesAdapter());
   router.register("pdf.organize", async () => (await import("@/features/engines/pdf-organize")).createPdfOrganizeAdapter());

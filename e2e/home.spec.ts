@@ -58,6 +58,40 @@ test("rotate PDF route processes file in browser worker", async ({ page }) => {
   await expect(page.getByRole("link", { name: /download output-1.pdf/i })).toBeVisible();
 });
 
+test("crop PDF route applies bounded margins in the browser worker", async ({ page }) => {
+  const doc = await PDFDocument.create();
+  doc.addPage([612, 792]);
+  doc.addPage([612, 792]);
+
+  await page.goto("/tools/crop-pdf");
+  await page.getByLabel(/crop margins in mm/i).fill("10,15,10,15");
+  await page.getByLabel(/^pages$/i).fill("2");
+  await page.getByLabel(/choose files/i).setInputFiles({
+    name: "source.pdf",
+    mimeType: "application/pdf",
+    buffer: Buffer.from(await doc.save()),
+  });
+  await expect(page.getByRole("button", { name: /run conversion/i })).toBeEnabled();
+  await page.getByRole("button", { name: /run conversion/i }).click();
+  await expect(page.getByRole("link", { name: /download output-1.pdf/i })).toBeVisible();
+});
+
+test("resize PDF route fits every page on A4 in the browser worker", async ({ page }) => {
+  const doc = await PDFDocument.create();
+  doc.addPage([400, 200]);
+  doc.addPage([200, 400]);
+
+  await page.goto("/tools/resize-pdf");
+  await page.getByLabel(/choose files/i).setInputFiles({
+    name: "source.pdf",
+    mimeType: "application/pdf",
+    buffer: Buffer.from(await doc.save()),
+  });
+  await expect(page.getByRole("button", { name: /run conversion/i })).toBeEnabled();
+  await page.getByRole("button", { name: /run conversion/i }).click();
+  await expect(page.getByRole("link", { name: /download output-1.pdf/i })).toBeVisible();
+});
+
 test("organize PDF route keeps original order by default in browser worker", async ({ page }) => {
   const doc = await PDFDocument.create();
   for (let index = 0; index < 3; index++) doc.addPage([612, 792]);

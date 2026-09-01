@@ -10,6 +10,8 @@ import {
   addPageNumbers,
   watermarkPdf,
   textToPdf,
+  cropPdfPages,
+  resizePdfPagesToA4,
 } from "./operations";
 
 async function createSamplePdf(pageCount: number = 3): Promise<Uint8Array> {
@@ -110,5 +112,38 @@ describe("PDF Operations Engine", () => {
 
     expect(doc.getPageCount()).toBe(1);
     expect(pdf.byteLength).toBeGreaterThan(0);
+  });
+
+  test("cropPdfPages changes only selected CropBoxes", async () => {
+    const source = await createSamplePdf(2);
+    const cropped = await cropPdfPages(source, [1], { left: 10, top: 20, right: 30, bottom: 40 });
+    const document = await PDFDocument.load(cropped);
+
+    expect(document.getPage(0).getCropBox()).toEqual({ x: 0, y: 0, width: 200, height: 200 });
+    expect(document.getPage(1).getCropBox()).toEqual({ x: 10, y: 40, width: 160, height: 140 });
+  });
+
+  test("cropPdfPages rejects margins that remove the visible page", async () => {
+    await expect(cropPdfPages(await createSamplePdf(1), [0], { left: 100, top: 0, right: 100, bottom: 0 })).rejects.toThrow("positive");
+  });
+
+  test("resizePdfPagesToA4 preserves page count and fits every page on A4", async () => {
+    const resized = await resizePdfPagesToA4(await createSamplePdf(2));
+    const document = await PDFDocument.load(resized);
+
+    expect(document.getPageCount()).toBe(2);
+    for (const page of document.getPages()) {
+      expect(page.getWidth()).toBeCloseTo(595.28, 2);
+      expect(page.getHeight()).toBeCloseTo(841.89, 2);
+    }
+  });
+
+  test("resizePdfPagesToA4 supports blank source pages", async () => {
+    const source = await PDFDocument.create();
+    source.addPage([400, 200]);
+    source.addPage([200, 400]);
+
+    const resized = await resizePdfPagesToA4(await source.save());
+    await expect(PDFDocument.load(resized)).resolves.toEqual(expect.objectContaining({}));
   });
 });

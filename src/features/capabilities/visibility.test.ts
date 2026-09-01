@@ -6,6 +6,8 @@ const activeIds = [
   "pdf.split",
   "pdf.organize",
   "pdf.rotate",
+  "pdf.crop",
+  "pdf.resize",
   "pdf.delete-pages",
   "pdf.extract-pages",
   "pdf.page-numbers",

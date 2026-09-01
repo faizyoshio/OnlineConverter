@@ -1,7 +1,8 @@
-import { mergePdfs, rotatePdfPages, splitPdf, deletePdfPages, extractPdfPages, organizePdf, addPageNumbers, watermarkPdf, imageWatermarkPdf, textToPdf, imagesToPdf } from "@/engines/pdf/operations";
+import { mergePdfs, rotatePdfPages, splitPdf, deletePdfPages, extractPdfPages, organizePdf, addPageNumbers, watermarkPdf, imageWatermarkPdf, textToPdf, imagesToPdf, cropPdfPages, resizePdfPagesToA4 } from "@/engines/pdf/operations";
 import { createZip } from "@/engines/utility/operations";
 import type { LocalWorkerResult } from "@/features/workers/protocol";
 import type { LocalWorkerOperationContext } from "@/features/workers/local-runtime";
+import { cropMarginsToPoints, parsePdfCropOptions, validatePdfResizeOptions } from "./options";
 
 function parseRanges(rangeString: string, maxPage: number): [number, number][] {
   const ranges: [number, number][] = [];
@@ -99,6 +100,49 @@ export async function processPdfOperation(context: LocalWorkerOperationContext):
         mode: "files",
         outputs: [{ blob: blobFromBytes(rotated, "application/pdf") }],
         metadata: { resultMode: "files", outputMimeTypes: ["application/pdf"], outputBytes: [rotated.length], pages: pageCount },
+      };
+    }
+
+    case "pdf.crop": {
+      reportProgress(0.1, "Loading PDF");
+      const buffer = new Uint8Array(await inputs[0]!.arrayBuffer());
+      const pdf = await (await import("pdf-lib")).PDFDocument.load(buffer);
+      const pageCount = pdf.getPageCount();
+      const cropOptions = parsePdfCropOptions(options);
+      const ranges = cropOptions.applyToAll
+        ? [[0, pageCount - 1] as [number, number]]
+        : parseRanges(cropOptions.pages, pageCount);
+      if (ranges.length === 0) throw new Error("No valid pages selected for cropping");
+      const indices = Array.from(new Set(ranges.flatMap(([start, end]) =>
+        Array.from({ length: end - start + 1 }, (_, index) => start + index))));
+      const margins = cropMarginsToPoints(cropOptions.marginsMm);
+      if (isCancelled()) return { mode: "files", outputs: [], metadata: { resultMode: "files", outputMimeTypes: [], outputBytes: [] } };
+      reportProgress(0.5, "Cropping pages");
+      const result = await cropPdfPages(buffer, indices, margins);
+      if (isCancelled()) return { mode: "files", outputs: [], metadata: { resultMode: "files", outputMimeTypes: [], outputBytes: [] } };
+      reportProgress(0.9, "Finalizing");
+      return {
+        mode: "files",
+        outputs: [{ blob: blobFromBytes(result, "application/pdf") }],
+        metadata: { resultMode: "files", outputMimeTypes: ["application/pdf"], outputBytes: [result.length], pages: pageCount },
+      };
+    }
+
+    case "pdf.resize": {
+      validatePdfResizeOptions(options);
+      reportProgress(0.1, "Loading PDF");
+      const buffer = new Uint8Array(await inputs[0]!.arrayBuffer());
+      const pdf = await (await import("pdf-lib")).PDFDocument.load(buffer);
+      const pageCount = pdf.getPageCount();
+      if (isCancelled()) return { mode: "files", outputs: [], metadata: { resultMode: "files", outputMimeTypes: [], outputBytes: [] } };
+      reportProgress(0.5, "Resizing pages");
+      const result = await resizePdfPagesToA4(buffer);
+      if (isCancelled()) return { mode: "files", outputs: [], metadata: { resultMode: "files", outputMimeTypes: [], outputBytes: [] } };
+      reportProgress(0.9, "Finalizing");
+      return {
+        mode: "files",
+        outputs: [{ blob: blobFromBytes(result, "application/pdf") }],
+        metadata: { resultMode: "files", outputMimeTypes: ["application/pdf"], outputBytes: [result.length], pages: pageCount },
       };
     }
 

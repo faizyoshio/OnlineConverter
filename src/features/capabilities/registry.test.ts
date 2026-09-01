@@ -49,6 +49,8 @@ test("declares 90 unique launch capabilities with only reviewed tools active", (
     "pdf.split",
     "pdf.organize",
     "pdf.rotate",
+    "pdf.crop",
+    "pdf.resize",
     "pdf.delete-pages",
     "pdf.extract-pages",
     "pdf.page-numbers",
@@ -62,7 +64,7 @@ test("declares 90 unique launch capabilities with only reviewed tools active", (
     "utility.barcode",
     "utility.password",
   ]);
-  expect(capabilityRegistry.filter((item) => item.releaseStatus === "planned")).toHaveLength(74);
+  expect(capabilityRegistry.filter((item) => item.releaseStatus === "planned")).toHaveLength(72);
 });
 
 test("keeps the approved manifest order", () => {

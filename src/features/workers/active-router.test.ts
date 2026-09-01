@@ -10,6 +10,8 @@ test("registers exactly the release-gated adapters", () => {
 });
 
 test.each([
+  "pdf.crop",
+  "pdf.resize",
   "archive.zip-create",
   "archive.zip-extract",
   "utility.unit",

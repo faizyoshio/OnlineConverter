@@ -269,4 +269,41 @@ describe("PDF worker operations", () => {
     const output = await PDFDocument.load(await result.outputs[0]!.blob.arrayBuffer());
     expect(output.getPageCount()).toBe(1);
   });
+
+  test("crops selected pages from millimetre margins in the PDF worker", async () => {
+    const result = await processPdfOperation({
+      capabilityId: "pdf.crop",
+      jobId: "job-crop",
+      inputs: [await createValidPdfFile(2)],
+      options: { cropBox: "10,10,10,10", pages: "2", applyToAll: false },
+      isCancelled: () => false,
+      reportProgress: () => undefined,
+    });
+
+    expect(result.mode).toBe("files");
+    if (result.mode !== "files") throw new Error("Expected file result");
+    const output = await PDFDocument.load(await result.outputs[0]!.blob.arrayBuffer());
+    expect(output.getPage(0).getCropBox().width).toBeCloseTo(output.getPage(0).getWidth(), 5);
+    expect(output.getPage(1).getCropBox().width).toBeLessThan(output.getPage(1).getWidth());
+    expect(result.metadata).toEqual(expect.objectContaining({ resultMode: "files", pages: 2 }));
+  });
+
+  test("resizes every PDF page to A4 in the PDF worker", async () => {
+    const stages: string[] = [];
+    const result = await processPdfOperation({
+      capabilityId: "pdf.resize",
+      jobId: "job-resize",
+      inputs: [await createValidPdfFile(2)],
+      options: { pageSize: "a4", fit: "fit", alignment: "center" },
+      isCancelled: () => false,
+      reportProgress: (_value, stage) => stages.push(stage),
+    });
+
+    expect(result.mode).toBe("files");
+    if (result.mode !== "files") throw new Error("Expected file result");
+    const output = await PDFDocument.load(await result.outputs[0]!.blob.arrayBuffer());
+    expect(output.getPageCount()).toBe(2);
+    expect(output.getPage(0).getSize()).toEqual(expect.objectContaining({ width: expect.closeTo(595.28, 2), height: expect.closeTo(841.89, 2) }));
+    expect(stages).toContain("Resizing pages");
+  });
 });

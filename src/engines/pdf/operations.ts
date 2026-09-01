@@ -302,3 +302,66 @@ export async function imagesToPdf(
 
   return pdf.save();
 }
+
+export type PdfCropMargins = {
+  left: number;
+  top: number;
+  right: number;
+  bottom: number;
+};
+
+export async function cropPdfPages(
+  pdfBuffer: Uint8Array,
+  pageIndices: readonly number[],
+  margins: PdfCropMargins,
+): Promise<Uint8Array> {
+  const values = [margins.left, margins.top, margins.right, margins.bottom];
+  if (values.some((value) => !Number.isFinite(value) || value < 0)) {
+    throw new Error("Crop margins must be finite non-negative values");
+  }
+
+  const pdf = await PDFDocument.load(pdfBuffer);
+  const selected = new Set(pageIndices.filter((index) => Number.isInteger(index) && index >= 0 && index < pdf.getPageCount()));
+  if (selected.size === 0) throw new Error("No valid pages selected for cropping");
+
+  for (const index of selected) {
+    const page = pdf.getPage(index);
+    const current = page.getCropBox();
+    const width = current.width - margins.left - margins.right;
+    const height = current.height - margins.top - margins.bottom;
+    if (width <= 0 || height <= 0) throw new Error("Crop margins must leave a positive visible page area");
+    page.setCropBox(current.x + margins.left, current.y + margins.bottom, width, height);
+  }
+
+  return pdf.save();
+}
+
+export async function resizePdfPagesToA4(pdfBuffer: Uint8Array): Promise<Uint8Array> {
+  const source = await PDFDocument.load(pdfBuffer);
+  const output = await PDFDocument.create();
+  const targetWidth = 595.28;
+  const targetHeight = 841.89;
+
+  for (const sourcePage of source.getPages()) {
+    if (!sourcePage.node.Contents()) sourcePage.pushOperators();
+    const cropBox = sourcePage.getCropBox();
+    const embedded = await output.embedPage(sourcePage, {
+      left: cropBox.x,
+      bottom: cropBox.y,
+      right: cropBox.x + cropBox.width,
+      top: cropBox.y + cropBox.height,
+    });
+    const scale = Math.min(targetWidth / embedded.width, targetHeight / embedded.height);
+    const width = embedded.width * scale;
+    const height = embedded.height * scale;
+    const page = output.addPage([targetWidth, targetHeight]);
+    page.drawPage(embedded, {
+      x: (targetWidth - width) / 2,
+      y: (targetHeight - height) / 2,
+      width,
+      height,
+    });
+  }
+
+  return output.save();
+}

@@ -1,26 +1,25 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
+import "client-only";
 import type { FileProbe, ValidationIssue } from "@/features/validation/types";
-import type { WorkerLike } from "@/features/workers/adapter";
-import type { WorkerRequest, WorkerResponse } from "@/features/workers/protocol";
+import type { EngineAdapter, WorkerLike } from "@/features/workers/adapter";
+import { BrowserWorkerBridge } from "@/features/workers/browser-worker";
+import { parsePdfCropOptions } from "./pdf/options";
+import { probePdf } from "./pdf/probe";
 
-class StubWorker implements WorkerLike {
-  postMessage(_message: WorkerRequest): void {}
-  addEventListener(_type: "message", _listener: (event: MessageEvent<WorkerResponse>) => void): void {}
-  removeEventListener(_type: "message", _listener: (event: MessageEvent<WorkerResponse>) => void): void {}
-  terminate(): void {}
-}
-
-export function createPdfCropAdapter() {
+export function createPdfCropAdapter(): EngineAdapter<Readonly<Record<string, unknown>>> {
   return {
-    async probe(_input: File): Promise<FileProbe> {
-      return { kind: "pdf" as const, probeRule: "pdf-header" as const, bytes: 0 };
+    probe(input: File): Promise<FileProbe> {
+      return probePdf(input);
     },
-    async validate(_inputs: readonly File[], _options: Readonly<Record<string, unknown>>): Promise<readonly ValidationIssue[]> {
-      return [];
+    async validate(_inputs, options): Promise<readonly ValidationIssue[]> {
+      try {
+        parsePdfCropOptions(options);
+        return [];
+      } catch {
+        return [{ code: "malformed-input", field: "options.cropBox", message: "Enter four bounded crop margins and a valid page selection." }];
+      }
     },
     createWorker(): WorkerLike {
-      return new StubWorker();
+      return new BrowserWorkerBridge(new Worker(new URL("../workers/pdf.worker.ts", import.meta.url), { type: "module" }));
     },
   };
 }
-
