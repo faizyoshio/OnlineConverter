@@ -1,5 +1,5 @@
 import { describe, expect, test } from "vitest";
-import { barcodeEncoder, generateBarcodeSvg, type BarcodeFormat } from "./barcode";
+import { barcodeEncoder, generateBarcodePng, generateBarcodeSvg, type BarcodeFormat } from "./barcode";
 
 const mappings: readonly [BarcodeFormat, string][] = [
   ["code-128", "code128"],
@@ -30,6 +30,8 @@ describe("barcode generation", () => {
     const svg = await generateBarcodeSvg({ format, text, quietZonePx: 10 });
     expect(svg).toMatch(/^<svg\b/);
     expect(svg).toContain("viewBox=");
+    expect(svg).toMatch(/^<svg\b[^>]*\bwidth="[1-9][0-9]*(?:\.[0-9]+)?"/);
+    expect(svg).toMatch(/^<svg\b[^>]*\bheight="[1-9][0-9]*(?:\.[0-9]+)?"/);
     expect(svg).not.toMatch(/<script\b|(?:href|src)=["']https?:/i);
   });
 
@@ -40,5 +42,9 @@ describe("barcode generation", () => {
     await expect(generateBarcodeSvg({ format: "qr", text: "", quietZonePx: 10 })).rejects.toThrow("required");
     await expect(generateBarcodeSvg({ format: "qr", text: "x".repeat(2_049), quietZonePx: 10 })).rejects.toThrow("2,048");
     await expect(generateBarcodeSvg({ format: "qr", text: "ok", quietZonePx: 101 })).rejects.toThrow("quiet zone");
+  });
+
+  test("reports when PNG rendering has no worker canvas", async () => {
+    await expect(generateBarcodePng({ format: "code-128", text: "ABC-123", quietZonePx: 10 })).rejects.toThrow("OffscreenCanvas");
   });
 });

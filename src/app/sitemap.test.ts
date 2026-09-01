@@ -26,5 +26,11 @@ test("includes home and only active capabilities", () => {
     { url: "http://localhost:3000/tools/watermark-pdf" },
     { url: "http://localhost:3000/tools/image-to-pdf" },
     { url: "http://localhost:3000/tools/text-to-pdf" },
+    { url: "http://localhost:3000/tools/zip-maker" },
+    { url: "http://localhost:3000/tools/zip-extractor" },
+    { url: "http://localhost:3000/tools/unit-converter" },
+    { url: "http://localhost:3000/tools/time-converter" },
+    { url: "http://localhost:3000/tools/barcode-generator" },
+    { url: "http://localhost:3000/tools/password-generator" },
   ]);
 });

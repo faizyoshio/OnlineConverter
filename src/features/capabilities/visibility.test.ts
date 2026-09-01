@@ -12,6 +12,12 @@ const activeIds = [
   "pdf.watermark",
   "pdf.image-to-pdf",
   "pdf.text-to-pdf",
+  "archive.zip-create",
+  "archive.zip-extract",
+  "utility.unit",
+  "utility.time",
+  "utility.barcode",
+  "utility.password",
 ];
 
 test("production hides planned capabilities while keeping active capabilities", () => {

@@ -1,5 +1,5 @@
 import "client-only";
-import { toSVG } from "@bwip-js/browser";
+import { toCanvas, toSVG } from "@bwip-js/browser";
 
 export type BarcodeFormat =
   | "code-128"
@@ -10,6 +10,12 @@ export type BarcodeFormat =
   | "itf-14"
   | "codabar"
   | "qr";
+
+export type BarcodeRenderOptions = {
+  format: BarcodeFormat;
+  text: string;
+  quietZonePx: number;
+};
 
 type BarcodeEncoder = "code128" | "code39" | "ean13" | "ean8" | "upca" | "itf14" | "rationalizedCodabar" | "qrcode";
 
@@ -70,23 +76,43 @@ function validateText(format: BarcodeFormat, text: string): void {
   }
 }
 
-export async function generateBarcodeSvg(options: {
-  format: BarcodeFormat;
-  text: string;
-  quietZonePx: number;
-}): Promise<string> {
+function addIntrinsicDimensions(svg: string): string {
+  const viewBox = /^<svg\b[^>]*\bviewBox="([^"]+)"/.exec(svg)?.[1];
+  const values = viewBox?.trim().split(/\s+/).map(Number);
+  if (!values || values.length !== 4 || values.some((value) => !Number.isFinite(value))) {
+    throw new Error("Barcode SVG has an invalid view box");
+  }
+  const width = values[2]! - values[0]!;
+  const height = values[3]! - values[1]!;
+  if (width <= 0 || height <= 0) throw new Error("Barcode SVG has invalid dimensions");
+  return svg.replace(/^<svg\b/, `<svg width="${width}" height="${height}"`);
+}
+
+function encoderOptions(options: BarcodeRenderOptions) {
   const { format, text, quietZonePx } = options;
   if (!Number.isInteger(quietZonePx) || quietZonePx < 0 || quietZonePx > 100) {
     throw new Error("Barcode quiet zone must be between 0 and 100 pixels");
   }
   validateText(format, text);
   const bcid = barcodeEncoder(format);
-  return toSVG({
+  return {
     bcid,
     text,
     scale: 2,
     paddingwidth: quietZonePx,
     paddingheight: quietZonePx,
     ...(format === "qr" ? {} : { height: 12, includetext: true, textxalign: "center" as const }),
-  });
+  };
+}
+
+export async function generateBarcodeSvg(options: BarcodeRenderOptions): Promise<string> {
+  return addIntrinsicDimensions(toSVG(encoderOptions(options)));
+}
+
+export async function generateBarcodePng(options: BarcodeRenderOptions): Promise<Blob> {
+  const renderOptions = encoderOptions(options);
+  if (typeof OffscreenCanvas === "undefined") throw new Error("OffscreenCanvas is unavailable for PNG barcode rendering");
+  const canvas = new OffscreenCanvas(1, 1);
+  toCanvas(canvas, renderOptions);
+  return canvas.convertToBlob({ type: "image/png" });
 }

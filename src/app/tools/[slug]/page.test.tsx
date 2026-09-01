@@ -13,6 +13,12 @@ test("generates static routes for active tools only", () => {
     { slug: "watermark-pdf" },
     { slug: "image-to-pdf" },
     { slug: "text-to-pdf" },
+    { slug: "zip-maker" },
+    { slug: "zip-extractor" },
+    { slug: "unit-converter" },
+    { slug: "time-converter" },
+    { slug: "barcode-generator" },
+    { slug: "password-generator" },
   ]);
 });
 

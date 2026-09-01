@@ -30,7 +30,7 @@ describe("utility worker operation", () => {
     const result = await processUtilityOperation(context({ capabilityId: "utility.password", options: { length: 8 } }), {
       generatePassword: () => "Aa2!Aa2!",
       generateBarcodeSvg: async () => "<svg viewBox=\"0 0 1 1\"></svg>",
-      svgToPng: async () => new Blob(["png"], { type: "image/png" }),
+      generateBarcodePng: async () => new Blob(["png"], { type: "image/png" }),
     });
     expect(result).toEqual({ mode: "value", value: { kind: "password", value: "Aa2!Aa2!" }, metadata: { resultMode: "value", outputMimeTypes: [], outputBytes: [] } });
     expect(JSON.stringify(result.metadata)).not.toContain("Aa2");
@@ -43,13 +43,13 @@ describe("utility worker operation", () => {
     expect(svg.outputs[0]!.blob.type).toBe("image/svg+xml");
     await expect(svg.outputs[0]!.blob.text()).resolves.toMatch(/^<svg\b/);
 
-    let renderedSvg = "";
+    let renderedText = "";
     const png = await processUtilityOperation(context({ capabilityId: "utility.barcode", options: { text: "ABC-123", format: "code-128", target: "png", quietZonePx: 10 } }), {
       generatePassword: () => "unused",
       generateBarcodeSvg: async () => "<svg viewBox=\"0 0 2 3\"></svg>",
-      svgToPng: async (source) => { renderedSvg = source; return new Blob([new Uint8Array([1, 2, 3])], { type: "image/png" }); },
+      generateBarcodePng: async (options) => { renderedText = options.text; return new Blob([new Uint8Array([1, 2, 3])], { type: "image/png" }); },
     });
-    expect(renderedSvg).toContain("viewBox");
+    expect(renderedText).toBe("ABC-123");
     expect(png.mode).toBe("files");
     if (png.mode === "files") expect(png.metadata).toEqual({ resultMode: "files", outputMimeTypes: ["image/png"], outputBytes: [3] });
   });

@@ -18,8 +18,16 @@ describe("site helpers", () => {
       "pdf.watermark",
       "pdf.image-to-pdf",
       "pdf.text-to-pdf",
+      "archive.zip-create",
+      "archive.zip-extract",
+      "utility.unit",
+      "utility.time",
+      "utility.barcode",
+      "utility.password",
     ]);
     expect(getActiveCapabilityBySlug("merge-pdf", capabilityRegistry)?.id).toBe("pdf.merge");
+    expect(getActiveCapabilityBySlug("zip-maker", capabilityRegistry)?.id).toBe("archive.zip-create");
+    expect(getActiveCapabilityBySlug("unit-converter", capabilityRegistry)?.id).toBe("utility.unit");
     expect(getActiveCapabilityBySlug("compress-pdf", capabilityRegistry)).toBeUndefined();
   });
 

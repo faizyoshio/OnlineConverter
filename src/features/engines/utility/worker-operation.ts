@@ -1,4 +1,4 @@
-import { generateBarcodeSvg, type BarcodeFormat } from "@/engines/utility/barcode";
+import { generateBarcodePng, generateBarcodeSvg, type BarcodeFormat, type BarcodeRenderOptions } from "@/engines/utility/barcode";
 import { convertTime, convertUnits, generatePassword, type PasswordOptions } from "@/engines/utility/operations";
 import type { LocalWorkerOperationContext } from "@/features/workers/local-runtime";
 import type { LocalWorkerResult } from "@/features/workers/protocol";
@@ -6,29 +6,13 @@ import type { LocalWorkerResult } from "@/features/workers/protocol";
 export type UtilityOperationDependencies = {
   generatePassword: (options: PasswordOptions) => string;
   generateBarcodeSvg: typeof generateBarcodeSvg;
-  svgToPng: (svg: string) => Promise<Blob>;
+  generateBarcodePng: typeof generateBarcodePng;
 };
-
-async function browserSvgToPng(svg: string): Promise<Blob> {
-  if (typeof createImageBitmap !== "function" || typeof OffscreenCanvas === "undefined") {
-    throw new Error("PNG barcode rendering is unavailable in this browser");
-  }
-  const bitmap = await createImageBitmap(new Blob([svg], { type: "image/svg+xml" }));
-  try {
-    const canvas = new OffscreenCanvas(bitmap.width, bitmap.height);
-    const drawing = canvas.getContext("2d");
-    if (!drawing) throw new Error("PNG barcode canvas is unavailable");
-    drawing.drawImage(bitmap, 0, 0);
-    return canvas.convertToBlob({ type: "image/png" });
-  } finally {
-    bitmap.close();
-  }
-}
 
 const DEFAULT_DEPENDENCIES: UtilityOperationDependencies = {
   generatePassword,
   generateBarcodeSvg,
-  svgToPng: browserSvgToPng,
+  generateBarcodePng,
 };
 
 function requiredString(options: Readonly<Record<string, unknown>>, key: string): string {
@@ -112,14 +96,13 @@ export async function processUtilityOperation(
     const format = barcodeFormat(requiredString(options, "format"));
     const target = requiredString(options, "target");
     const quietZonePx = requiredNumber(options, "quietZonePx");
+    const barcodeOptions: BarcodeRenderOptions = { text, format, quietZonePx };
     ensureActive(context);
     reportProgress(0.45, "Generating barcode");
-    const svg = await dependencies.generateBarcodeSvg({ text, format, quietZonePx });
-    ensureActive(context);
     const output = target === "svg"
-      ? new Blob([svg], { type: "image/svg+xml" })
+      ? new Blob([await dependencies.generateBarcodeSvg(barcodeOptions)], { type: "image/svg+xml" })
       : target === "png"
-        ? await dependencies.svgToPng(svg)
+        ? await dependencies.generateBarcodePng(barcodeOptions)
         : (() => { throw new Error("Unsupported barcode output format"); })();
     ensureActive(context);
     reportProgress(0.95, "Finalizing barcode");

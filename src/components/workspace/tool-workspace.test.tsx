@@ -53,6 +53,32 @@ function createRunnerHarness() {
 afterEach(() => vi.restoreAllMocks());
 
 describe("ToolWorkspace", () => {
+  test("renders value tools without a file picker and passes edited values to the runner", async () => {
+    const user = userEvent.setup();
+    const harness = createRunnerHarness();
+    harness.setResult({
+      id: "unit-1",
+      mode: "value",
+      value: { kind: "number", display: "1000 m", numericValue: 1000, unit: "m" },
+      metadata: { resultMode: "value", outputMimeTypes: [], outputBytes: [] },
+    });
+    render(<ToolWorkspace capability={capability("utility.unit")} runner={harness.runner} />);
+
+    expect(screen.queryByLabelText(/choose files/i)).not.toBeInTheDocument();
+    await user.type(screen.getByLabelText(/^value$/i), "1");
+    await user.type(screen.getByLabelText(/from unit/i), "km");
+    await user.type(screen.getByLabelText(/to unit/i), "m");
+    await user.click(screen.getByRole("button", { name: /run conversion/i }));
+
+    expect(harness.runner.run).toHaveBeenCalledWith([], expect.objectContaining({
+      value: 1,
+      category: "length",
+      fromUnit: "km",
+      toUnit: "m",
+    }));
+    expect(await screen.findByText("1000 m")).toBeVisible();
+  });
+
   test("validates selected files before enabling conversion and focuses validation summary", async () => {
     const user = userEvent.setup();
     const harness = createRunnerHarness();

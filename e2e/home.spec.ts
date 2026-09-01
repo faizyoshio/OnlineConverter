@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import JSZip from "jszip";
 import { PDFDocument } from "pdf-lib";
 import { VALID_PNG_BYTES } from "../src/test/fixtures/pdf-inputs";
 
@@ -196,4 +197,74 @@ test("text to PDF route processes UTF-8 text in browser worker", async ({ page }
   await expect(page.getByRole("button", { name: /run conversion/i })).toBeEnabled();
   await page.getByRole("button", { name: /run conversion/i }).click();
   await expect(page.getByRole("link", { name: /download output-1.pdf/i })).toBeVisible();
+});
+
+test("ZIP maker route creates an archive in the browser worker", async ({ page }) => {
+  await page.goto("/tools/zip-maker");
+  await page.getByLabel(/choose files/i).setInputFiles([
+    { name: "notes.txt", mimeType: "text/plain", buffer: Buffer.from("local notes") },
+    { name: "data.json", mimeType: "application/json", buffer: Buffer.from('{"local":true}') },
+  ]);
+  await expect(page.getByRole("button", { name: /run conversion/i })).toBeEnabled();
+  await page.getByRole("button", { name: /run conversion/i }).click();
+  await expect(page.getByRole("link", { name: /download output-1.zip/i })).toBeVisible();
+});
+
+test("ZIP extractor route exposes safe entries from a local archive", async ({ page }) => {
+  const archive = new JSZip();
+  archive.file("reports/summary.txt", "local summary");
+  archive.file("data.csv", "value\n42");
+
+  await page.goto("/tools/zip-extractor");
+  await page.getByLabel(/choose files/i).setInputFiles({
+    name: "source.zip",
+    mimeType: "application/zip",
+    buffer: await archive.generateAsync({ type: "nodebuffer" }),
+  });
+  await expect(page.getByRole("button", { name: /run conversion/i })).toBeEnabled();
+  await page.getByRole("button", { name: /run conversion/i }).click();
+  await expect(page.getByRole("link", { name: /download reports-summary.txt/i })).toBeVisible();
+  await expect(page.getByRole("link", { name: /download data.csv/i })).toBeVisible();
+});
+
+test("unit converter route converts values without a file picker", async ({ page }) => {
+  await page.goto("/tools/unit-converter");
+  await expect(page.getByLabel(/choose files/i)).toHaveCount(0);
+  await page.getByLabel(/^value$/i).fill("1");
+  await page.getByLabel(/from unit/i).fill("km");
+  await page.getByLabel(/to unit/i).fill("m");
+  await page.getByRole("button", { name: /run conversion/i }).click();
+  await expect(page.getByLabel(/local conversion result/i)).toContainText("1000 m");
+});
+
+test("time converter route applies IANA time zones locally", async ({ page }) => {
+  await page.goto("/tools/time-converter");
+  await page.getByLabel(/date and time/i).fill("2026-01-15T12:00:00");
+  await page.getByLabel(/from time zone/i).fill("Asia/Jakarta");
+  await page.getByLabel(/to time zone/i).fill("UTC");
+  await page.getByRole("button", { name: /run conversion/i }).click();
+  await expect(page.getByLabel(/local conversion result/i)).toContainText("UTC");
+  await expect(page.getByLabel(/local conversion result/i)).toContainText("05:00");
+});
+
+test("barcode generator route produces PNG and SVG entirely in the browser", async ({ page }) => {
+  await page.goto("/tools/barcode-generator");
+  await page.getByLabel(/barcode text/i).fill("LOCAL-123");
+  await page.getByLabel(/output format/i).selectOption("svg");
+  await page.getByRole("button", { name: /run conversion/i }).click();
+  await expect(page.getByRole("link", { name: /download output-1.svg/i })).toBeVisible();
+
+  await page.getByLabel(/output format/i).selectOption("png");
+  await page.getByRole("button", { name: /run conversion/i }).click();
+  await expect(page.getByRole("link", { name: /download output-1.png/i })).toBeVisible();
+});
+
+test("password generator route returns a local value without a download", async ({ page }) => {
+  await page.goto("/tools/password-generator");
+  await page.getByLabel(/password length/i).fill("32");
+  await page.getByRole("button", { name: /run conversion/i }).click();
+  const result = page.getByLabel(/local conversion result/i);
+  await expect(result).toBeVisible();
+  await expect(result.locator("output")).toHaveText(/.{32}/);
+  await expect(result.getByRole("link", { name: /download/i })).toHaveCount(0);
 });

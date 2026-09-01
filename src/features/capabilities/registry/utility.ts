@@ -15,22 +15,25 @@ import {
 export const utilityCapabilities = Object.freeze([
   capability({
     id: "archive.zip-create", slug: "zip-maker", title: "ZIP Maker",
+    releaseStatus: "active",
     description: "Create a local ZIP from one to twenty files while preserving selected relative names.",
     category: "utility", workerFamily: "archive", resultContract: "exact-structural", inputMode: "files",
     inputs: [input("binary")], result: filesResult(output("zip")),
     optionFields: [toggleOption("preserveRelativeNames", "Preserve relative names", true), numberOption("deflateLevel", "Deflate level", 6, 0, 9)],
-    limits: limits(["batch", "zip"], 1, 20, true), browserRequirements: ["wasm"], unsupportedCodes: ["unsafe-relative-name"],
+    limits: limits(["batch", "zip"], 1, 20, true), browserRequirements: [], unsupportedCodes: ["unsafe-relative-name"],
   }),
   capability({
     id: "archive.zip-extract", slug: "zip-extractor", title: "ZIP Extractor",
+    releaseStatus: "active",
     description: "Extract safe local ZIP entries individually or bundle selected entries into a new ZIP.",
     category: "utility", workerFamily: "archive", resultContract: "exact-structural", inputMode: "files",
     inputs: [input("zip")], result: selectedEntriesResult(output("binary"), output("zip")),
     optionFields: [toggleOption("selectAllSafe", "Select all safe entries", true), toggleOption("flatten", "Flatten folders", false)],
-    limits: limits(["zip"], 1, 1), browserRequirements: ["wasm"], unsupportedCodes: ["unsafe-archive-entry", "zip-bomb"],
+    limits: limits(["zip"], 1, 1), browserRequirements: [], unsupportedCodes: ["unsafe-archive-entry", "zip-bomb"],
   }),
   capability({
     id: "utility.unit", slug: "unit-converter", title: "Unit Converter",
+    releaseStatus: "active",
     description: "Convert a numeric value between supported measurement units with controlled precision.",
     category: "utility", workerFamily: "utility", resultContract: "exact-structural", inputMode: "values", inputs: [],
     result: valueResult("number"),
@@ -44,6 +47,7 @@ export const utilityCapabilities = Object.freeze([
   }),
   capability({
     id: "utility.time", slug: "time-converter", title: "Time Converter",
+    releaseStatus: "active",
     description: "Convert a date and time between IANA zones while showing the exact zone and UTC offset used.",
     category: "utility", workerFamily: "utility", resultContract: "exact-structural", inputMode: "values", inputs: [],
     result: valueResult("time"),
@@ -52,14 +56,16 @@ export const utilityCapabilities = Object.freeze([
   }),
   capability({
     id: "utility.barcode", slug: "barcode-generator", title: "Barcode Generator",
+    releaseStatus: "active",
     description: "Generate a validated local barcode as PNG or SVG without sending its text to a server.",
     category: "utility", workerFamily: "utility", resultContract: "exact-structural", inputMode: "values", inputs: [],
     result: filesResult(output("png", "explicit-user-choice"), output("svg", "explicit-user-choice")),
     optionFields: [textOption("text", "Barcode text", null), selectOption("format", "Barcode format", "code-128", ["code-128", "code-39", "ean-13", "ean-8", "upc-a", "itf-14", "codabar", "qr"]), selectOption("target", "Output format", "png", ["png", "svg"]), numberOption("quietZonePx", "Quiet zone", 10, 0, 100)],
-    limits: limits(["utility"], 0, 0), browserRequirements: ["canvas"], unsupportedCodes: ["invalid-barcode-value"],
+    limits: limits(["utility"], 0, 0), browserRequirements: ["canvas", "offscreen-canvas"], unsupportedCodes: ["invalid-barcode-value"],
   }),
   capability({
     id: "utility.password", slug: "password-generator", title: "Password Generator",
+    releaseStatus: "active",
     description: "Generate a strong password locally with selected character groups and no retained history.",
     category: "utility", workerFamily: "utility", resultContract: "exact-structural", inputMode: "values", inputs: [],
     result: valueResult("password", true, true),
