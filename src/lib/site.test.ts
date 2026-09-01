@@ -34,8 +34,8 @@ describe("site helpers", () => {
   });
 
   test("requires a HTTPS site URL in production", () => {
-    expect(() => resolveSiteUrl({ environment: "production" })).toThrow("SITE_URL is required in production");
+    expect(() => resolveSiteUrl({ environment: "production", siteUrl: "" })).toThrow("SITE_URL is required in production");
     expect(() => resolveSiteUrl({ environment: "production", siteUrl: "http://converter.example" })).toThrow("SITE_URL must use HTTPS in production");
-    expect(resolveSiteUrl({ environment: "local" }).toString()).toBe("http://localhost:3000/");
+    expect(resolveSiteUrl({ environment: "local", siteUrl: "http://localhost:3000" }).toString()).toBe("http://localhost:3000/");
   });
 });
