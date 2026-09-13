@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { EngineRouter } from "./router";
 
@@ -20,6 +20,8 @@ export function createActiveEngineRouter(): EngineRouter {
   router.register("image.webp-to-jpg", async () => (await import("@/features/engines/image-webp-to-jpg")).createImageWebpToJpgAdapter());
   router.register("image.webp-to-png", async () => (await import("@/features/engines/image-webp-to-png")).createImageWebpToPngAdapter());
   router.register("image.jfif-to-png", async () => (await import("@/features/engines/image-jfif-to-png")).createImageJfifToPngAdapter());
+  router.register("image.rotate", async () => (await import("@/features/engines/image-rotate")).createImageRotateAdapter());
+  router.register("image.flip", async () => (await import("@/features/engines/image-flip")).createImageFlipAdapter());
   router.register("archive.zip-create", async () => (await import("@/features/engines/archive-zip-create")).createArchiveZipCreateAdapter());
   router.register("archive.zip-extract", async () => (await import("@/features/engines/zip-extract")).createZipExtractAdapter());
   router.register("utility.unit", async () => (await import("@/features/engines/utility-unit")).createUnitConverterAdapter());

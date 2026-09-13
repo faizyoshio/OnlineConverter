@@ -32,6 +32,8 @@ test("includes home and only active capabilities", () => {
     { url: "http://localhost:3000/tools/webp-to-jpg" },
     { url: "http://localhost:3000/tools/webp-to-png" },
     { url: "http://localhost:3000/tools/jfif-to-png" },
+    { url: "http://localhost:3000/tools/rotate-image" },
+    { url: "http://localhost:3000/tools/flip-image" },
     { url: "http://localhost:3000/tools/zip-maker" },
     { url: "http://localhost:3000/tools/zip-extractor" },
     { url: "http://localhost:3000/tools/unit-converter" },

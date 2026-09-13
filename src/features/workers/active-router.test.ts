@@ -16,6 +16,8 @@ test.each([
   "image.webp-to-jpg",
   "image.webp-to-png",
   "image.jfif-to-png",
+  "image.rotate",
+  "image.flip",
   "archive.zip-create",
   "archive.zip-extract",
   "utility.unit",

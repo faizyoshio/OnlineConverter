@@ -36,15 +36,44 @@ export async function processImageOperation(
   try {
     validateDimensions(bitmap.width, bitmap.height);
     ensureActive(context);
-    context.reportProgress(0.5, "Rendering local image");
-    const canvas = dependencies.createCanvas(bitmap.width, bitmap.height);
+    let canvasWidth = bitmap.width;
+    let canvasHeight = bitmap.height;
+
+    if (outputOptions.rotationDegrees === 90 || outputOptions.rotationDegrees === 270) {
+      canvasWidth = bitmap.height;
+      canvasHeight = bitmap.width;
+    }
+
+    const canvas = dependencies.createCanvas(canvasWidth, canvasHeight);
     const drawing = canvas.getContext("2d");
     if (!drawing) throw new Error("Image canvas rendering is unavailable");
     if (outputOptions.background) {
       drawing.fillStyle = outputOptions.background;
-      drawing.fillRect(0, 0, bitmap.width, bitmap.height);
+      drawing.fillRect(0, 0, canvasWidth, canvasHeight);
     }
-    drawing.drawImage(bitmap, 0, 0);
+    if (outputOptions.rotationDegrees === 90) {
+      drawing.translate(canvasWidth, 0);
+      drawing.rotate(Math.PI / 2);
+      drawing.drawImage(bitmap, 0, 0);
+    } else if (outputOptions.rotationDegrees === 180) {
+      drawing.translate(canvasWidth, canvasHeight);
+      drawing.rotate(Math.PI);
+      drawing.drawImage(bitmap, 0, 0);
+    } else if (outputOptions.rotationDegrees === 270) {
+      drawing.translate(0, canvasHeight);
+      drawing.rotate((3 * Math.PI) / 2);
+      drawing.drawImage(bitmap, 0, 0);
+    } else if (outputOptions.flipDirection === "horizontal") {
+      drawing.translate(canvasWidth, 0);
+      drawing.scale(-1, 1);
+      drawing.drawImage(bitmap, 0, 0);
+    } else if (outputOptions.flipDirection === "vertical") {
+      drawing.translate(0, canvasHeight);
+      drawing.scale(1, -1);
+      drawing.drawImage(bitmap, 0, 0);
+    } else {
+      drawing.drawImage(bitmap, 0, 0);
+    }
     ensureActive(context);
     context.reportProgress(0.8, "Encoding local image");
     const blob = await canvas.convertToBlob({

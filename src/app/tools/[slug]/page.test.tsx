@@ -19,6 +19,8 @@ test("generates static routes for active tools only", () => {
     { slug: "webp-to-jpg" },
     { slug: "webp-to-png" },
     { slug: "jfif-to-png" },
+    { slug: "rotate-image" },
+    { slug: "flip-image" },
     { slug: "zip-maker" },
     { slug: "zip-extractor" },
     { slug: "unit-converter" },

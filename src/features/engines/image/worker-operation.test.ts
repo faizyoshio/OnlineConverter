@@ -18,15 +18,18 @@ function dependencies(outputType = "image/png", width = 4, height = 3) {
   const close = vi.fn();
   const fillRect = vi.fn();
   const drawImage = vi.fn();
+  const translate = vi.fn();
+  const rotate = vi.fn();
+  const scale = vi.fn();
   const convertToBlob = vi.fn(async () => new Blob([new Uint8Array([1, 2, 3])], { type: outputType }));
   const deps: ImageOperationDependencies = {
     decode: vi.fn(async () => ({ width, height, close } as unknown as ImageBitmap)),
     createCanvas: vi.fn(() => ({
-      getContext: () => ({ fillStyle: "", fillRect, drawImage }),
+      getContext: () => ({ fillStyle: "", fillRect, drawImage, translate, rotate, scale }),
       convertToBlob,
     } as unknown as OffscreenCanvas)),
   };
-  return { deps, close, fillRect, drawImage, convertToBlob };
+  return { deps, close, fillRect, drawImage, translate, rotate, scale, convertToBlob };
 }
 
 describe("image worker operation", () => {
@@ -55,9 +58,35 @@ describe("image worker operation", () => {
     expect(harness.convertToBlob).toHaveBeenCalledWith({ type: "image/jpeg", quality: 0.85 });
   });
 
+  test("rotates image 90 degrees and adjusts canvas dimensions", async () => {
+    const harness = dependencies("image/png", 4, 3);
+    await processImageOperation(context({
+      capabilityId: "image.rotate",
+      options: { degrees: "90", target: "png" },
+    }), harness.deps);
+    expect(harness.deps.createCanvas).toHaveBeenCalledWith(3, 4);
+    expect(harness.translate).toHaveBeenCalledWith(3, 0);
+    expect(harness.rotate).toHaveBeenCalledWith(Math.PI / 2);
+    expect(harness.drawImage).toHaveBeenCalledTimes(1);
+  });
+
+  test("flips image horizontally", async () => {
+    const harness = dependencies("image/png", 4, 3);
+    await processImageOperation(context({
+      capabilityId: "image.flip",
+      options: { direction: "horizontal", target: "png" },
+    }), harness.deps);
+    expect(harness.deps.createCanvas).toHaveBeenCalledWith(4, 3);
+    expect(harness.translate).toHaveBeenCalledWith(4, 0);
+    expect(harness.scale).toHaveBeenCalledWith(-1, 1);
+    expect(harness.drawImage).toHaveBeenCalledTimes(1);
+  });
+
   test.each([
     ["image.webp-to-png", "image/png"],
     ["image.jfif-to-png", "image/png"],
+    ["image.rotate", "image/png"],
+    ["image.flip", "image/png"],
   ])("encodes %s with the declared MIME", async (capabilityId, mimeType) => {
     const harness = dependencies(mimeType);
     const result = await processImageOperation(context({ capabilityId, options: {} }), harness.deps);

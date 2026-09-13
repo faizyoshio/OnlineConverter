@@ -201,6 +201,7 @@ export const imageCapabilities = Object.freeze([
   }),
   defineImage({
     id: "image.rotate", slug: "rotate-image", title: "Rotate Image",
+    releaseStatus: "active",
     description: "Rotate a supported local raster image ninety degrees clockwise by default.",
     resultContract: "lossy-visual", inputMode: "files", inputs: rasterInputs(),
     result: filesResult(output("jpeg", "explicit-user-choice"), output("png", "explicit-user-choice"), output("webp", "explicit-user-choice"), output("bmp", "explicit-user-choice")),
@@ -209,6 +210,7 @@ export const imageCapabilities = Object.freeze([
   }),
   defineImage({
     id: "image.flip", slug: "flip-image", title: "Flip Image",
+    releaseStatus: "active",
     description: "Flip a supported local raster image horizontally by default and choose its output format.",
     resultContract: "lossy-visual", inputMode: "files", inputs: rasterInputs(),
     result: filesResult(output("jpeg", "explicit-user-choice"), output("png", "explicit-user-choice"), output("webp", "explicit-user-choice"), output("bmp", "explicit-user-choice")),

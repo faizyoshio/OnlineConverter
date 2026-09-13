@@ -13,7 +13,9 @@ export async function probeRasterImage(
 ): Promise<FileProbe> {
   const head = new Uint8Array(await file.slice(0, 32).arrayBuffer());
   const signature = detectSignature(head);
-  if (signature.confidence !== "exact" || (signature.kind !== "jpeg" && signature.kind !== "webp")) {
+  const isAllowedKind = signature.kind === "jpeg" || signature.kind === "webp" || signature.kind === "png" || signature.kind === "bmp";
+  const isValidConfidence = signature.confidence === "exact" || (signature.kind === "png" && signature.confidence === "candidate");
+  if (!isAllowedKind || !isValidConfidence) {
     return unknownProbe();
   }
 
