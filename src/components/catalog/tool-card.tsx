@@ -14,11 +14,19 @@ type ToolCardProps = {
   previewMode: boolean;
 };
 
+const groupNames: Record<string, string> = {
+  organize: "Organize",
+  optimize: "Optimize",
+  "to-pdf": "To PDF",
+  "from-pdf": "From PDF",
+};
+
 function CardBody({ capability, previewMode }: ToolCardProps) {
+  const categoryBadge = capability.group ? groupNames[capability.group] ?? capability.group : capability.category;
   return (
     <>
       <div className="tool-card__topline">
-        <span className="tool-card__category">{capability.category}</span>
+        <span className="tool-card__category">{categoryBadge}</span>
         {capability.releaseStatus === "planned" && previewMode ? <Badge>In development</Badge> : null}
       </div>
       <h3>{capability.title}</h3>

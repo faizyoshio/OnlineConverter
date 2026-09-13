@@ -10,38 +10,27 @@ describe("site helpers", () => {
     expect(activeCapabilities.map((capability) => capability.id)).toEqual([
       "pdf.merge",
       "pdf.split",
-      "pdf.organize",
-      "pdf.rotate",
-      "pdf.crop",
-      "pdf.resize",
       "pdf.delete-pages",
       "pdf.extract-pages",
-      "pdf.page-numbers",
-      "pdf.watermark",
-      "pdf.flatten",
+      "pdf.organize",
+      "pdf.scan",
+      "pdf.compress",
+      "pdf.repair",
+      "pdf.ocr",
       "pdf.image-to-pdf",
-      "pdf.text-to-pdf",
-      "image.jpg-to-modern",
-      "image.webp-to-jpg",
-      "image.webp-to-png",
-      "image.jfif-to-png",
-      "image.compress-jpeg",
-      "image.compress-webp",
-      "image.resize",
-      "image.crop",
-      "image.circle-crop",
-      "image.rotate",
-      "image.flip",
-      "archive.zip-create",
-      "archive.zip-extract",
-      "utility.unit",
-      "utility.time",
-      "utility.password",
+      "pdf.word-to-pdf",
+      "pdf.powerpoint-to-pdf",
+      "pdf.excel-to-pdf",
+      "pdf.to-jpg",
+      "pdf.pdf-to-word",
+      "pdf.pdf-to-powerpoint",
+      "pdf.pdf-to-excel",
     ]);
     expect(getActiveCapabilityBySlug("merge-pdf", capabilityRegistry)?.id).toBe("pdf.merge");
-    expect(getActiveCapabilityBySlug("zip-maker", capabilityRegistry)?.id).toBe("archive.zip-create");
-    expect(getActiveCapabilityBySlug("unit-converter", capabilityRegistry)?.id).toBe("utility.unit");
-    expect(getActiveCapabilityBySlug("compress-pdf", capabilityRegistry)).toBeUndefined();
+    expect(getActiveCapabilityBySlug("compress-pdf", capabilityRegistry)?.id).toBe("pdf.compress");
+    expect(getActiveCapabilityBySlug("word-to-pdf", capabilityRegistry)?.id).toBe("pdf.word-to-pdf");
+    expect(getActiveCapabilityBySlug("zip-maker", capabilityRegistry)).toBeUndefined();
+    expect(getActiveCapabilityBySlug("unit-converter", capabilityRegistry)).toBeUndefined();
   });
 
   test("builds canonical metadata only from active manifest fields", () => {

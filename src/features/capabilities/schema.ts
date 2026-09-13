@@ -27,7 +27,7 @@ const fixturePlanSchema = z.object({
 export const fileKindSchema = z.enum([
   "pdf", "jpeg", "png", "webp", "bmp", "jfif", "heic", "svg", "html", "text",
   "gif", "apng", "zip", "mp4", "mov", "webm", "avi", "mp3", "wav", "ogg",
-  "aac", "m4a", "flac", "binary",
+  "aac", "m4a", "flac", "binary", "docx", "pptx", "xlsx",
 ]);
 export const probeRuleSchema = z.enum([
   "pdf-header", "jpeg-soi", "png-signature", "webp-riff", "bmp-header", "heic-brand",
@@ -74,6 +74,7 @@ export const capabilityManifestSchema = z.object({
   title: z.string().min(2).max(64),
   description: z.string().min(20).max(180),
   category: capabilityCategorySchema,
+  group: z.enum(["organize", "optimize", "to-pdf", "from-pdf"]).optional(),
   aliases: z.array(z.string().min(2).max(48)).max(12),
   execution: z.literal("browser-worker"),
   workerFamily: z.enum(["pdf", "image", "archive", "ocr", "utility"]),
@@ -141,6 +142,9 @@ const inputDescriptors: Record<FileKind, InputDescriptor> = {
   m4a: { kind: "m4a", mimeTypes: ["audio/mp4", "audio/x-m4a"], extensions: [".m4a"], probeRule: "iso-bmff-brand" },
   flac: { kind: "flac", mimeTypes: ["audio/flac"], extensions: [".flac"], probeRule: "flac-header" },
   binary: { kind: "binary", mimeTypes: ["application/octet-stream"], extensions: ["*"], probeRule: "opaque-local-file" },
+  docx: { kind: "docx", mimeTypes: ["application/vnd.openxmlformats-officedocument.wordprocessingml.document", "application/msword"], extensions: [".docx", ".doc"], probeRule: "zip-header" },
+  pptx: { kind: "pptx", mimeTypes: ["application/vnd.openxmlformats-officedocument.presentationml.presentation", "application/vnd.ms-powerpoint"], extensions: [".pptx", ".ppt"], probeRule: "zip-header" },
+  xlsx: { kind: "xlsx", mimeTypes: ["application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "application/vnd.ms-excel"], extensions: [".xlsx", ".xls"], probeRule: "zip-header" },
 };
 
 const outputMetadata: Record<FileKind, { mimeType: string; extension: OutputDescriptor["extension"] }> = {
@@ -168,6 +172,9 @@ const outputMetadata: Record<FileKind, { mimeType: string; extension: OutputDesc
   m4a: { mimeType: "audio/mp4", extension: ".m4a" },
   flac: { mimeType: "audio/flac", extension: ".flac" },
   binary: { mimeType: "application/octet-stream", extension: "preserve" },
+  docx: { mimeType: "application/vnd.openxmlformats-officedocument.wordprocessingml.document", extension: ".docx" },
+  pptx: { mimeType: "application/vnd.openxmlformats-officedocument.presentationml.presentation", extension: ".pptx" },
+  xlsx: { mimeType: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", extension: ".xlsx" },
 };
 
 export function input(kind: FileKind): InputDescriptor {

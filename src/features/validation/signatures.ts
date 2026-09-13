@@ -29,7 +29,7 @@ function detectIsoBrand(bytes: Uint8Array): SignatureDetection | undefined {
   return { kind: "unknown", probeRule: "iso-bmff-brand", confidence: "candidate" };
 }
 
-export function detectSignature(input: Uint8Array): SignatureDetection {
+export function detectSignature(input: Uint8Array, fileName?: string): SignatureDetection {
   const bytes = input.subarray(0, MAX_SIGNATURE_BYTES);
   if (startsWith(bytes, ascii("%PDF-"))) return exact("pdf", "pdf-header");
   if (startsWith(bytes, [0xff, 0xd8, 0xff])) return exact("jpeg", "jpeg-soi");
@@ -37,7 +37,15 @@ export function detectSignature(input: Uint8Array): SignatureDetection {
   if (startsWith(bytes, ascii("BM"))) return exact("bmp", "bmp-header");
   if (startsWith(bytes, ascii("RIFF")) && startsWith(bytes.subarray(8), ascii("WEBP"))) return exact("webp", "webp-riff");
   if (startsWith(bytes, ascii("GIF87a")) || startsWith(bytes, ascii("GIF89a"))) return exact("gif", "gif-header");
-  if (startsWith(bytes, [0x50, 0x4b, 0x03, 0x04]) || startsWith(bytes, [0x50, 0x4b, 0x05, 0x06])) return exact("zip", "zip-header");
+  if (startsWith(bytes, [0x50, 0x4b, 0x03, 0x04]) || startsWith(bytes, [0x50, 0x4b, 0x05, 0x06])) {
+    if (fileName) {
+      const lower = fileName.toLowerCase();
+      if (lower.endsWith(".docx") || lower.endsWith(".doc")) return exact("docx", "zip-header");
+      if (lower.endsWith(".pptx") || lower.endsWith(".ppt")) return exact("pptx", "zip-header");
+      if (lower.endsWith(".xlsx") || lower.endsWith(".xls")) return exact("xlsx", "zip-header");
+    }
+    return exact("zip", "zip-header");
+  }
 
   const isoDetection = detectIsoBrand(bytes);
   if (isoDetection) return isoDetection;

@@ -8,12 +8,15 @@ function isPdfFile(input: File): boolean {
   return input.type === "application/pdf" || String(input.name ?? "").toLowerCase().endsWith(".pdf");
 }
 
-export function createPdfOcrAdapter(): EngineAdapter<Readonly<Record<string, unknown>>> {
+export function createPdfToPowerpointAdapter(): EngineAdapter<Readonly<Record<string, unknown>>> {
   return {
     async probe(input: File): Promise<FileProbe> {
       return isPdfFile(input) ? probePdf(input) : { kind: "unknown", probeRule: "unknown", bytes: 0 };
     },
-    async validate(): Promise<readonly ValidationIssue[]> {
+    async validate(inputs: readonly File[]): Promise<readonly ValidationIssue[]> {
+      if (inputs.length === 0) {
+        return [{ code: "malformed-input", field: "files", message: "A PDF file is required." }];
+      }
       return [];
     },
     createWorker(): WorkerLike {

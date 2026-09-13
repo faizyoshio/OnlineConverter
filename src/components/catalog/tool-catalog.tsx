@@ -9,6 +9,12 @@ import { ToolCard } from "./tool-card";
 import { ToolSearch } from "./tool-search";
 
 const categoryOrder: readonly CapabilityCategory[] = ["pdf", "image", "gif", "utility", "trust"];
+const groupOrder = [
+  { id: "organize", title: "ORGANIZE PDF" },
+  { id: "optimize", title: "OPTIMIZE PDF" },
+  { id: "to-pdf", title: "CONVERT TO PDF" },
+  { id: "from-pdf", title: "CONVERT FROM PDF" },
+] as const;
 
 type ToolCatalogProps = {
   capabilities: readonly CapabilityManifest[];
@@ -17,16 +23,36 @@ type ToolCatalogProps = {
 
 export function ToolCatalog({ capabilities, previewMode }: ToolCatalogProps) {
   const [query, setQuery] = useState("");
-  const [category, setCategory] = useState<CapabilityCategory | "all">("all");
+  const [category, setCategory] = useState<string>("all");
   const deferredQuery = useDeferredValue(query);
-  const categories = useMemo(
-    () => categoryOrder.filter((item) => capabilities.some((capability) => capability.category === item)),
-    [capabilities],
+
+  const filterOptions = useMemo(() => {
+    const list: string[] = [];
+    for (const g of groupOrder) {
+      if (capabilities.some((item) => item.group === g.id)) {
+        list.push(g.id);
+      }
+    }
+    for (const cat of categoryOrder) {
+      if (!list.length && capabilities.some((item) => item.category === cat)) {
+        list.push(cat);
+      }
+      if (capabilities.some((item) => item.category === cat && !item.group) && !list.includes(cat)) {
+        list.push(cat);
+      }
+    }
+    return list;
+  }, [capabilities]);
+
+  const hasGroups = useMemo(
+    () => capabilities.some((item) => Boolean(item.group)),
+    [capabilities]
   );
+
   const results = useMemo(() => {
     const categoryResults = category === "all"
       ? capabilities
-      : capabilities.filter((capability) => capability.category === category);
+      : capabilities.filter((capability) => capability.group === category || capability.category === category);
     return searchCapabilities(deferredQuery, categoryResults);
   }, [capabilities, category, deferredQuery]);
 
@@ -34,6 +60,8 @@ export function ToolCatalog({ capabilities, previewMode }: ToolCatalogProps) {
     setQuery("");
     setCategory("all");
   };
+
+  const showGroupSections = hasGroups && category === "all" && !deferredQuery.trim();
 
   return (
     <section aria-labelledby="catalog-title" className="catalog-shell">
@@ -45,7 +73,7 @@ export function ToolCatalog({ capabilities, previewMode }: ToolCatalogProps) {
       </div>
       <div className="catalog-controls">
         <ToolSearch onChange={setQuery} value={query} />
-        <CategoryFilter categories={categories} onSelect={setCategory} selected={category} />
+        <CategoryFilter categories={filterOptions} onSelect={setCategory} selected={category} />
       </div>
       <div className="catalog-status-row">
         <p aria-live="polite" role="status">{results.length} {results.length === 1 ? "tool" : "tools"}</p>
@@ -54,9 +82,28 @@ export function ToolCatalog({ capabilities, previewMode }: ToolCatalogProps) {
           : null}
       </div>
       {results.length > 0 ? (
-        <div className="tool-grid">
-          {results.map((item) => <ToolCard capability={item} key={item.id} previewMode={previewMode} />)}
-        </div>
+        showGroupSections ? (
+          <div className="catalog-sections">
+            {groupOrder.map((group) => {
+              const groupTools = capabilities.filter((item) => item.group === group.id);
+              if (groupTools.length === 0) return null;
+              return (
+                <div key={group.id} className="catalog-group-section">
+                  <h3 className="catalog-group-title">{group.title}</h3>
+                  <div className="tool-grid">
+                    {groupTools.map((item) => (
+                      <ToolCard capability={item} key={item.id} previewMode={previewMode} />
+                    ))}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        ) : (
+          <div className="tool-grid">
+            {results.map((item) => <ToolCard capability={item} key={item.id} previewMode={previewMode} />)}
+          </div>
+        )
       ) : (
         <div className="catalog-empty">
           <h3>No tools match</h3>

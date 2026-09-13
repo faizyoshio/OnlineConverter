@@ -1,7 +1,7 @@
 import { assertValidRegistry, capabilityRegistry, getCapabilityBySlug, validateOptionValues } from "./index";
 
 const expectedCategoryCounts = {
-  pdf: 27,
+  pdf: 34,
   image: 31,
   gif: 5,
   utility: 5,
@@ -9,11 +9,12 @@ const expectedCategoryCounts = {
 } as const;
 
 const expectedIds = [
-  "pdf.merge", "pdf.merge-image", "pdf.split", "pdf.compress", "pdf.add-content", "pdf.annotate",
-  "pdf.organize", "pdf.rotate", "pdf.crop", "pdf.resize", "pdf.delete-pages", "pdf.extract-pages",
-  "pdf.page-numbers", "pdf.watermark", "pdf.flatten", "pdf.compare", "pdf.scan", "pdf.ocr",
-  "pdf.forms", "pdf.converter", "pdf.to-image", "pdf.to-jpg", "pdf.to-text", "pdf.html-to-pdf",
-  "pdf.image-to-pdf", "pdf.heic-to-pdf", "pdf.text-to-pdf",
+  "pdf.merge", "pdf.split", "pdf.delete-pages", "pdf.extract-pages", "pdf.organize", "pdf.scan",
+  "pdf.compress", "pdf.repair", "pdf.ocr", "pdf.image-to-pdf", "pdf.word-to-pdf", "pdf.powerpoint-to-pdf",
+  "pdf.excel-to-pdf", "pdf.to-jpg", "pdf.pdf-to-word", "pdf.pdf-to-powerpoint", "pdf.pdf-to-excel",
+  "pdf.merge-image", "pdf.add-content", "pdf.annotate", "pdf.rotate", "pdf.crop", "pdf.resize",
+  "pdf.page-numbers", "pdf.watermark", "pdf.flatten", "pdf.compare", "pdf.forms", "pdf.converter",
+  "pdf.to-image", "pdf.to-text", "pdf.html-to-pdf", "pdf.heic-to-pdf", "pdf.text-to-pdf",
   "image.converter", "image.to-jpg", "image.jpg-to-modern", "image.to-png", "image.to-webp",
   "image.webp-to-jpg", "image.webp-to-png", "image.jfif-to-png", "image.heic-to-jpg",
   "image.heic-to-png", "image.png-to-svg", "image.svg-converter", "image.html-to-image",
@@ -33,42 +34,30 @@ function capability(id: string) {
   return manifest!;
 }
 
-test("declares 70 unique launch capabilities with only reviewed tools active", () => {
-  expect(capabilityRegistry).toHaveLength(70);
-  expect(new Set(capabilityRegistry.map((item) => item.id)).size).toBe(70);
-  expect(new Set(capabilityRegistry.map((item) => item.slug)).size).toBe(70);
+test("declares 77 unique launch capabilities with only reviewed tools active", () => {
+  expect(capabilityRegistry).toHaveLength(77);
+  expect(new Set(capabilityRegistry.map((item) => item.id)).size).toBe(77);
+  expect(new Set(capabilityRegistry.map((item) => item.slug)).size).toBe(77);
   expect(capabilityRegistry.filter((item) => item.releaseStatus === "active").map((item) => item.id)).toEqual([
     "pdf.merge",
     "pdf.split",
-    "pdf.organize",
-    "pdf.rotate",
-    "pdf.crop",
-    "pdf.resize",
     "pdf.delete-pages",
     "pdf.extract-pages",
-    "pdf.page-numbers",
-    "pdf.watermark",
-    "pdf.flatten",
+    "pdf.organize",
+    "pdf.scan",
+    "pdf.compress",
+    "pdf.repair",
+    "pdf.ocr",
     "pdf.image-to-pdf",
-    "pdf.text-to-pdf",
-    "image.jpg-to-modern",
-    "image.webp-to-jpg",
-    "image.webp-to-png",
-    "image.jfif-to-png",
-    "image.compress-jpeg",
-    "image.compress-webp",
-    "image.resize",
-    "image.crop",
-    "image.circle-crop",
-    "image.rotate",
-    "image.flip",
-    "archive.zip-create",
-    "archive.zip-extract",
-    "utility.unit",
-    "utility.time",
-    "utility.password",
+    "pdf.word-to-pdf",
+    "pdf.powerpoint-to-pdf",
+    "pdf.excel-to-pdf",
+    "pdf.to-jpg",
+    "pdf.pdf-to-word",
+    "pdf.pdf-to-powerpoint",
+    "pdf.pdf-to-excel",
   ]);
-  expect(capabilityRegistry.filter((item) => item.releaseStatus === "planned")).toHaveLength(41);
+  expect(capabilityRegistry.filter((item) => item.releaseStatus === "planned")).toHaveLength(60);
 });
 
 test("keeps the approved manifest order", () => {
@@ -78,6 +67,7 @@ test("keeps the approved manifest order", () => {
 test.each(Object.entries(expectedCategoryCounts))("declares the %s category count", (category, count) => {
   expect(capabilityRegistry.filter((item) => item.category === category)).toHaveLength(count);
 });
+
 
 test("keeps server processing impossible by contract", () => {
   expect(capabilityRegistry.every((item) => item.execution === "browser-worker")).toBe(true);
@@ -199,6 +189,642 @@ test("matches the approved compatibility projection", () => {
         },
       },
       {
+        "id": "pdf.split",
+        "inputMode": "files",
+        "inputs": [
+          {
+            "extensions": [
+              ".pdf",
+            ],
+            "kind": "pdf",
+            "mimeTypes": [
+              "application/pdf",
+            ],
+            "probeRule": "pdf-header",
+          },
+        ],
+        "limits": {
+          "allowMixedKinds": false,
+          "maximumFiles": 1,
+          "minimumFiles": 1,
+          "profiles": [
+            "pdf",
+          ],
+        },
+        "result": {
+          "files": [
+            {
+              "extension": ".pdf",
+              "fallback": "explicit-user-choice",
+              "kind": "pdf",
+              "mimeType": "application/pdf",
+            },
+            {
+              "extension": ".zip",
+              "fallback": "explicit-user-choice",
+              "kind": "zip",
+              "mimeType": "application/zip",
+            },
+          ],
+          "mode": "files",
+        },
+      },
+      {
+        "id": "pdf.delete-pages",
+        "inputMode": "files",
+        "inputs": [
+          {
+            "extensions": [
+              ".pdf",
+            ],
+            "kind": "pdf",
+            "mimeTypes": [
+              "application/pdf",
+            ],
+            "probeRule": "pdf-header",
+          },
+        ],
+        "limits": {
+          "allowMixedKinds": false,
+          "maximumFiles": 1,
+          "minimumFiles": 1,
+          "profiles": [
+            "pdf",
+          ],
+        },
+        "result": {
+          "files": [
+            {
+              "extension": ".pdf",
+              "fallback": "reject",
+              "kind": "pdf",
+              "mimeType": "application/pdf",
+            },
+          ],
+          "mode": "files",
+        },
+      },
+      {
+        "id": "pdf.extract-pages",
+        "inputMode": "files",
+        "inputs": [
+          {
+            "extensions": [
+              ".pdf",
+            ],
+            "kind": "pdf",
+            "mimeTypes": [
+              "application/pdf",
+            ],
+            "probeRule": "pdf-header",
+          },
+        ],
+        "limits": {
+          "allowMixedKinds": false,
+          "maximumFiles": 1,
+          "minimumFiles": 1,
+          "profiles": [
+            "pdf",
+          ],
+        },
+        "result": {
+          "files": [
+            {
+              "extension": ".pdf",
+              "fallback": "explicit-user-choice",
+              "kind": "pdf",
+              "mimeType": "application/pdf",
+            },
+            {
+              "extension": ".zip",
+              "fallback": "explicit-user-choice",
+              "kind": "zip",
+              "mimeType": "application/zip",
+            },
+          ],
+          "mode": "files",
+        },
+      },
+      {
+        "id": "pdf.organize",
+        "inputMode": "files",
+        "inputs": [
+          {
+            "extensions": [
+              ".pdf",
+            ],
+            "kind": "pdf",
+            "mimeTypes": [
+              "application/pdf",
+            ],
+            "probeRule": "pdf-header",
+          },
+        ],
+        "limits": {
+          "allowMixedKinds": false,
+          "maximumFiles": 1,
+          "minimumFiles": 1,
+          "profiles": [
+            "pdf",
+          ],
+        },
+        "result": {
+          "files": [
+            {
+              "extension": ".pdf",
+              "fallback": "reject",
+              "kind": "pdf",
+              "mimeType": "application/pdf",
+            },
+          ],
+          "mode": "files",
+        },
+      },
+      {
+        "id": "pdf.scan",
+        "inputMode": "camera-or-files",
+        "inputs": [
+          {
+            "extensions": [
+              ".jpg",
+              ".jpeg",
+            ],
+            "kind": "jpeg",
+            "mimeTypes": [
+              "image/jpeg",
+            ],
+            "probeRule": "jpeg-soi",
+          },
+          {
+            "extensions": [
+              ".png",
+            ],
+            "kind": "png",
+            "mimeTypes": [
+              "image/png",
+            ],
+            "probeRule": "png-signature",
+          },
+          {
+            "extensions": [
+              ".webp",
+            ],
+            "kind": "webp",
+            "mimeTypes": [
+              "image/webp",
+            ],
+            "probeRule": "webp-riff",
+          },
+        ],
+        "limits": {
+          "allowMixedKinds": false,
+          "maximumFiles": 20,
+          "minimumFiles": 1,
+          "profiles": [
+            "image",
+            "batch",
+          ],
+        },
+        "result": {
+          "files": [
+            {
+              "extension": ".pdf",
+              "fallback": "reject",
+              "kind": "pdf",
+              "mimeType": "application/pdf",
+            },
+          ],
+          "mode": "files",
+        },
+      },
+      {
+        "id": "pdf.compress",
+        "inputMode": "files",
+        "inputs": [
+          {
+            "extensions": [
+              ".pdf",
+            ],
+            "kind": "pdf",
+            "mimeTypes": [
+              "application/pdf",
+            ],
+            "probeRule": "pdf-header",
+          },
+        ],
+        "limits": {
+          "allowMixedKinds": false,
+          "maximumFiles": 1,
+          "minimumFiles": 1,
+          "profiles": [
+            "pdf",
+          ],
+        },
+        "result": {
+          "files": [
+            {
+              "extension": ".pdf",
+              "fallback": "reject",
+              "kind": "pdf",
+              "mimeType": "application/pdf",
+            },
+          ],
+          "mode": "files",
+        },
+      },
+      {
+        "id": "pdf.repair",
+        "inputMode": "files",
+        "inputs": [
+          {
+            "extensions": [
+              ".pdf",
+            ],
+            "kind": "pdf",
+            "mimeTypes": [
+              "application/pdf",
+            ],
+            "probeRule": "pdf-header",
+          },
+        ],
+        "limits": {
+          "allowMixedKinds": false,
+          "maximumFiles": 1,
+          "minimumFiles": 1,
+          "profiles": [
+            "pdf",
+          ],
+        },
+        "result": {
+          "files": [
+            {
+              "extension": ".pdf",
+              "fallback": "reject",
+              "kind": "pdf",
+              "mimeType": "application/pdf",
+            },
+          ],
+          "mode": "files",
+        },
+      },
+      {
+        "id": "pdf.ocr",
+        "inputMode": "files",
+        "inputs": [
+          {
+            "extensions": [
+              ".pdf",
+            ],
+            "kind": "pdf",
+            "mimeTypes": [
+              "application/pdf",
+            ],
+            "probeRule": "pdf-header",
+          },
+        ],
+        "limits": {
+          "allowMixedKinds": false,
+          "maximumFiles": 1,
+          "minimumFiles": 1,
+          "profiles": [
+            "pdf",
+            "ocr",
+          ],
+        },
+        "result": {
+          "files": [
+            {
+              "extension": ".pdf",
+              "fallback": "reject",
+              "kind": "pdf",
+              "mimeType": "application/pdf",
+            },
+            {
+              "extension": ".txt",
+              "fallback": "reject",
+              "kind": "text",
+              "mimeType": "text/plain",
+            },
+          ],
+          "mode": "files",
+        },
+      },
+      {
+        "id": "pdf.image-to-pdf",
+        "inputMode": "files",
+        "inputs": [
+          {
+            "extensions": [
+              ".jpg",
+              ".jpeg",
+            ],
+            "kind": "jpeg",
+            "mimeTypes": [
+              "image/jpeg",
+            ],
+            "probeRule": "jpeg-soi",
+          },
+          {
+            "extensions": [
+              ".png",
+            ],
+            "kind": "png",
+            "mimeTypes": [
+              "image/png",
+            ],
+            "probeRule": "png-signature",
+          },
+          {
+            "extensions": [
+              ".webp",
+            ],
+            "kind": "webp",
+            "mimeTypes": [
+              "image/webp",
+            ],
+            "probeRule": "webp-riff",
+          },
+        ],
+        "limits": {
+          "allowMixedKinds": false,
+          "maximumFiles": 20,
+          "minimumFiles": 1,
+          "profiles": [
+            "image",
+            "batch",
+          ],
+        },
+        "result": {
+          "files": [
+            {
+              "extension": ".pdf",
+              "fallback": "reject",
+              "kind": "pdf",
+              "mimeType": "application/pdf",
+            },
+          ],
+          "mode": "files",
+        },
+      },
+      {
+        "id": "pdf.word-to-pdf",
+        "inputMode": "files",
+        "inputs": [
+          {
+            "extensions": [
+              ".docx",
+              ".doc",
+            ],
+            "kind": "docx",
+            "mimeTypes": [
+              "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+              "application/msword",
+            ],
+            "probeRule": "zip-header",
+          },
+        ],
+        "limits": {
+          "allowMixedKinds": false,
+          "maximumFiles": 1,
+          "minimumFiles": 1,
+          "profiles": [
+            "batch",
+          ],
+        },
+        "result": {
+          "files": [
+            {
+              "extension": ".pdf",
+              "fallback": "reject",
+              "kind": "pdf",
+              "mimeType": "application/pdf",
+            },
+          ],
+          "mode": "files",
+        },
+      },
+      {
+        "id": "pdf.powerpoint-to-pdf",
+        "inputMode": "files",
+        "inputs": [
+          {
+            "extensions": [
+              ".pptx",
+              ".ppt",
+            ],
+            "kind": "pptx",
+            "mimeTypes": [
+              "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+              "application/vnd.ms-powerpoint",
+            ],
+            "probeRule": "zip-header",
+          },
+        ],
+        "limits": {
+          "allowMixedKinds": false,
+          "maximumFiles": 1,
+          "minimumFiles": 1,
+          "profiles": [
+            "batch",
+          ],
+        },
+        "result": {
+          "files": [
+            {
+              "extension": ".pdf",
+              "fallback": "reject",
+              "kind": "pdf",
+              "mimeType": "application/pdf",
+            },
+          ],
+          "mode": "files",
+        },
+      },
+      {
+        "id": "pdf.excel-to-pdf",
+        "inputMode": "files",
+        "inputs": [
+          {
+            "extensions": [
+              ".xlsx",
+              ".xls",
+            ],
+            "kind": "xlsx",
+            "mimeTypes": [
+              "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+              "application/vnd.ms-excel",
+            ],
+            "probeRule": "zip-header",
+          },
+        ],
+        "limits": {
+          "allowMixedKinds": false,
+          "maximumFiles": 1,
+          "minimumFiles": 1,
+          "profiles": [
+            "batch",
+          ],
+        },
+        "result": {
+          "files": [
+            {
+              "extension": ".pdf",
+              "fallback": "reject",
+              "kind": "pdf",
+              "mimeType": "application/pdf",
+            },
+          ],
+          "mode": "files",
+        },
+      },
+      {
+        "id": "pdf.to-jpg",
+        "inputMode": "files",
+        "inputs": [
+          {
+            "extensions": [
+              ".pdf",
+            ],
+            "kind": "pdf",
+            "mimeTypes": [
+              "application/pdf",
+            ],
+            "probeRule": "pdf-header",
+          },
+        ],
+        "limits": {
+          "allowMixedKinds": false,
+          "maximumFiles": 1,
+          "minimumFiles": 1,
+          "profiles": [
+            "pdf",
+          ],
+        },
+        "result": {
+          "files": [
+            {
+              "extension": ".jpg",
+              "fallback": "reject",
+              "kind": "jpeg",
+              "mimeType": "image/jpeg",
+            },
+            {
+              "extension": ".zip",
+              "fallback": "listed-fallback",
+              "fallbackKind": "jpeg",
+              "kind": "zip",
+              "mimeType": "application/zip",
+            },
+          ],
+          "mode": "files",
+        },
+      },
+      {
+        "id": "pdf.pdf-to-word",
+        "inputMode": "files",
+        "inputs": [
+          {
+            "extensions": [
+              ".pdf",
+            ],
+            "kind": "pdf",
+            "mimeTypes": [
+              "application/pdf",
+            ],
+            "probeRule": "pdf-header",
+          },
+        ],
+        "limits": {
+          "allowMixedKinds": false,
+          "maximumFiles": 1,
+          "minimumFiles": 1,
+          "profiles": [
+            "pdf",
+          ],
+        },
+        "result": {
+          "files": [
+            {
+              "extension": ".docx",
+              "fallback": "reject",
+              "kind": "docx",
+              "mimeType": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+            },
+          ],
+          "mode": "files",
+        },
+      },
+      {
+        "id": "pdf.pdf-to-powerpoint",
+        "inputMode": "files",
+        "inputs": [
+          {
+            "extensions": [
+              ".pdf",
+            ],
+            "kind": "pdf",
+            "mimeTypes": [
+              "application/pdf",
+            ],
+            "probeRule": "pdf-header",
+          },
+        ],
+        "limits": {
+          "allowMixedKinds": false,
+          "maximumFiles": 1,
+          "minimumFiles": 1,
+          "profiles": [
+            "pdf",
+          ],
+        },
+        "result": {
+          "files": [
+            {
+              "extension": ".pptx",
+              "fallback": "reject",
+              "kind": "pptx",
+              "mimeType": "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+            },
+          ],
+          "mode": "files",
+        },
+      },
+      {
+        "id": "pdf.pdf-to-excel",
+        "inputMode": "files",
+        "inputs": [
+          {
+            "extensions": [
+              ".pdf",
+            ],
+            "kind": "pdf",
+            "mimeTypes": [
+              "application/pdf",
+            ],
+            "probeRule": "pdf-header",
+          },
+        ],
+        "limits": {
+          "allowMixedKinds": false,
+          "maximumFiles": 1,
+          "minimumFiles": 1,
+          "profiles": [
+            "pdf",
+          ],
+        },
+        "result": {
+          "files": [
+            {
+              "extension": ".xlsx",
+              "fallback": "reject",
+              "kind": "xlsx",
+              "mimeType": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            },
+          ],
+          "mode": "files",
+        },
+      },
+      {
         "id": "pdf.merge-image",
         "inputMode": "files",
         "inputs": [
@@ -264,82 +890,6 @@ test("matches the approved compatibility projection", () => {
             "pdf",
             "image",
             "batch",
-          ],
-        },
-        "result": {
-          "files": [
-            {
-              "extension": ".pdf",
-              "fallback": "reject",
-              "kind": "pdf",
-              "mimeType": "application/pdf",
-            },
-          ],
-          "mode": "files",
-        },
-      },
-      {
-        "id": "pdf.split",
-        "inputMode": "files",
-        "inputs": [
-          {
-            "extensions": [
-              ".pdf",
-            ],
-            "kind": "pdf",
-            "mimeTypes": [
-              "application/pdf",
-            ],
-            "probeRule": "pdf-header",
-          },
-        ],
-        "limits": {
-          "allowMixedKinds": false,
-          "maximumFiles": 1,
-          "minimumFiles": 1,
-          "profiles": [
-            "pdf",
-          ],
-        },
-        "result": {
-          "files": [
-            {
-              "extension": ".pdf",
-              "fallback": "explicit-user-choice",
-              "kind": "pdf",
-              "mimeType": "application/pdf",
-            },
-            {
-              "extension": ".zip",
-              "fallback": "explicit-user-choice",
-              "kind": "zip",
-              "mimeType": "application/zip",
-            },
-          ],
-          "mode": "files",
-        },
-      },
-      {
-        "id": "pdf.compress",
-        "inputMode": "files",
-        "inputs": [
-          {
-            "extensions": [
-              ".pdf",
-            ],
-            "kind": "pdf",
-            "mimeTypes": [
-              "application/pdf",
-            ],
-            "probeRule": "pdf-header",
-          },
-        ],
-        "limits": {
-          "allowMixedKinds": false,
-          "maximumFiles": 1,
-          "minimumFiles": 1,
-          "profiles": [
-            "pdf",
           ],
         },
         "result": {
@@ -423,41 +973,6 @@ test("matches the approved compatibility projection", () => {
       },
       {
         "id": "pdf.annotate",
-        "inputMode": "files",
-        "inputs": [
-          {
-            "extensions": [
-              ".pdf",
-            ],
-            "kind": "pdf",
-            "mimeTypes": [
-              "application/pdf",
-            ],
-            "probeRule": "pdf-header",
-          },
-        ],
-        "limits": {
-          "allowMixedKinds": false,
-          "maximumFiles": 1,
-          "minimumFiles": 1,
-          "profiles": [
-            "pdf",
-          ],
-        },
-        "result": {
-          "files": [
-            {
-              "extension": ".pdf",
-              "fallback": "reject",
-              "kind": "pdf",
-              "mimeType": "application/pdf",
-            },
-          ],
-          "mode": "files",
-        },
-      },
-      {
-        "id": "pdf.organize",
         "inputMode": "files",
         "inputs": [
           {
@@ -591,82 +1106,6 @@ test("matches the approved compatibility projection", () => {
               "fallback": "reject",
               "kind": "pdf",
               "mimeType": "application/pdf",
-            },
-          ],
-          "mode": "files",
-        },
-      },
-      {
-        "id": "pdf.delete-pages",
-        "inputMode": "files",
-        "inputs": [
-          {
-            "extensions": [
-              ".pdf",
-            ],
-            "kind": "pdf",
-            "mimeTypes": [
-              "application/pdf",
-            ],
-            "probeRule": "pdf-header",
-          },
-        ],
-        "limits": {
-          "allowMixedKinds": false,
-          "maximumFiles": 1,
-          "minimumFiles": 1,
-          "profiles": [
-            "pdf",
-          ],
-        },
-        "result": {
-          "files": [
-            {
-              "extension": ".pdf",
-              "fallback": "reject",
-              "kind": "pdf",
-              "mimeType": "application/pdf",
-            },
-          ],
-          "mode": "files",
-        },
-      },
-      {
-        "id": "pdf.extract-pages",
-        "inputMode": "files",
-        "inputs": [
-          {
-            "extensions": [
-              ".pdf",
-            ],
-            "kind": "pdf",
-            "mimeTypes": [
-              "application/pdf",
-            ],
-            "probeRule": "pdf-header",
-          },
-        ],
-        "limits": {
-          "allowMixedKinds": false,
-          "maximumFiles": 1,
-          "minimumFiles": 1,
-          "profiles": [
-            "pdf",
-          ],
-        },
-        "result": {
-          "files": [
-            {
-              "extension": ".pdf",
-              "fallback": "explicit-user-choice",
-              "kind": "pdf",
-              "mimeType": "application/pdf",
-            },
-            {
-              "extension": ".zip",
-              "fallback": "explicit-user-choice",
-              "kind": "zip",
-              "mimeType": "application/zip",
             },
           ],
           "mode": "files",
@@ -845,117 +1284,6 @@ test("matches the approved compatibility projection", () => {
               "fallback": "explicit-user-choice",
               "kind": "png",
               "mimeType": "image/png",
-            },
-          ],
-          "mode": "files",
-        },
-      },
-      {
-        "id": "pdf.scan",
-        "inputMode": "camera-or-files",
-        "inputs": [
-          {
-            "extensions": [
-              ".jpg",
-              ".jpeg",
-            ],
-            "kind": "jpeg",
-            "mimeTypes": [
-              "image/jpeg",
-            ],
-            "probeRule": "jpeg-soi",
-          },
-          {
-            "extensions": [
-              ".png",
-            ],
-            "kind": "png",
-            "mimeTypes": [
-              "image/png",
-            ],
-            "probeRule": "png-signature",
-          },
-          {
-            "extensions": [
-              ".webp",
-            ],
-            "kind": "webp",
-            "mimeTypes": [
-              "image/webp",
-            ],
-            "probeRule": "webp-riff",
-          },
-          {
-            "extensions": [
-              ".heic",
-              ".heif",
-            ],
-            "kind": "heic",
-            "mimeTypes": [
-              "image/heic",
-              "image/heif",
-            ],
-            "probeRule": "heic-brand",
-          },
-        ],
-        "limits": {
-          "allowMixedKinds": false,
-          "maximumFiles": 20,
-          "minimumFiles": 1,
-          "profiles": [
-            "image",
-            "batch",
-          ],
-        },
-        "result": {
-          "files": [
-            {
-              "extension": ".pdf",
-              "fallback": "reject",
-              "kind": "pdf",
-              "mimeType": "application/pdf",
-            },
-          ],
-          "mode": "files",
-        },
-      },
-      {
-        "id": "pdf.ocr",
-        "inputMode": "files",
-        "inputs": [
-          {
-            "extensions": [
-              ".pdf",
-            ],
-            "kind": "pdf",
-            "mimeTypes": [
-              "application/pdf",
-            ],
-            "probeRule": "pdf-header",
-          },
-        ],
-        "limits": {
-          "allowMixedKinds": false,
-          "maximumFiles": 1,
-          "minimumFiles": 1,
-          "profiles": [
-            "pdf",
-            "ocr",
-          ],
-        },
-        "result": {
-          "files": [
-            {
-              "extension": ".pdf",
-              "fallback": "reject",
-              "kind": "pdf",
-              "mimeType": "application/pdf",
-            },
-            {
-              "extension": ".txt",
-              "fallback": "reject",
-              "kind": "text",
-              "mimeType": "text/plain",
             },
           ],
           "mode": "files",
@@ -1163,48 +1491,6 @@ test("matches the approved compatibility projection", () => {
         },
       },
       {
-        "id": "pdf.to-jpg",
-        "inputMode": "files",
-        "inputs": [
-          {
-            "extensions": [
-              ".pdf",
-            ],
-            "kind": "pdf",
-            "mimeTypes": [
-              "application/pdf",
-            ],
-            "probeRule": "pdf-header",
-          },
-        ],
-        "limits": {
-          "allowMixedKinds": false,
-          "maximumFiles": 1,
-          "minimumFiles": 1,
-          "profiles": [
-            "pdf",
-          ],
-        },
-        "result": {
-          "files": [
-            {
-              "extension": ".jpg",
-              "fallback": "reject",
-              "kind": "jpeg",
-              "mimeType": "image/jpeg",
-            },
-            {
-              "extension": ".zip",
-              "fallback": "listed-fallback",
-              "fallbackKind": "jpeg",
-              "kind": "zip",
-              "mimeType": "application/zip",
-            },
-          ],
-          "mode": "files",
-        },
-      },
-      {
         "id": "pdf.to-text",
         "inputMode": "files",
         "inputs": [
@@ -1261,63 +1547,6 @@ test("matches the approved compatibility projection", () => {
           "minimumFiles": 1,
           "profiles": [
             "pdf",
-          ],
-        },
-        "result": {
-          "files": [
-            {
-              "extension": ".pdf",
-              "fallback": "reject",
-              "kind": "pdf",
-              "mimeType": "application/pdf",
-            },
-          ],
-          "mode": "files",
-        },
-      },
-      {
-        "id": "pdf.image-to-pdf",
-        "inputMode": "files",
-        "inputs": [
-          {
-            "extensions": [
-              ".jpg",
-              ".jpeg",
-            ],
-            "kind": "jpeg",
-            "mimeTypes": [
-              "image/jpeg",
-            ],
-            "probeRule": "jpeg-soi",
-          },
-          {
-            "extensions": [
-              ".png",
-            ],
-            "kind": "png",
-            "mimeTypes": [
-              "image/png",
-            ],
-            "probeRule": "png-signature",
-          },
-          {
-            "extensions": [
-              ".webp",
-            ],
-            "kind": "webp",
-            "mimeTypes": [
-              "image/webp",
-            ],
-            "probeRule": "webp-riff",
-          },
-        ],
-        "limits": {
-          "allowMixedKinds": false,
-          "maximumFiles": 20,
-          "minimumFiles": 1,
-          "profiles": [
-            "image",
-            "batch",
           ],
         },
         "result": {

@@ -1,7 +1,11 @@
 import { Button } from "@/components/ui/button";
-import type { CapabilityCategory } from "@/features/capabilities/schema";
 
-const categoryLabels: Record<CapabilityCategory, string> = {
+const filterLabels: Record<string, string> = {
+  all: "All tools",
+  organize: "Organize PDF",
+  optimize: "Optimize PDF",
+  "to-pdf": "Convert to PDF",
+  "from-pdf": "Convert from PDF",
   pdf: "Thesis & Papers",
   image: "Figures & Images",
   gif: "Animations & GIF",
@@ -10,9 +14,9 @@ const categoryLabels: Record<CapabilityCategory, string> = {
 };
 
 type CategoryFilterProps = {
-  categories: readonly CapabilityCategory[];
-  selected: CapabilityCategory | "all";
-  onSelect: (category: CapabilityCategory | "all") => void;
+  categories: readonly string[];
+  selected: string;
+  onSelect: (category: string) => void;
 };
 
 export function CategoryFilter({ categories, selected, onSelect }: CategoryFilterProps) {
@@ -28,7 +32,7 @@ export function CategoryFilter({ categories, selected, onSelect }: CategoryFilte
           onClick={() => onSelect(category)}
           variant="secondary"
         >
-          {categoryLabels[category]}
+          {filterLabels[category] ?? category}
         </Button>
       ))}
     </div>

@@ -31,7 +31,7 @@ describe("archive.zip-create", () => {
       expect(manifest?.slug).toBe("zip-maker");
       expect(manifest?.category).toBe("utility");
       expect(manifest?.workerFamily).toBe("archive");
-      expect(manifest?.releaseStatus).toBe("active");
+      expect(manifest?.releaseStatus).toBe("planned");
       expect(manifest?.resultContract).toBe("exact-structural");
       expect(manifest?.inputMode).toBe("files");
       expect(manifest?.result.mode).toBe("files");

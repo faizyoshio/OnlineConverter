@@ -4,33 +4,21 @@ import { getVisibleCapabilities } from "./visibility";
 const activeIds = [
   "pdf.merge",
   "pdf.split",
-  "pdf.organize",
-  "pdf.rotate",
-  "pdf.crop",
-  "pdf.resize",
   "pdf.delete-pages",
   "pdf.extract-pages",
-  "pdf.page-numbers",
-  "pdf.watermark",
-  "pdf.flatten",
+  "pdf.organize",
+  "pdf.scan",
+  "pdf.compress",
+  "pdf.repair",
+  "pdf.ocr",
   "pdf.image-to-pdf",
-  "pdf.text-to-pdf",
-  "image.jpg-to-modern",
-  "image.webp-to-jpg",
-  "image.webp-to-png",
-  "image.jfif-to-png",
-  "image.compress-jpeg",
-  "image.compress-webp",
-  "image.resize",
-  "image.crop",
-  "image.circle-crop",
-  "image.rotate",
-  "image.flip",
-  "archive.zip-create",
-  "archive.zip-extract",
-  "utility.unit",
-  "utility.time",
-  "utility.password",
+  "pdf.word-to-pdf",
+  "pdf.powerpoint-to-pdf",
+  "pdf.excel-to-pdf",
+  "pdf.to-jpg",
+  "pdf.pdf-to-word",
+  "pdf.pdf-to-powerpoint",
+  "pdf.pdf-to-excel",
 ];
 
 test("production hides planned capabilities while keeping active capabilities", () => {
@@ -38,7 +26,7 @@ test("production hides planned capabilities while keeping active capabilities", 
 });
 
 test("preview review mode returns planned capabilities", () => {
-  expect(getVisibleCapabilities(capabilityRegistry, { environment: "preview", previewRequested: true })).toHaveLength(70);
+  expect(getVisibleCapabilities(capabilityRegistry, { environment: "preview", previewRequested: true })).toHaveLength(capabilityRegistry.length);
 });
 
 test("local mode requires an explicit preview request for planned capabilities", () => {

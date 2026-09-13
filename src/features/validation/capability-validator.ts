@@ -90,7 +90,7 @@ async function validateCheapPhase(
   if (!opaqueInput) {
     for (const [index, file] of files.entries()) {
       try {
-        const detection = detectSignature(await readHeader(file));
+        const detection = detectSignature(await readHeader(file), file.name);
         if (detection.confidence === "exact") {
           const supported = capability.inputs.some(
             (input) => input.kind === detection.kind && input.probeRule === detection.probeRule,

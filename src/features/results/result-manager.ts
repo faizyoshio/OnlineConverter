@@ -59,6 +59,9 @@ const MIME_EXT: Record<string, string> = {
   "audio/mpeg": "mp3",
   "audio/wav": "wav",
   "audio/ogg": "ogg",
+  "application/vnd.openxmlformats-officedocument.wordprocessingml.document": "docx",
+  "application/vnd.openxmlformats-officedocument.presentationml.presentation": "pptx",
+  "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": "xlsx",
 };
 function extFromMime(mime: string): string { return MIME_EXT[mime] ?? "bin"; }
 

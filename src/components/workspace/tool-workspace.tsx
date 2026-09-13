@@ -12,6 +12,7 @@ import { JobError } from "./job-error";
 import { JobProgress } from "./job-progress";
 import { ResultPanel } from "./result-panel";
 import { CompressionSettings } from "./compression-settings";
+import { PdfCompressSettings } from "./pdf-compress-settings";
 
 export type ToolWorkspaceProps = {
   capability: CapabilityManifest;
@@ -102,7 +103,14 @@ export function ToolWorkspace({ capability, runner, renderOptions }: ToolWorkspa
         <p>{capability.description}</p>
       </header>
       <DropZone capability={capability} disabled={busy} files={files} onFilesChange={selectFiles} />
-      {capability.id === "image.compress-jpeg" || capability.id === "image.compress-webp" ? (
+      {capability.id === "pdf.compress" ? (
+        <PdfCompressSettings
+          capability={capability}
+          disabled={busy || validating}
+          options={options}
+          setOption={setOption}
+        />
+      ) : capability.id === "image.compress-jpeg" || capability.id === "image.compress-webp" ? (
         <CompressionSettings
           capability={capability}
           disabled={busy || validating}

@@ -23,7 +23,7 @@ test("breaks equal scores by English title order", () => {
 
 test("returns the stable title order for an empty query", () => {
   const results = searchCapabilities("   ", capabilityRegistry);
-  expect(results).toHaveLength(70);
+  expect(results).toHaveLength(capabilityRegistry.length);
   expect(results.map((item) => item.title)).toEqual(
     [...results].map((item) => item.title).sort((left, right) => left.localeCompare(right, "en")),
   );

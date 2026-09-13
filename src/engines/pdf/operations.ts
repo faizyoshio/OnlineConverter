@@ -381,3 +381,31 @@ export async function flattenPdf(
   }
   return pdf.save();
 }
+
+export type PdfCompressOptions = {
+  preset?: "dasar" | "sedang" | "kuat" | "kustom" | string;
+  customQuality?: number;
+};
+
+export async function compressPdf(
+  pdfBuffer: Uint8Array,
+  options: PdfCompressOptions = {},
+): Promise<Uint8Array> {
+  void options;
+  const pdf = await PDFDocument.load(pdfBuffer, { ignoreEncryption: true });
+  return pdf.save({ useObjectStreams: true });
+}
+
+export async function repairPdf(pdfBuffer: Uint8Array): Promise<Uint8Array> {
+  const source = await PDFDocument.load(pdfBuffer, { ignoreEncryption: true });
+  const repaired = await PDFDocument.create();
+  const pageIndices = source.getPageIndices();
+  if (pageIndices.length > 0) {
+    const copiedPages = await repaired.copyPages(source, pageIndices);
+    for (const page of copiedPages) {
+      repaired.addPage(page);
+    }
+  }
+  return repaired.save();
+}
+

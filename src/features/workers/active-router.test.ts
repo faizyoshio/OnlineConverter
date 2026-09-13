@@ -10,25 +10,23 @@ test("registers exactly the release-gated adapters", () => {
 });
 
 test.each([
-  "pdf.crop",
-  "pdf.resize",
-  "pdf.flatten",
-  "image.jpg-to-modern",
-  "image.webp-to-jpg",
-  "image.webp-to-png",
-  "image.jfif-to-png",
-  "image.rotate",
-  "image.flip",
-  "image.compress-jpeg",
-  "image.compress-webp",
-  "image.resize",
-  "image.crop",
-  "image.circle-crop",
-  "archive.zip-create",
-  "archive.zip-extract",
-  "utility.unit",
-  "utility.time",
-  "utility.password",
-])("registers the newly reviewed adapter %s", (adapterKey) => {
+  "pdf.merge",
+  "pdf.split",
+  "pdf.delete-pages",
+  "pdf.extract-pages",
+  "pdf.organize",
+  "pdf.scan",
+  "pdf.compress",
+  "pdf.repair",
+  "pdf.ocr",
+  "pdf.image-to-pdf",
+  "pdf.word-to-pdf",
+  "pdf.powerpoint-to-pdf",
+  "pdf.excel-to-pdf",
+  "pdf.to-jpg",
+  "pdf.pdf-to-word",
+  "pdf.pdf-to-powerpoint",
+  "pdf.pdf-to-excel",
+])("registers the active adapter %s", (adapterKey) => {
   expect(createActiveEngineRouter().has(adapterKey)).toBe(true);
 });

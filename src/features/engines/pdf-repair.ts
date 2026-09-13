@@ -8,7 +8,7 @@ function isPdfFile(input: File): boolean {
   return input.type === "application/pdf" || String(input.name ?? "").toLowerCase().endsWith(".pdf");
 }
 
-export function createPdfOcrAdapter(): EngineAdapter<Readonly<Record<string, unknown>>> {
+export function createPdfRepairAdapter(): EngineAdapter<Readonly<Record<string, unknown>>> {
   return {
     async probe(input: File): Promise<FileProbe> {
       return isPdfFile(input) ? probePdf(input) : { kind: "unknown", probeRule: "unknown", bytes: 0 };

@@ -15,7 +15,6 @@ import {
 export const utilityCapabilities = Object.freeze([
   capability({
     id: "archive.zip-create", slug: "zip-maker", title: "ZIP Maker",
-    releaseStatus: "active",
     description: "Bundle code, datasets, or supplementary materials into a local ZIP archive without uploading.",
     aliases: ["supplementary zip", "dataset zip", "code archive"],
     category: "utility", workerFamily: "archive", resultContract: "exact-structural", inputMode: "files",
@@ -25,7 +24,6 @@ export const utilityCapabilities = Object.freeze([
   }),
   capability({
     id: "archive.zip-extract", slug: "zip-extractor", title: "ZIP Extractor",
-    releaseStatus: "active",
     description: "Extract research data packages, assignment submissions, or paper bundles locally.",
     aliases: ["unzip data", "extract supplementary"],
     category: "utility", workerFamily: "archive", resultContract: "exact-structural", inputMode: "files",
@@ -35,7 +33,6 @@ export const utilityCapabilities = Object.freeze([
   }),
   capability({
     id: "utility.unit", slug: "unit-converter", title: "Unit Converter",
-    releaseStatus: "active",
     description: "Convert numeric scientific and engineering values between measurement units with controlled precision.",
     aliases: ["scientific unit converter", "physics units", "engineering units"],
     category: "utility", workerFamily: "utility", resultContract: "exact-structural", inputMode: "values", inputs: [],
@@ -50,7 +47,6 @@ export const utilityCapabilities = Object.freeze([
   }),
   capability({
     id: "utility.time", slug: "time-converter", title: "Time Converter",
-    releaseStatus: "active",
     description: "Convert date and time between IANA zones for conference submission deadlines and defense schedules.",
     aliases: ["conference deadline", "submission timezone", "utc converter"],
     category: "utility", workerFamily: "utility", resultContract: "exact-structural", inputMode: "values", inputs: [],
@@ -60,7 +56,6 @@ export const utilityCapabilities = Object.freeze([
   }),
   capability({
     id: "utility.password", slug: "password-generator", title: "Password Generator",
-    releaseStatus: "active",
     description: "Generate a strong password locally with selected character groups and no retained history.",
     category: "utility", workerFamily: "utility", resultContract: "exact-structural", inputMode: "values", inputs: [],
     result: valueResult("password", true, true),

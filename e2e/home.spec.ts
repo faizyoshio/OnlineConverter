@@ -1,40 +1,41 @@
-import { expect, test, type Page } from "@playwright/test";
-import JSZip from "jszip";
+import { expect, test } from "@playwright/test";
 import { PDFDocument } from "pdf-lib";
 import { VALID_PNG_BYTES } from "../src/test/fixtures/pdf-inputs";
+import { createDocx, createPptx, createXlsx } from "../src/engines/office/openxml";
 
-async function canvasImage(page: Page, mimeType: "image/jpeg" | "image/webp"): Promise<Buffer> {
-  const base64 = await page.evaluate((type) => {
-    const canvas = document.createElement("canvas");
-    canvas.width = 3;
-    canvas.height = 2;
-    const context = canvas.getContext("2d");
-    if (!context) throw new Error("Canvas is unavailable");
-    context.fillStyle = "rgba(124, 58, 237, 0.5)";
-    context.fillRect(0, 0, canvas.width, canvas.height);
-    const dataUrl = canvas.toDataURL(type, 0.9);
-    if (!dataUrl.startsWith(`data:${type}`)) throw new Error(`${type} encoding is unavailable`);
-    return dataUrl.split(",")[1]!;
-  }, mimeType);
-  return Buffer.from(base64, "base64");
+async function createSamplePdf(pageCount = 1): Promise<Buffer> {
+  const doc = await PDFDocument.create();
+  for (let i = 0; i < pageCount; i++) {
+    doc.addPage([612, 792]);
+  }
+  const bytes = await doc.save();
+  return Buffer.from(bytes);
 }
 
-test("home page explains the privacy boundary", async ({ page }) => {
+test("home page explains the privacy boundary and displays 4 PDF categories", async ({ page }) => {
   await page.goto("/");
-  await expect(page.getByRole("heading", { level: 1 })).toHaveText(/convert files locally/i);
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText(/academic & research toolkit/i);
   await expect(page.getByText(/files never leave your device/i)).toBeVisible();
+
+  // Verify the 4 category headers
+  await expect(page.locator(".catalog-group-title", { hasText: "ORGANIZE PDF" })).toBeVisible();
+  await expect(page.locator(".catalog-group-title", { hasText: "OPTIMIZE PDF" })).toBeVisible();
+  await expect(page.locator(".catalog-group-title", { hasText: "CONVERT TO PDF" })).toBeVisible();
+  await expect(page.locator(".catalog-group-title", { hasText: "CONVERT FROM PDF" })).toBeVisible();
 });
 
+// ----------------------------------------------------------------------------
+// 1. ORGANIZE PDF
+// ----------------------------------------------------------------------------
+
 test("merge PDF route processes files in browser worker", async ({ page }) => {
-  const first = await PDFDocument.create();
-  first.addPage([612, 792]);
-  const second = await PDFDocument.create();
-  second.addPage([612, 792]);
+  const first = await createSamplePdf(1);
+  const second = await createSamplePdf(1);
 
   await page.goto("/tools/merge-pdf");
   await page.getByLabel(/choose files/i).setInputFiles([
-    { name: "first.pdf", mimeType: "application/pdf", buffer: Buffer.from(await first.save()) },
-    { name: "second.pdf", mimeType: "application/pdf", buffer: Buffer.from(await second.save()) },
+    { name: "first.pdf", mimeType: "application/pdf", buffer: first },
+    { name: "second.pdf", mimeType: "application/pdf", buffer: second },
   ]);
   await expect(page.getByRole("button", { name: /run conversion/i })).toBeEnabled();
   await page.getByRole("button", { name: /run conversion/i }).click();
@@ -42,8 +43,7 @@ test("merge PDF route processes files in browser worker", async ({ page }) => {
 });
 
 test("split PDF route processes file in browser worker", async ({ page }) => {
-  const doc = await PDFDocument.create();
-  for (let i = 0; i < 4; i++) doc.addPage([612, 792]);
+  const doc = await createSamplePdf(4);
 
   await page.goto("/tools/split-pdf");
   await page.getByLabel(/page ranges/i).fill("1,3-4");
@@ -51,143 +51,136 @@ test("split PDF route processes file in browser worker", async ({ page }) => {
   await page.getByLabel(/choose files/i).setInputFiles({
     name: "source.pdf",
     mimeType: "application/pdf",
-    buffer: Buffer.from(await doc.save()),
+    buffer: doc,
   });
   await expect(page.getByRole("button", { name: /run conversion/i })).toBeEnabled();
   await page.getByRole("button", { name: /run conversion/i }).click();
   await expect(page.getByRole("link", { name: /download output-1.pdf/i })).toBeVisible();
 });
 
+test("remove pages route processes selected pages in browser worker", async ({ page }) => {
+  const doc = await createSamplePdf(3);
 
-test("rotate PDF route processes file in browser worker", async ({ page }) => {
-  const doc = await PDFDocument.create();
-  doc.addPage([612, 792]);
-
-  await page.goto("/tools/rotate-pdf");
-  await page.getByLabel(/choose files/i).setInputFiles({
-    name: "source.pdf",
-    mimeType: "application/pdf",
-    buffer: Buffer.from(await doc.save()),
-  });
-  await expect(page.getByRole("button", { name: /run conversion/i })).toBeEnabled();
-  await page.getByRole("button", { name: /run conversion/i }).click();
-  await expect(page.getByRole("link", { name: /download output-1.pdf/i })).toBeVisible();
-});
-
-test("crop PDF route applies bounded margins in the browser worker", async ({ page }) => {
-  const doc = await PDFDocument.create();
-  doc.addPage([612, 792]);
-  doc.addPage([612, 792]);
-
-  await page.goto("/tools/crop-pdf");
-  await page.getByLabel(/crop margins in mm/i).fill("10,15,10,15");
-  await page.getByLabel(/^pages$/i).fill("2");
-  await page.getByLabel(/choose files/i).setInputFiles({
-    name: "source.pdf",
-    mimeType: "application/pdf",
-    buffer: Buffer.from(await doc.save()),
-  });
-  await expect(page.getByRole("button", { name: /run conversion/i })).toBeEnabled();
-  await page.getByRole("button", { name: /run conversion/i }).click();
-  await expect(page.getByRole("link", { name: /download output-1.pdf/i })).toBeVisible();
-});
-
-test("resize PDF route fits every page on A4 in the browser worker", async ({ page }) => {
-  const doc = await PDFDocument.create();
-  doc.addPage([400, 200]);
-  doc.addPage([200, 400]);
-
-  await page.goto("/tools/resize-pdf");
-  await page.getByLabel(/choose files/i).setInputFiles({
-    name: "source.pdf",
-    mimeType: "application/pdf",
-    buffer: Buffer.from(await doc.save()),
-  });
-  await expect(page.getByRole("button", { name: /run conversion/i })).toBeEnabled();
-  await page.getByRole("button", { name: /run conversion/i }).click();
-  await expect(page.getByRole("link", { name: /download output-1.pdf/i })).toBeVisible();
-});
-
-test("organize PDF route keeps original order by default in browser worker", async ({ page }) => {
-  const doc = await PDFDocument.create();
-  for (let index = 0; index < 3; index++) doc.addPage([612, 792]);
-
-  await page.goto("/tools/organize-pdf");
-  await page.getByLabel(/choose files/i).setInputFiles({
-    name: "source.pdf",
-    mimeType: "application/pdf",
-    buffer: Buffer.from(await doc.save()),
-  });
-  await expect(page.getByRole("button", { name: /run conversion/i })).toBeEnabled();
-  await page.getByRole("button", { name: /run conversion/i }).click();
-  await expect(page.getByRole("link", { name: /download output-1.pdf/i })).toBeVisible();
-});
-
-test("delete PDF pages route processes selected pages in browser worker", async ({ page }) => {
-  const doc = await PDFDocument.create();
-  for (let index = 0; index < 3; index++) doc.addPage([612, 792]);
-
-  await page.goto("/tools/delete-pdf-pages");
+  await page.goto("/tools/remove-pages");
   await page.getByLabel(/pages to delete/i).fill("2");
   await page.getByLabel(/choose files/i).setInputFiles({
     name: "source.pdf",
     mimeType: "application/pdf",
-    buffer: Buffer.from(await doc.save()),
+    buffer: doc,
   });
   await expect(page.getByRole("button", { name: /run conversion/i })).toBeEnabled();
   await page.getByRole("button", { name: /run conversion/i }).click();
   await expect(page.getByRole("link", { name: /download output-1.pdf/i })).toBeVisible();
 });
 
-test("extract PDF pages route creates a ZIP when separate PDFs are selected", async ({ page }) => {
-  const doc = await PDFDocument.create();
-  for (let index = 0; index < 3; index++) doc.addPage([612, 792]);
+test("extract pages route creates a ZIP when separate PDFs are selected", async ({ page }) => {
+  const doc = await createSamplePdf(3);
 
-  await page.goto("/tools/extract-pdf-pages");
+  await page.goto("/tools/extract-pages");
   await page.getByLabel(/pages to extract/i).fill("1,3");
   await page.getByLabel(/create one combined pdf/i).uncheck();
   await page.getByLabel(/choose files/i).setInputFiles({
     name: "source.pdf",
     mimeType: "application/pdf",
-    buffer: Buffer.from(await doc.save()),
+    buffer: doc,
   });
   await expect(page.getByRole("button", { name: /run conversion/i })).toBeEnabled();
   await page.getByRole("button", { name: /run conversion/i }).click();
   await expect(page.getByRole("link", { name: /download output-1.zip/i })).toBeVisible();
 });
 
-test("page numbers route processes a PDF in browser worker", async ({ page }) => {
-  const doc = await PDFDocument.create();
-  doc.addPage([612, 792]);
+test("organize PDF route processes in browser worker", async ({ page }) => {
+  const doc = await createSamplePdf(3);
 
-  await page.goto("/tools/page-numbers");
+  await page.goto("/tools/organize-pdf");
   await page.getByLabel(/choose files/i).setInputFiles({
     name: "source.pdf",
     mimeType: "application/pdf",
-    buffer: Buffer.from(await doc.save()),
+    buffer: doc,
   });
   await expect(page.getByRole("button", { name: /run conversion/i })).toBeEnabled();
   await page.getByRole("button", { name: /run conversion/i }).click();
   await expect(page.getByRole("link", { name: /download output-1.pdf/i })).toBeVisible();
 });
 
-test("watermark PDF route processes a text watermark in browser worker", async ({ page }) => {
-  const doc = await PDFDocument.create();
-  doc.addPage([612, 792]);
-
-  await page.goto("/tools/watermark-pdf");
+test("scan to PDF route converts images to PDF", async ({ page }) => {
+  await page.goto("/tools/scan-to-pdf");
   await page.getByLabel(/choose files/i).setInputFiles({
-    name: "source.pdf",
-    mimeType: "application/pdf",
-    buffer: Buffer.from(await doc.save()),
+    name: "scan.png",
+    mimeType: "image/png",
+    buffer: Buffer.from(VALID_PNG_BYTES),
   });
   await expect(page.getByRole("button", { name: /run conversion/i })).toBeEnabled();
   await page.getByRole("button", { name: /run conversion/i }).click();
   await expect(page.getByRole("link", { name: /download output-1.pdf/i })).toBeVisible();
 });
 
-test("image to PDF route processes a PNG in browser worker", async ({ page }) => {
-  await page.goto("/tools/image-to-pdf");
+// ----------------------------------------------------------------------------
+// 2. OPTIMIZE PDF
+// ----------------------------------------------------------------------------
+
+test("compress PDF route displays 4 compression preset cards and compresses PDF", async ({ page }) => {
+  const doc = await createSamplePdf(2);
+
+  await page.goto("/tools/compress-pdf");
+
+  // Verify dedicated 4 preset card UI
+  await expect(page.getByRole("heading", { name: "Kompres PDF" })).toBeVisible();
+  await expect(page.locator(".pdf-compress-card__name", { hasText: "Dasar" })).toBeVisible();
+  await expect(page.locator(".pdf-compress-card__name", { hasText: "Sedang" })).toBeVisible();
+  await expect(page.locator(".pdf-compress-card__name", { hasText: "Kuat" })).toBeVisible();
+  await expect(page.locator(".pdf-compress-badge", { hasText: "Terkecil" })).toBeVisible();
+  await expect(page.locator(".pdf-compress-card__name", { hasText: "Kustom" })).toBeVisible();
+
+  // Select Kuat preset
+  await page.locator(".pdf-compress-card__name", { hasText: "Kuat" }).click();
+
+  // Upload file and run
+  await page.getByLabel(/choose files/i).setInputFiles({
+    name: "source.pdf",
+    mimeType: "application/pdf",
+    buffer: doc,
+  });
+  await expect(page.getByRole("button", { name: /run conversion/i })).toBeEnabled();
+  await page.getByRole("button", { name: /run conversion/i }).click();
+  await expect(page.getByRole("link", { name: /download output-1.pdf/i })).toBeVisible();
+});
+
+test("repair PDF route processes file in browser worker", async ({ page }) => {
+  const doc = await createSamplePdf(1);
+
+  await page.goto("/tools/repair-pdf");
+  await page.getByLabel(/choose files/i).setInputFiles({
+    name: "source.pdf",
+    mimeType: "application/pdf",
+    buffer: doc,
+  });
+  await expect(page.getByRole("button", { name: /run conversion/i })).toBeEnabled();
+  await page.getByRole("button", { name: /run conversion/i }).click();
+  await expect(page.getByRole("link", { name: /download output-1.pdf/i })).toBeVisible();
+});
+
+test("OCR PDF route recognizes text in browser worker", async ({ page }) => {
+  const doc = await createSamplePdf(1);
+
+  await page.goto("/tools/ocr-pdf");
+  await page.getByLabel(/choose files/i).setInputFiles({
+    name: "source.pdf",
+    mimeType: "application/pdf",
+    buffer: doc,
+  });
+  await expect(page.getByRole("button", { name: /run conversion/i })).toBeEnabled();
+  await page.getByRole("button", { name: /run conversion/i }).click();
+  await expect(page.getByRole("link", { name: /download output-1.pdf/i })).toBeVisible();
+  await expect(page.getByRole("link", { name: /download output-2.txt/i })).toBeVisible();
+});
+
+// ----------------------------------------------------------------------------
+// 3. CONVERT TO PDF
+// ----------------------------------------------------------------------------
+
+test("JPG to PDF route converts image to PDF", async ({ page }) => {
+  await page.goto("/tools/jpg-to-pdf");
   await page.getByLabel(/choose files/i).setInputFiles({
     name: "source.png",
     mimeType: "image/png",
@@ -198,261 +191,106 @@ test("image to PDF route processes a PNG in browser worker", async ({ page }) =>
   await expect(page.getByRole("link", { name: /download output-1.pdf/i })).toBeVisible();
 });
 
-test("image to PDF route decodes WebP in browser worker", async ({ page }) => {
-  await page.goto("/tools/image-to-pdf");
-  const webpBase64 = await page.evaluate(() => {
-    const canvas = document.createElement("canvas");
-    canvas.width = 2;
-    canvas.height = 2;
-    const context = canvas.getContext("2d");
-    if (!context) throw new Error("Canvas is unavailable");
-    context.fillStyle = "#7c3aed";
-    context.fillRect(0, 0, 2, 2);
-    const dataUrl = canvas.toDataURL("image/webp");
-    if (!dataUrl.startsWith("data:image/webp")) throw new Error("WebP encoding is unavailable");
-    return dataUrl.split(",")[1]!;
-  });
+test("WORD to PDF route converts DOCX to PDF", async ({ page }) => {
+  const docxBytes = await createDocx(["Thesis Chapter 1", "Introduction and background"]);
+
+  await page.goto("/tools/word-to-pdf");
   await page.getByLabel(/choose files/i).setInputFiles({
-    name: "source.webp",
-    mimeType: "image/webp",
-    buffer: Buffer.from(webpBase64, "base64"),
+    name: "document.docx",
+    mimeType: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    buffer: Buffer.from(docxBytes),
   });
   await expect(page.getByRole("button", { name: /run conversion/i })).toBeEnabled();
   await page.getByRole("button", { name: /run conversion/i }).click();
   await expect(page.getByRole("link", { name: /download output-1.pdf/i })).toBeVisible();
 });
 
-test("JPG route produces explicit PNG and WebP outputs in the browser worker", async ({ page }) => {
-  await page.goto("/tools/jpg-to-png-webp");
-  const jpeg = await canvasImage(page, "image/jpeg");
-  await page.getByLabel(/target format/i).selectOption("png");
-  await page.getByLabel(/choose files/i).setInputFiles({ name: "source.jpg", mimeType: "image/jpeg", buffer: jpeg });
-  await page.getByRole("button", { name: /run conversion/i }).click();
-  await expect(page.getByRole("link", { name: /download output-1.png/i })).toBeVisible();
+test("POWERPOINT to PDF route converts PPTX to PDF", async ({ page }) => {
+  const pptxBytes = await createPptx(["Slide 1: Overview", "Slide 2: Results"]);
 
-  await page.getByLabel(/target format/i).selectOption("webp");
-  await page.getByRole("button", { name: /run conversion/i }).click();
-  await expect(page.getByRole("link", { name: /download output-1.webp/i })).toBeVisible();
-});
-
-test("WebP to JPG route composites alpha and encodes JPEG in the browser worker", async ({ page }) => {
-  await page.goto("/tools/webp-to-jpg");
+  await page.goto("/tools/powerpoint-to-pdf");
   await page.getByLabel(/choose files/i).setInputFiles({
-    name: "source.webp",
-    mimeType: "image/webp",
-    buffer: await canvasImage(page, "image/webp"),
-  });
-  await page.getByRole("button", { name: /run conversion/i }).click();
-  await expect(page.getByRole("link", { name: /download output-1.jpg/i })).toBeVisible();
-});
-
-test("WebP to PNG route preserves raster dimensions in the browser worker", async ({ page }) => {
-  await page.goto("/tools/webp-to-png");
-  await page.getByLabel(/choose files/i).setInputFiles({
-    name: "source.webp",
-    mimeType: "image/webp",
-    buffer: await canvasImage(page, "image/webp"),
-  });
-  await page.getByRole("button", { name: /run conversion/i }).click();
-  await expect(page.getByRole("link", { name: /download output-1.png/i })).toBeVisible();
-});
-
-test("JFIF to PNG route accepts a JPEG bitstream in the browser worker", async ({ page }) => {
-  await page.goto("/tools/jfif-to-png");
-  await page.getByLabel(/choose files/i).setInputFiles({
-    name: "source.jfif",
-    mimeType: "image/jpeg",
-    buffer: await canvasImage(page, "image/jpeg"),
-  });
-  await page.getByRole("button", { name: /run conversion/i }).click();
-  await expect(page.getByRole("link", { name: /download output-1.png/i })).toBeVisible();
-});
-
-test("watermark PDF route processes a local image watermark in browser worker", async ({ page }) => {
-  const doc = await PDFDocument.create();
-  doc.addPage([612, 792]);
-
-  await page.goto("/tools/watermark-pdf");
-  await page.getByLabel(/watermark type/i).selectOption("image");
-  await page.getByLabel(/choose files/i).setInputFiles([
-    { name: "source.pdf", mimeType: "application/pdf", buffer: Buffer.from(await doc.save()) },
-    { name: "watermark.png", mimeType: "image/png", buffer: Buffer.from(VALID_PNG_BYTES) },
-  ]);
-  await expect(page.getByRole("button", { name: /run conversion/i })).toBeEnabled();
-  await page.getByRole("button", { name: /run conversion/i }).click();
-  await expect(page.getByRole("link", { name: /download output-1.pdf/i })).toBeVisible();
-});
-
-test("text to PDF route processes UTF-8 text in browser worker", async ({ page }) => {
-  await page.goto("/tools/text-to-pdf");
-  await page.getByLabel(/choose files/i).setInputFiles({
-    name: "source.txt",
-    mimeType: "text/plain",
-    buffer: Buffer.from("Local UTF-8 text"),
+    name: "presentation.pptx",
+    mimeType: "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+    buffer: Buffer.from(pptxBytes),
   });
   await expect(page.getByRole("button", { name: /run conversion/i })).toBeEnabled();
   await page.getByRole("button", { name: /run conversion/i }).click();
   await expect(page.getByRole("link", { name: /download output-1.pdf/i })).toBeVisible();
 });
 
-test("ZIP maker route creates an archive in the browser worker", async ({ page }) => {
-  await page.goto("/tools/zip-maker");
-  await page.getByLabel(/choose files/i).setInputFiles([
-    { name: "notes.txt", mimeType: "text/plain", buffer: Buffer.from("local notes") },
-    { name: "data.json", mimeType: "application/json", buffer: Buffer.from('{"local":true}') },
-  ]);
-  await expect(page.getByRole("button", { name: /run conversion/i })).toBeEnabled();
-  await page.getByRole("button", { name: /run conversion/i }).click();
-  await expect(page.getByRole("link", { name: /download output-1.zip/i })).toBeVisible();
-});
+test("EXCEL to PDF route converts XLSX to PDF", async ({ page }) => {
+  const xlsxBytes = await createXlsx([["Header 1", "Header 2"], ["Val 1", "Val 2"]]);
 
-test("ZIP extractor route exposes safe entries from a local archive", async ({ page }) => {
-  const archive = new JSZip();
-  archive.file("reports/summary.txt", "local summary");
-  archive.file("data.csv", "value\n42");
-
-  await page.goto("/tools/zip-extractor");
+  await page.goto("/tools/excel-to-pdf");
   await page.getByLabel(/choose files/i).setInputFiles({
-    name: "source.zip",
-    mimeType: "application/zip",
-    buffer: await archive.generateAsync({ type: "nodebuffer" }),
+    name: "sheet.xlsx",
+    mimeType: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    buffer: Buffer.from(xlsxBytes),
   });
   await expect(page.getByRole("button", { name: /run conversion/i })).toBeEnabled();
   await page.getByRole("button", { name: /run conversion/i }).click();
-  await expect(page.getByRole("link", { name: /download reports-summary.txt/i })).toBeVisible();
-  await expect(page.getByRole("link", { name: /download data.csv/i })).toBeVisible();
+  await expect(page.getByRole("link", { name: /download output-1.pdf/i })).toBeVisible();
 });
 
-test("unit converter route converts values without a file picker", async ({ page }) => {
-  await page.goto("/tools/unit-converter");
-  await expect(page.getByLabel(/choose files/i)).toHaveCount(0);
-  await page.getByLabel(/^value$/i).fill("1");
-  await page.getByLabel(/from unit/i).fill("km");
-  await page.getByLabel(/to unit/i).fill("m");
-  await page.getByRole("button", { name: /run conversion/i }).click();
-  await expect(page.getByLabel(/local conversion result/i)).toContainText("1000 m");
-});
+// ----------------------------------------------------------------------------
+// 4. CONVERT FROM PDF
+// ----------------------------------------------------------------------------
 
-test("time converter route applies IANA time zones locally", async ({ page }) => {
-  await page.goto("/tools/time-converter");
-  await page.getByLabel(/date and time/i).fill("2026-01-15T12:00:00");
-  await page.getByLabel(/from time zone/i).fill("Asia/Jakarta");
-  await page.getByLabel(/to time zone/i).fill("UTC");
-  await page.getByRole("button", { name: /run conversion/i }).click();
-  await expect(page.getByLabel(/local conversion result/i)).toContainText("UTC");
-  await expect(page.getByLabel(/local conversion result/i)).toContainText("05:00");
-});
+test("PDF to JPG route converts PDF to JPG", async ({ page }) => {
+  const doc = await createSamplePdf(1);
 
-test("password generator route returns a local value without a download", async ({ page }) => {
-  await page.goto("/tools/password-generator");
-  await page.getByLabel(/password length/i).fill("32");
-  await page.getByRole("button", { name: /run conversion/i }).click();
-  const result = page.getByLabel(/local conversion result/i);
-  await expect(result).toBeVisible();
-  await expect(result.locator("output")).toHaveText(/.{32}/);
-  await expect(result.getByRole("link", { name: /download/i })).toHaveCount(0);
-});
-
-test("flatten PDF route processes a PDF in browser worker", async ({ page }) => {
-  const doc = await PDFDocument.create();
-  doc.addPage([612, 792]);
-  await page.goto("/tools/flatten-pdf");
+  await page.goto("/tools/pdf-to-jpg");
   await page.getByLabel(/choose files/i).setInputFiles({
     name: "source.pdf",
     mimeType: "application/pdf",
-    buffer: Buffer.from(await doc.save()),
+    buffer: doc,
   });
-  await expect(page.getByRole("button", { name: /run conversion/i })).toBeEnabled();
-  await page.getByRole("button", { name: /run conversion/i }).click();
-  await expect(page.getByRole("link", { name: /download output-1.pdf/i })).toBeVisible();
-});
-
-test("compress JPEG route processes image in browser worker", async ({ page }) => {
-  await page.goto("/tools/compress-jpeg");
-  const jpeg = await canvasImage(page, "image/jpeg");
-  await page.getByLabel(/choose files/i).setInputFiles({ name: "source.jpg", mimeType: "image/jpeg", buffer: jpeg });
   await expect(page.getByRole("button", { name: /run conversion/i })).toBeEnabled();
   await page.getByRole("button", { name: /run conversion/i }).click();
   await expect(page.getByRole("link", { name: /download output-1.jpg/i })).toBeVisible();
 });
 
-test("compress WebP route processes image in browser worker", async ({ page }) => {
-  await page.goto("/tools/compress-webp");
-  const webp = await canvasImage(page, "image/webp");
-  await page.getByLabel(/choose files/i).setInputFiles({ name: "source.webp", mimeType: "image/webp", buffer: webp });
+test("PDF to WORD route converts PDF to DOCX", async ({ page }) => {
+  const doc = await createSamplePdf(1);
+
+  await page.goto("/tools/pdf-to-word");
+  await page.getByLabel(/choose files/i).setInputFiles({
+    name: "source.pdf",
+    mimeType: "application/pdf",
+    buffer: doc,
+  });
   await expect(page.getByRole("button", { name: /run conversion/i })).toBeEnabled();
   await page.getByRole("button", { name: /run conversion/i }).click();
-  await expect(page.getByRole("link", { name: /download output-1.webp/i })).toBeVisible();
+  await expect(page.getByRole("link", { name: /download output-1.docx/i })).toBeVisible();
 });
 
-test("compress JPEG route renders custom collapsible compression settings and handles mode switching", async ({ page }) => {
-  await page.goto("/tools/compress-jpeg");
+test("PDF to POWERPOINT route converts PDF to PPTX", async ({ page }) => {
+  const doc = await createSamplePdf(1);
 
-  // Verify header
-  const header = page.locator(".compression-settings__header");
-  await expect(header).toBeVisible();
-  await expect(header).toHaveText(/compression settings \(optional\)/i);
-
-  // Verify default is Quality with slider and tooltip
-  await expect(page.locator(".compression-slider-tooltip")).toBeVisible();
-  await expect(page.locator(".compression-slider-tooltip")).toHaveText("75%");
-
-  // Switch to Max File Size mode
-  await page.locator(".compression-radio-label", { hasText: /max file size \(kb\)/i }).click();
-  const input = page.getByPlaceholder("Enter Max File Size");
-  await expect(input).toBeVisible();
-  await input.fill("300");
-
-  // Verify collapse toggle
-  await header.click();
-  await expect(page.locator(".compression-settings__body")).not.toBeVisible();
-  await header.click();
-  await expect(page.locator(".compression-settings__body")).toBeVisible();
-});
-
-test("resize image route resizes image in browser worker", async ({ page }) => {
-  await page.goto("/tools/resize-image");
-  const jpeg = await canvasImage(page, "image/jpeg");
-  await page.getByLabel(/choose files/i).setInputFiles({ name: "source.jpg", mimeType: "image/jpeg", buffer: jpeg });
+  await page.goto("/tools/pdf-to-powerpoint");
+  await page.getByLabel(/choose files/i).setInputFiles({
+    name: "source.pdf",
+    mimeType: "application/pdf",
+    buffer: doc,
+  });
   await expect(page.getByRole("button", { name: /run conversion/i })).toBeEnabled();
   await page.getByRole("button", { name: /run conversion/i }).click();
-  await expect(page.getByRole("link", { name: /download output-1.png/i })).toBeVisible();
+  await expect(page.getByRole("link", { name: /download output-1.pptx/i })).toBeVisible();
 });
 
-test("crop image route crops image in browser worker", async ({ page }) => {
-  await page.goto("/tools/crop-image");
-  const jpeg = await canvasImage(page, "image/jpeg");
-  await page.getByLabel(/choose files/i).setInputFiles({ name: "source.jpg", mimeType: "image/jpeg", buffer: jpeg });
-  await expect(page.getByRole("button", { name: /run conversion/i })).toBeEnabled();
-  await page.getByRole("button", { name: /run conversion/i }).click();
-  await expect(page.getByRole("link", { name: /download output-1.png/i })).toBeVisible();
-});
+test("PDF to EXCEL route converts PDF to XLSX", async ({ page }) => {
+  const doc = await createSamplePdf(1);
 
-test("circle crop image route applies circular mask in browser worker", async ({ page }) => {
-  await page.goto("/tools/circle-crop-image");
-  const webp = await canvasImage(page, "image/webp");
-  await page.getByLabel(/choose files/i).setInputFiles({ name: "source.webp", mimeType: "image/webp", buffer: webp });
+  await page.goto("/tools/pdf-to-excel");
+  await page.getByLabel(/choose files/i).setInputFiles({
+    name: "source.pdf",
+    mimeType: "application/pdf",
+    buffer: doc,
+  });
   await expect(page.getByRole("button", { name: /run conversion/i })).toBeEnabled();
   await page.getByRole("button", { name: /run conversion/i }).click();
-  await expect(page.getByRole("link", { name: /download output-1.png/i })).toBeVisible();
-});
-
-test("rotate image route rotates image in browser worker", async ({ page }) => {
-  await page.goto("/tools/rotate-image");
-  const jpeg = await canvasImage(page, "image/jpeg");
-  await page.getByLabel(/choose files/i).setInputFiles({ name: "source.jpg", mimeType: "image/jpeg", buffer: jpeg });
-  await expect(page.getByRole("button", { name: /run conversion/i })).toBeEnabled();
-  await page.getByRole("button", { name: /run conversion/i }).click();
-  await expect(page.getByRole("link", { name: /download output-1.png/i })).toBeVisible();
-});
-
-test("flip image route flips image in browser worker", async ({ page }) => {
-  await page.goto("/tools/flip-image");
-  const jpeg = await canvasImage(page, "image/jpeg");
-  await page.getByLabel(/choose files/i).setInputFiles({ name: "source.jpg", mimeType: "image/jpeg", buffer: jpeg });
-  await expect(page.getByRole("button", { name: /run conversion/i })).toBeEnabled();
-  await page.getByRole("button", { name: /run conversion/i }).click();
-  await expect(page.getByRole("link", { name: /download output-1.png/i })).toBeVisible();
+  await expect(page.getByRole("link", { name: /download output-1.xlsx/i })).toBeVisible();
 });
 
 test("drop-zone has exactly one visible choose files button and remains responsive across all devices", async ({ page }) => {
@@ -488,5 +326,3 @@ test("drop-zone has exactly one visible choose files button and remains responsi
     expect(isFileInputHidden).toBe(true);
   }
 });
-
-

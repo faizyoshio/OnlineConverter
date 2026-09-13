@@ -979,7 +979,197 @@ h3 {
   cursor: pointer;
 }
 
+.catalog-sections {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+
+.catalog-group-section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.catalog-group-title {
+  font-size: 1.1rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  color: var(--ink);
+  text-transform: uppercase;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.catalog-group-title::after {
+  content: "";
+  flex: 1;
+  height: 2px;
+  background: #e0d4cc;
+}
+
+/* -------------------------------------------------------------------------- */
+/* Dedicated PDF Compress Settings UI                                        */
+
+/* -------------------------------------------------------------------------- */
+
+.pdf-compress-panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  background: var(--surface);
+  border: var(--line);
+  border-radius: var(--radius-sm);
+  padding: var(--space-5);
+  box-shadow: 3px 3px 0 var(--ink);
+}
+
+.pdf-compress-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding-bottom: var(--space-3);
+  border-bottom: 1px solid #e0d4cc;
+}
+
+.pdf-compress-icon-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 3rem;
+  height: 3rem;
+  border-radius: 0.5rem;
+  background: #e11d48;
+  color: #ffffff;
+  flex-shrink: 0;
+  box-shadow: 2px 2px 0 var(--ink);
+}
+
+.pdf-compress-heading-text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.pdf-compress-title {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: var(--ink);
+}
+
+.pdf-compress-subtitle {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--muted);
+}
+
+.pdf-compress-options-grid {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.pdf-compress-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.85rem 1.15rem;
+  border: 2px solid #e0d4cc;
+  border-radius: var(--radius-sm);
+  background: #ffffff;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  user-select: none;
+}
+
+.pdf-compress-card:hover {
+  border-color: var(--ink);
+  transform: translate(-1px, -1px);
+  box-shadow: 2px 2px 0 var(--ink);
+}
+
+.pdf-compress-card.is-selected {
+  border-color: #e11d48;
+  background: #fff5f5;
+  box-shadow: 2px 2px 0 #e11d48;
+}
+
+.pdf-compress-card.is-disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.pdf-compress-card__left {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.pdf-compress-radio {
+  width: 1.2rem;
+  height: 1.2rem;
+  accent-color: #e11d48;
+  cursor: pointer;
+}
+
+.pdf-compress-card__text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+}
+
+.pdf-compress-card__name {
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: var(--ink);
+}
+
+.pdf-compress-card__desc {
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+.pdf-compress-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.2rem 0.55rem;
+  border-radius: 9999px;
+  background: #dcfce7;
+  color: #15803d;
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  border: 1px solid #86efac;
+}
+
+.pdf-compress-custom-area {
+  padding: var(--space-3) var(--space-4);
+  background: #fdfaf7;
+  border: 1px dashed #d9cdc7;
+  border-radius: var(--radius-sm);
+}
+
+.pdf-compress-custom-label {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.pdf-compress-slider {
+  width: 100%;
+  accent-color: #e11d48;
+  cursor: pointer;
+}
+
 @media (max-width: 40rem) {
+
   .compression-settings__main-row {
     flex-direction: column;
     align-items: stretch;
