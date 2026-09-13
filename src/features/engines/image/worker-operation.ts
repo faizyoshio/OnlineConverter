@@ -39,7 +39,38 @@ export async function processImageOperation(
     let canvasWidth = bitmap.width;
     let canvasHeight = bitmap.height;
 
-    if (outputOptions.rotationDegrees === 90 || outputOptions.rotationDegrees === 270) {
+    if (outputOptions.circleCrop) {
+      const diameter = Math.min(bitmap.width, bitmap.height);
+      canvasWidth = diameter;
+      canvasHeight = diameter;
+    } else if (outputOptions.cropBox) {
+      const { x, y, width, height } = outputOptions.cropBox;
+      const clampedX = Math.max(0, Math.min(x, bitmap.width - 1));
+      const clampedY = Math.max(0, Math.min(y, bitmap.height - 1));
+      const clampedW = Math.max(1, Math.min(width, bitmap.width - clampedX));
+      const clampedH = Math.max(1, Math.min(height, bitmap.height - clampedY));
+      canvasWidth = Math.round(clampedW);
+      canvasHeight = Math.round(clampedH);
+    } else if (outputOptions.resizeDimensions) {
+      const { width, height, aspectLock } = outputOptions.resizeDimensions;
+      if (width && height) {
+        if (aspectLock) {
+          const ratio = Math.min(width / bitmap.width, height / bitmap.height);
+          canvasWidth = Math.max(1, Math.round(bitmap.width * ratio));
+          canvasHeight = Math.max(1, Math.round(bitmap.height * ratio));
+        } else {
+          canvasWidth = Math.round(width);
+          canvasHeight = Math.round(height);
+        }
+      } else if (width) {
+        canvasWidth = Math.round(width);
+        canvasHeight = Math.max(1, Math.round((bitmap.height * width) / bitmap.width));
+      } else if (height) {
+        canvasHeight = Math.round(height);
+        canvasWidth = Math.max(1, Math.round((bitmap.width * height) / bitmap.height));
+      }
+      validateDimensions(canvasWidth, canvasHeight);
+    } else if (outputOptions.rotationDegrees === 90 || outputOptions.rotationDegrees === 270) {
       canvasWidth = bitmap.height;
       canvasHeight = bitmap.width;
     }
@@ -51,7 +82,24 @@ export async function processImageOperation(
       drawing.fillStyle = outputOptions.background;
       drawing.fillRect(0, 0, canvasWidth, canvasHeight);
     }
-    if (outputOptions.rotationDegrees === 90) {
+    if (outputOptions.circleCrop) {
+      const diameter = canvasWidth;
+      const sx = (bitmap.width - diameter) / 2;
+      const sy = (bitmap.height - diameter) / 2;
+      if (drawing.beginPath && drawing.arc && drawing.clip) {
+        drawing.beginPath();
+        drawing.arc(diameter / 2, diameter / 2, diameter / 2, 0, Math.PI * 2);
+        drawing.clip();
+      }
+      drawing.drawImage(bitmap, sx, sy, diameter, diameter, 0, 0, diameter, diameter);
+    } else if (outputOptions.cropBox) {
+      const { x, y } = outputOptions.cropBox;
+      const clampedX = Math.max(0, Math.min(x, bitmap.width - 1));
+      const clampedY = Math.max(0, Math.min(y, bitmap.height - 1));
+      drawing.drawImage(bitmap, clampedX, clampedY, canvasWidth, canvasHeight, 0, 0, canvasWidth, canvasHeight);
+    } else if (outputOptions.resizeDimensions && (canvasWidth !== bitmap.width || canvasHeight !== bitmap.height)) {
+      drawing.drawImage(bitmap, 0, 0, canvasWidth, canvasHeight);
+    } else if (outputOptions.rotationDegrees === 90) {
       drawing.translate(canvasWidth, 0);
       drawing.rotate(Math.PI / 2);
       drawing.drawImage(bitmap, 0, 0);

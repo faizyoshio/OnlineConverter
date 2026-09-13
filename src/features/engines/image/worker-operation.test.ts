@@ -82,11 +82,46 @@ describe("image worker operation", () => {
     expect(harness.drawImage).toHaveBeenCalledTimes(1);
   });
 
+  test("resizes image according to width and height", async () => {
+    const harness = dependencies("image/png", 800, 600);
+    await processImageOperation(context({
+      capabilityId: "image.resize",
+      options: { width: 400, height: 300, aspectLock: false, target: "png" },
+    }), harness.deps);
+    expect(harness.deps.createCanvas).toHaveBeenCalledWith(400, 300);
+    expect(harness.drawImage).toHaveBeenCalledTimes(1);
+  });
+
+  test("crops image according to cropBox coordinates", async () => {
+    const harness = dependencies("image/png", 800, 600);
+    await processImageOperation(context({
+      capabilityId: "image.crop",
+      options: { cropBox: { x: 50, y: 50, width: 200, height: 150 }, target: "png" },
+    }), harness.deps);
+    expect(harness.deps.createCanvas).toHaveBeenCalledWith(200, 150);
+    expect(harness.drawImage).toHaveBeenCalledWith(expect.anything(), 50, 50, 200, 150, 0, 0, 200, 150);
+  });
+
+  test("circle crops image with centered square dimensions", async () => {
+    const harness = dependencies("image/png", 800, 600);
+    await processImageOperation(context({
+      capabilityId: "image.circle-crop",
+      options: { target: "png" },
+    }), harness.deps);
+    expect(harness.deps.createCanvas).toHaveBeenCalledWith(600, 600);
+    expect(harness.drawImage).toHaveBeenCalledTimes(1);
+  });
+
   test.each([
     ["image.webp-to-png", "image/png"],
     ["image.jfif-to-png", "image/png"],
     ["image.rotate", "image/png"],
     ["image.flip", "image/png"],
+    ["image.compress-jpeg", "image/jpeg"],
+    ["image.compress-webp", "image/webp"],
+    ["image.resize", "image/png"],
+    ["image.crop", "image/png"],
+    ["image.circle-crop", "image/png"],
   ])("encodes %s with the declared MIME", async (capabilityId, mimeType) => {
     const harness = dependencies(mimeType);
     const result = await processImageOperation(context({ capabilityId, options: {} }), harness.deps);

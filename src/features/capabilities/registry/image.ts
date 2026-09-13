@@ -142,6 +142,7 @@ export const imageCapabilities = Object.freeze([
   }),
   defineImage({
     id: "image.compress-jpeg", slug: "compress-jpeg", title: "Compress JPEG",
+    releaseStatus: "active",
     description: "Compress JPEG or JFIF files at quality seventy-five and remove nonessential metadata.",
     resultContract: "lossy-visual", inputMode: "files", inputs: [input("jpeg"), input("jfif")], result: filesResult(output("jpeg")),
     optionFields: [numberOption("quality", "JPEG quality", 75, 1, 100), toggleOption("stripMetadata", "Strip nonessential metadata", true)],
@@ -156,6 +157,7 @@ export const imageCapabilities = Object.freeze([
   }),
   defineImage({
     id: "image.compress-webp", slug: "compress-webp", title: "Compress WebP",
+    releaseStatus: "active",
     description: "Compress a local WebP image at quality seventy-five while preserving transparency.",
     resultContract: "lossy-visual", inputMode: "files", inputs: [input("webp")], result: filesResult(output("webp")),
     optionFields: [numberOption("quality", "WebP quality", 75, 1, 100), toggleOption("preserveAlpha", "Preserve alpha", true)],
@@ -171,6 +173,7 @@ export const imageCapabilities = Object.freeze([
   }),
   defineImage({
     id: "image.resize", slug: "resize-image", title: "Resize Image",
+    releaseStatus: "active",
     description: "Resize a supported local raster image with aspect lock and high-quality Lanczos resampling.",
     resultContract: "lossy-visual", inputMode: "files", inputs: rasterInputs(),
     result: filesResult(output("jpeg", "explicit-user-choice"), output("png", "explicit-user-choice"), output("webp", "explicit-user-choice"), output("bmp", "explicit-user-choice")),
@@ -185,6 +188,7 @@ export const imageCapabilities = Object.freeze([
   }),
   defineImage({
     id: "image.crop", slug: "crop-image", title: "Crop Image",
+    releaseStatus: "active",
     description: "Crop a supported local raster image within its source bounds and choose the output format.",
     resultContract: "lossy-visual", inputMode: "files", inputs: rasterInputs(),
     result: filesResult(output("jpeg", "explicit-user-choice"), output("png", "explicit-user-choice"), output("webp", "explicit-user-choice"), output("bmp", "explicit-user-choice")),
@@ -193,6 +197,7 @@ export const imageCapabilities = Object.freeze([
   }),
   defineImage({
     id: "image.circle-crop", slug: "circle-crop-image", title: "Circle Crop Image",
+    releaseStatus: "active",
     description: "Create a centered circular crop from a local image with transparent pixels outside it.",
     resultContract: "lossy-visual", inputMode: "files", inputs: editableInputs(),
     result: filesResult(output("png", "explicit-user-choice"), output("webp", "explicit-user-choice")),

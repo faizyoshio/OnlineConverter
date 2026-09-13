@@ -61,6 +61,11 @@ test("declares 90 unique launch capabilities with only reviewed tools active", (
     "image.webp-to-jpg",
     "image.webp-to-png",
     "image.jfif-to-png",
+    "image.compress-jpeg",
+    "image.compress-webp",
+    "image.resize",
+    "image.crop",
+    "image.circle-crop",
     "image.rotate",
     "image.flip",
     "archive.zip-create",
@@ -70,7 +75,7 @@ test("declares 90 unique launch capabilities with only reviewed tools active", (
     "utility.barcode",
     "utility.password",
   ]);
-  expect(capabilityRegistry.filter((item) => item.releaseStatus === "planned")).toHaveLength(66);
+  expect(capabilityRegistry.filter((item) => item.releaseStatus === "planned")).toHaveLength(61);
 });
 
 test("keeps the approved manifest order", () => {

@@ -4,16 +4,24 @@ export type ImageCapabilityId =
   | "image.webp-to-png"
   | "image.jfif-to-png"
   | "image.rotate"
-  | "image.flip";
+  | "image.flip"
+  | "image.compress-jpeg"
+  | "image.compress-webp"
+  | "image.resize"
+  | "image.crop"
+  | "image.circle-crop";
 
 export type ImageCodecCapabilityId = ImageCapabilityId;
 
 export type ImageEncodeOptions = {
   mimeType: "image/jpeg" | "image/png" | "image/webp";
-  quality?: number;
-  background?: string;
-  rotationDegrees?: 90 | 180 | 270;
-  flipDirection?: "horizontal" | "vertical";
+  quality?: number | undefined;
+  background?: string | undefined;
+  rotationDegrees?: 90 | 180 | 270 | undefined;
+  flipDirection?: "horizontal" | "vertical" | undefined;
+  resizeDimensions?: { width?: number | undefined; height?: number | undefined; aspectLock?: boolean | undefined } | undefined;
+  cropBox?: { x: number; y: number; width: number; height: number } | undefined;
+  circleCrop?: boolean | undefined;
 };
 
 export function parseImageCodecCapabilityId(value: string): ImageCapabilityId {
@@ -24,6 +32,11 @@ export function parseImageCodecCapabilityId(value: string): ImageCapabilityId {
     || value === "image.jfif-to-png"
     || value === "image.rotate"
     || value === "image.flip"
+    || value === "image.compress-jpeg"
+    || value === "image.compress-webp"
+    || value === "image.resize"
+    || value === "image.crop"
+    || value === "image.circle-crop"
   ) return value;
   throw new Error(`Unknown image capability: ${value}`);
 }
@@ -105,6 +118,56 @@ export function resolveImageEncodeOptions(
     return {
       ...target,
       flipDirection: resolveFlipDirection(options),
+    };
+  }
+  if (capabilityId === "image.compress-jpeg") {
+    return {
+      mimeType: "image/jpeg",
+      quality: percentage(options, "quality", 75),
+    };
+  }
+  if (capabilityId === "image.compress-webp") {
+    return {
+      mimeType: "image/webp",
+      quality: percentage(options, "quality", 75),
+    };
+  }
+  if (capabilityId === "image.resize") {
+    const target = resolveTargetMime(options.target);
+    const width = typeof options.width === "number" && Number.isFinite(options.width) && options.width > 0 ? options.width : undefined;
+    const height = typeof options.height === "number" && Number.isFinite(options.height) && options.height > 0 ? options.height : undefined;
+    const aspectLock = options.aspectLock !== false;
+    return {
+      ...target,
+      resizeDimensions: { width, height, aspectLock },
+    };
+  }
+  if (capabilityId === "image.crop") {
+    const target = resolveTargetMime(options.target);
+    let cropBox: { x: number; y: number; width: number; height: number } | undefined;
+    if (options.cropBox && typeof options.cropBox === "object") {
+      const box = options.cropBox as Record<string, unknown>;
+      if (
+        typeof box.x === "number"
+        && typeof box.y === "number"
+        && typeof box.width === "number"
+        && typeof box.height === "number"
+        && box.width > 0
+        && box.height > 0
+      ) {
+        cropBox = { x: box.x, y: box.y, width: box.width, height: box.height };
+      }
+    }
+    return {
+      ...target,
+      cropBox,
+    };
+  }
+  if (capabilityId === "image.circle-crop") {
+    const mimeType = options.target === "webp" ? "image/webp" : "image/png";
+    return {
+      mimeType,
+      circleCrop: true,
     };
   }
   throw new Error(`Unknown image capability: ${String(capabilityId)}`);

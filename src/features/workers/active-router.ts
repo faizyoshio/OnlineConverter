@@ -22,6 +22,11 @@ export function createActiveEngineRouter(): EngineRouter {
   router.register("image.jfif-to-png", async () => (await import("@/features/engines/image-jfif-to-png")).createImageJfifToPngAdapter());
   router.register("image.rotate", async () => (await import("@/features/engines/image-rotate")).createImageRotateAdapter());
   router.register("image.flip", async () => (await import("@/features/engines/image-flip")).createImageFlipAdapter());
+  router.register("image.compress-jpeg", async () => (await import("@/features/engines/image-compress-jpg")).createImageCompressJpgAdapter());
+  router.register("image.compress-webp", async () => (await import("@/features/engines/image-compress-webp")).createImageCompressWebpAdapter());
+  router.register("image.resize", async () => (await import("@/features/engines/image-resize")).createImageResizeAdapter());
+  router.register("image.crop", async () => (await import("@/features/engines/image-crop")).createImageCropAdapter());
+  router.register("image.circle-crop", async () => (await import("@/features/engines/image-circle-crop")).createImageCircleCropAdapter());
   router.register("archive.zip-create", async () => (await import("@/features/engines/archive-zip-create")).createArchiveZipCreateAdapter());
   router.register("archive.zip-extract", async () => (await import("@/features/engines/zip-extract")).createZipExtractAdapter());
   router.register("utility.unit", async () => (await import("@/features/engines/utility-unit")).createUnitConverterAdapter());
