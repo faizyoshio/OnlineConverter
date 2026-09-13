@@ -16,8 +16,21 @@ function currentEnvironment(): SiteEnvironment {
   return "local";
 }
 
-export function resolveSiteUrl({ environment = currentEnvironment(), siteUrl = process.env.SITE_URL }: SiteUrlInput = {}): URL {
-  if (environment === "production" && !siteUrl) throw new Error("SITE_URL is required in production");
+function defaultSiteUrl(environment: SiteEnvironment): string | undefined {
+  if (process.env.SITE_URL) return process.env.SITE_URL;
+  if (process.env.VERCEL_PROJECT_PRODUCTION_URL) return `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`;
+  if (process.env.VERCEL_URL) return `https://${process.env.VERCEL_URL}`;
+  if (environment === "production") return "https://onlineconverter.vercel.app";
+  return undefined;
+}
+
+export function resolveSiteUrl(input: SiteUrlInput = {}): URL {
+  const environment = input.environment ?? currentEnvironment();
+  const siteUrl = "siteUrl" in input ? input.siteUrl : defaultSiteUrl(environment);
+
+  if (environment === "production" && !siteUrl) {
+    throw new Error("SITE_URL is required in production");
+  }
   const url = new URL(siteUrl ?? "http://localhost:3000");
   if (environment === "production" && url.protocol !== "https:") {
     throw new Error("SITE_URL must use HTTPS in production");
