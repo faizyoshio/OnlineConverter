@@ -442,3 +442,38 @@ test("flip image route flips image in browser worker", async ({ page }) => {
   await expect(page.getByRole("link", { name: /download output-1.png/i })).toBeVisible();
 });
 
+test("drop-zone has exactly one visible choose files button and remains responsive across all devices", async ({ page }) => {
+  const viewports = [
+    { width: 320, height: 568, name: "mobile-small (iPhone SE 1)" },
+    { width: 375, height: 667, name: "mobile-medium (iPhone 8)" },
+    { width: 390, height: 844, name: "mobile-modern (iPhone 14)" },
+    { width: 768, height: 1024, name: "tablet-portrait (iPad)" },
+    { width: 1024, height: 768, name: "tablet-landscape" },
+    { width: 1440, height: 900, name: "desktop" },
+  ];
+
+  for (const vp of viewports) {
+    await page.setViewportSize({ width: vp.width, height: vp.height });
+    await page.goto("/tools/merge-pdf");
+
+    // Check no horizontal scroll overflow
+    const hasHorizontalOverflow = await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth);
+    expect(hasHorizontalOverflow, `Horizontal overflow detected at ${vp.name}`).toBe(false);
+
+    // Verify only 1 visible choose files button/label in the drop zone
+    const dropZone = page.locator(".workspace-drop-zone");
+    const visibleButtons = dropZone.locator("label:visible, button:visible");
+    await expect(visibleButtons).toHaveCount(1);
+    await expect(visibleButtons.first()).toHaveText(/choose files/i);
+
+    // Verify native input is hidden from layout
+    const fileInput = dropZone.locator("input[type='file']");
+    const isFileInputHidden = await fileInput.evaluate((el) => {
+      const rect = el.getBoundingClientRect();
+      return rect.width <= 1 && rect.height <= 1;
+    });
+    expect(isFileInputHidden).toBe(true);
+  }
+});
+
+
