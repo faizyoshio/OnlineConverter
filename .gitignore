@@ -3,4 +3,11 @@
 .next/
 node_modules/
 test-results/
+playwright-report/
+blob-report/
 tsconfig.tsbuildinfo
+.vercel/
+.env*.local
+*.log
+.DS_Store
+Thumbs.db
