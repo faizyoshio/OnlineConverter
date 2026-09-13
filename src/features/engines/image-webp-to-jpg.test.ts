@@ -1,15 +1,10 @@
 import { describe, test, expect } from "vitest";
 import { createImageWebpToJpgAdapter } from "./image-webp-to-jpg";
 
-describe("WebP to JPG Adapter", () => {
-  test("probe returns expected kind", async () => {
+describe("WebP to JPG adapter", () => {
+  test("validates JPEG quality and alpha background", async () => {
     const adapter = createImageWebpToJpgAdapter();
-    const probe = await adapter.probe(new File([], "test", { type: "application/octet-stream" }));
-    expect(probe.kind).toBe("webp");
-  });
-  test("validate returns empty", async () => {
-    const adapter = createImageWebpToJpgAdapter();
-    const issues = await adapter.validate([], {});
-    expect(issues).toEqual([]);
+    await expect(adapter.validate([], { quality: 85, alphaBackground: "#ffffff" })).resolves.toEqual([]);
+    await expect(adapter.validate([], { alphaBackground: "transparent" })).resolves.toEqual([expect.objectContaining({ code: "malformed-input" })]);
   });
 });

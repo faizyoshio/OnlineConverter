@@ -1,7 +1,23 @@
-import { expect, test } from "@playwright/test";
+import { expect, test, type Page } from "@playwright/test";
 import JSZip from "jszip";
 import { PDFDocument } from "pdf-lib";
 import { VALID_PNG_BYTES } from "../src/test/fixtures/pdf-inputs";
+
+async function canvasImage(page: Page, mimeType: "image/jpeg" | "image/webp"): Promise<Buffer> {
+  const base64 = await page.evaluate((type) => {
+    const canvas = document.createElement("canvas");
+    canvas.width = 3;
+    canvas.height = 2;
+    const context = canvas.getContext("2d");
+    if (!context) throw new Error("Canvas is unavailable");
+    context.fillStyle = "rgba(124, 58, 237, 0.5)";
+    context.fillRect(0, 0, canvas.width, canvas.height);
+    const dataUrl = canvas.toDataURL(type, 0.9);
+    if (!dataUrl.startsWith(`data:${type}`)) throw new Error(`${type} encoding is unavailable`);
+    return dataUrl.split(",")[1]!;
+  }, mimeType);
+  return Buffer.from(base64, "base64");
+}
 
 test("home page explains the privacy boundary", async ({ page }) => {
   await page.goto("/");
@@ -204,6 +220,52 @@ test("image to PDF route decodes WebP in browser worker", async ({ page }) => {
   await expect(page.getByRole("button", { name: /run conversion/i })).toBeEnabled();
   await page.getByRole("button", { name: /run conversion/i }).click();
   await expect(page.getByRole("link", { name: /download output-1.pdf/i })).toBeVisible();
+});
+
+test("JPG route produces explicit PNG and WebP outputs in the browser worker", async ({ page }) => {
+  await page.goto("/tools/jpg-to-png-webp");
+  const jpeg = await canvasImage(page, "image/jpeg");
+  await page.getByLabel(/target format/i).selectOption("png");
+  await page.getByLabel(/choose files/i).setInputFiles({ name: "source.jpg", mimeType: "image/jpeg", buffer: jpeg });
+  await page.getByRole("button", { name: /run conversion/i }).click();
+  await expect(page.getByRole("link", { name: /download output-1.png/i })).toBeVisible();
+
+  await page.getByLabel(/target format/i).selectOption("webp");
+  await page.getByRole("button", { name: /run conversion/i }).click();
+  await expect(page.getByRole("link", { name: /download output-1.webp/i })).toBeVisible();
+});
+
+test("WebP to JPG route composites alpha and encodes JPEG in the browser worker", async ({ page }) => {
+  await page.goto("/tools/webp-to-jpg");
+  await page.getByLabel(/choose files/i).setInputFiles({
+    name: "source.webp",
+    mimeType: "image/webp",
+    buffer: await canvasImage(page, "image/webp"),
+  });
+  await page.getByRole("button", { name: /run conversion/i }).click();
+  await expect(page.getByRole("link", { name: /download output-1.jpg/i })).toBeVisible();
+});
+
+test("WebP to PNG route preserves raster dimensions in the browser worker", async ({ page }) => {
+  await page.goto("/tools/webp-to-png");
+  await page.getByLabel(/choose files/i).setInputFiles({
+    name: "source.webp",
+    mimeType: "image/webp",
+    buffer: await canvasImage(page, "image/webp"),
+  });
+  await page.getByRole("button", { name: /run conversion/i }).click();
+  await expect(page.getByRole("link", { name: /download output-1.png/i })).toBeVisible();
+});
+
+test("JFIF to PNG route accepts a JPEG bitstream in the browser worker", async ({ page }) => {
+  await page.goto("/tools/jfif-to-png");
+  await page.getByLabel(/choose files/i).setInputFiles({
+    name: "source.jfif",
+    mimeType: "image/jpeg",
+    buffer: await canvasImage(page, "image/jpeg"),
+  });
+  await page.getByRole("button", { name: /run conversion/i }).click();
+  await expect(page.getByRole("link", { name: /download output-1.png/i })).toBeVisible();
 });
 
 test("watermark PDF route processes a local image watermark in browser worker", async ({ page }) => {

@@ -53,6 +53,7 @@ export const imageCapabilities = Object.freeze([
   }),
   defineImage({
     id: "image.jpg-to-modern", slug: "jpg-to-png-webp", title: "JPG to PNG or WebP",
+    releaseStatus: "active",
     description: "Convert a local JPEG to PNG or WebP with an explicit modern output selection.",
     resultContract: "lossy-visual", inputMode: "files", inputs: [input("jpeg")],
     result: filesResult(output("png", "explicit-user-choice"), output("webp", "explicit-user-choice")),
@@ -77,6 +78,7 @@ export const imageCapabilities = Object.freeze([
   }),
   defineImage({
     id: "image.webp-to-jpg", slug: "webp-to-jpg", title: "WebP to JPG",
+    releaseStatus: "active",
     description: "Convert a local WebP image to JPEG with a white background behind transparent pixels.",
     resultContract: "lossy-visual", inputMode: "files", inputs: [input("webp")], result: filesResult(output("jpeg")),
     optionFields: [colorOption("alphaBackground", "Alpha background", "#ffffff"), numberOption("quality", "JPEG quality", 85, 1, 100)],
@@ -84,12 +86,14 @@ export const imageCapabilities = Object.freeze([
   }),
   defineImage({
     id: "image.webp-to-png", slug: "webp-to-png", title: "WebP to PNG",
+    releaseStatus: "active",
     description: "Convert a local WebP image to PNG while retaining all available alpha transparency.",
     resultContract: "lossy-visual", inputMode: "files", inputs: [input("webp")], result: filesResult(output("png")),
     optionFields: [toggleOption("preserveAlpha", "Preserve alpha", true)], limits: limits(["image"], 1, 1), warningCodes: ["lossy-output"],
   }),
   defineImage({
     id: "image.jfif-to-png", slug: "jfif-to-png", title: "JFIF to PNG",
+    releaseStatus: "active",
     description: "Convert a local JFIF or JPEG image to PNG while preserving its original dimensions.",
     resultContract: "lossy-visual", inputMode: "files", inputs: [input("jfif"), input("jpeg")], result: filesResult(output("png")),
     optionFields: [toggleOption("preserveDimensions", "Preserve dimensions", true)], limits: limits(["image"], 1, 1), warningCodes: ["lossy-output"],

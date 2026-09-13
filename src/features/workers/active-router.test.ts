@@ -12,6 +12,10 @@ test("registers exactly the release-gated adapters", () => {
 test.each([
   "pdf.crop",
   "pdf.resize",
+  "image.jpg-to-modern",
+  "image.webp-to-jpg",
+  "image.webp-to-png",
+  "image.jfif-to-png",
   "archive.zip-create",
   "archive.zip-extract",
   "utility.unit",
