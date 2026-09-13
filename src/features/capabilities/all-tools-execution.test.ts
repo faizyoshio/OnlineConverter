@@ -75,7 +75,7 @@ async function createSampleFiles(capabilityId: string): Promise<File[]> {
   return [];
 }
 
-describe("All 30 active tools end-to-end audit", () => {
+describe("All 29 active tools end-to-end audit", () => {
   beforeEach(() => {
     vi.stubGlobal(
       "createImageBitmap",
@@ -94,8 +94,8 @@ describe("All 30 active tools end-to-end audit", () => {
   const router = createActiveEngineRouter();
   const activeTools = capabilityRegistry.filter((c) => c.releaseStatus === "active");
 
-  test("contains exactly 30 active tools across expected categories", () => {
-    expect(activeTools).toHaveLength(30);
+  test("contains exactly 29 active tools across expected categories", () => {
+    expect(activeTools).toHaveLength(29);
     const pdfTools = activeTools.filter((c) => c.category === "pdf");
     const imageTools = activeTools.filter((c) => c.category === "image");
     const archiveTools = activeTools.filter((c) => c.workerFamily === "archive");
@@ -104,7 +104,7 @@ describe("All 30 active tools end-to-end audit", () => {
     expect(pdfTools).toHaveLength(13);
     expect(imageTools).toHaveLength(11);
     expect(archiveTools).toHaveLength(2);
-    expect(utilityTools).toHaveLength(4);
+    expect(utilityTools).toHaveLength(3);
   });
 
   for (const tool of activeTools) {

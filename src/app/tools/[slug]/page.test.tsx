@@ -31,7 +31,6 @@ test("generates static routes for active tools only", () => {
     { slug: "zip-extractor" },
     { slug: "unit-converter" },
     { slug: "time-converter" },
-    { slug: "barcode-generator" },
     { slug: "password-generator" },
   ]);
 });
@@ -41,4 +40,5 @@ test("emits metadata only for active tool routes", async () => {
     title: "Merge PDF | ScholarKit",
   });
   await expect(generateMetadata({ params: Promise.resolve({ slug: "compress-pdf" }) })).resolves.toEqual({});
+  await expect(generateMetadata({ params: Promise.resolve({ slug: "barcode-generator" }) })).resolves.toEqual({});
 });

@@ -5,7 +5,7 @@ test("keeps all planned tools visible, noninteractive, and responsive in catalog
 
   const search = page.getByRole("searchbox", { name: "Search tools" });
   const allTools = page.getByRole("button", { name: "All tools" });
-  await expect(page.getByRole("status")).toHaveText("71 tools");
+  await expect(page.getByRole("status")).toHaveText("70 tools");
 
   await search.fill("PDF to JPG");
   await expect(page.getByRole("status")).toHaveText("1 tool");
@@ -16,6 +16,9 @@ test("keeps all planned tools visible, noninteractive, and responsive in catalog
   const route = await page.goto("/tools/pdf-to-jpg");
   expect(route?.status()).toBe(404);
   await expect(page.getByRole("heading", { name: "Page not found" })).toBeVisible();
+
+  const barcodeRoute = await page.goto("/tools/barcode-generator");
+  expect(barcodeRoute?.status()).toBe(404);
 
   await page.goto("/");
   await page.keyboard.press("Tab");

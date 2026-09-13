@@ -32,7 +32,6 @@ export function createActiveEngineRouter(): EngineRouter {
   router.register("archive.zip-extract", async () => (await import("@/features/engines/zip-extract")).createZipExtractAdapter());
   router.register("utility.unit", async () => (await import("@/features/engines/utility-unit")).createUnitConverterAdapter());
   router.register("utility.time", async () => (await import("@/features/engines/utility-time")).createUtilityTimeAdapter());
-  router.register("utility.barcode", async () => (await import("@/features/engines/utility-barcode")).createUtilityBarcodeAdapter());
   router.register("utility.password", async () => (await import("@/features/engines/utility-password")).createUtilityPasswordAdapter());
   return router;
 }

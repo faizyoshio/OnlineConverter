@@ -6,9 +6,9 @@ A fast, private, **local-first web application** for converting, editing, and tr
 
 ---
 
-## Features & Active Capabilities (30 Tools)
+## Features & Active Capabilities (29 Tools)
 
-OnlineConverter currently ships with **30 fully functional, client-side tools** across 4 categories:
+OnlineConverter currently ships with **29 fully functional, client-side tools** across 4 categories:
 
 ### 📄 PDF Tools (13)
 - **Merge PDF** (`/tools/merge-pdf`): Combine multiple PDF documents into a single document.
@@ -42,10 +42,9 @@ OnlineConverter currently ships with **30 fully functional, client-side tools** 
 - **ZIP Maker** (`/tools/zip-maker`): Package multiple files into a compressed ZIP file locally.
 - **ZIP Extractor** (`/tools/zip-extractor`): Inspect and extract archive files safely in memory.
 
-### ⚙️ Everyday Utilities (4)
+### ⚙️ Everyday Utilities (3)
 - **Unit Converter** (`/tools/unit-converter`): Convert length, area, mass, speed, volume, and data sizes.
 - **Time Zone Converter** (`/tools/time-converter`): Convert timestamps between IANA global time zones.
-- **Barcode & QR Generator** (`/tools/barcode-generator`): Generate Code-128, EAN, UPC, and QR codes locally.
 - **Password Generator** (`/tools/password-generator`): Generate cryptographically strong random passwords.
 
 ---

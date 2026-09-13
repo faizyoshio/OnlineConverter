@@ -36,7 +36,6 @@ describe("site helpers", () => {
       "archive.zip-extract",
       "utility.unit",
       "utility.time",
-      "utility.barcode",
       "utility.password",
     ]);
     expect(getActiveCapabilityBySlug("merge-pdf", capabilityRegistry)?.id).toBe("pdf.merge");

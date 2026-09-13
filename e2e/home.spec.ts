@@ -343,18 +343,6 @@ test("time converter route applies IANA time zones locally", async ({ page }) =>
   await expect(page.getByLabel(/local conversion result/i)).toContainText("05:00");
 });
 
-test("barcode generator route produces PNG and SVG entirely in the browser", async ({ page }) => {
-  await page.goto("/tools/barcode-generator");
-  await page.getByLabel(/barcode text/i).fill("LOCAL-123");
-  await page.getByLabel(/output format/i).selectOption("svg");
-  await page.getByRole("button", { name: /run conversion/i }).click();
-  await expect(page.getByRole("link", { name: /download output-1.svg/i })).toBeVisible();
-
-  await page.getByLabel(/output format/i).selectOption("png");
-  await page.getByRole("button", { name: /run conversion/i }).click();
-  await expect(page.getByRole("link", { name: /download output-1.png/i })).toBeVisible();
-});
-
 test("password generator route returns a local value without a download", async ({ page }) => {
   await page.goto("/tools/password-generator");
   await page.getByLabel(/password length/i).fill("32");

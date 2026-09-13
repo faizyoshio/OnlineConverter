@@ -59,15 +59,6 @@ export const utilityCapabilities = Object.freeze([
     limits: limits(["utility"], 0, 0),
   }),
   capability({
-    id: "utility.barcode", slug: "barcode-generator", title: "Barcode Generator",
-    releaseStatus: "active",
-    description: "Generate a validated local barcode as PNG or SVG without sending its text to a server.",
-    category: "utility", workerFamily: "utility", resultContract: "exact-structural", inputMode: "values", inputs: [],
-    result: filesResult(output("png", "explicit-user-choice"), output("svg", "explicit-user-choice")),
-    optionFields: [textOption("text", "Barcode text", "12345678"), selectOption("format", "Barcode format", "code-128", ["code-128", "code-39", "ean-13", "ean-8", "upc-a", "itf-14", "codabar", "qr"]), selectOption("target", "Output format", "png", ["png", "svg"]), numberOption("quietZonePx", "Quiet zone", 10, 0, 100)],
-    limits: limits(["utility"], 0, 0), browserRequirements: ["canvas", "offscreen-canvas"], unsupportedCodes: ["invalid-barcode-value"],
-  }),
-  capability({
     id: "utility.password", slug: "password-generator", title: "Password Generator",
     releaseStatus: "active",
     description: "Generate a strong password locally with selected character groups and no retained history.",

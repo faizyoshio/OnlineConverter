@@ -44,7 +44,6 @@ test("includes home and only active capabilities", () => {
     { url: "http://localhost:3000/tools/zip-extractor" },
     { url: "http://localhost:3000/tools/unit-converter" },
     { url: "http://localhost:3000/tools/time-converter" },
-    { url: "http://localhost:3000/tools/barcode-generator" },
     { url: "http://localhost:3000/tools/password-generator" },
   ]);
 });

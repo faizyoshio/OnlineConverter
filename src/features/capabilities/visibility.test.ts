@@ -30,7 +30,6 @@ const activeIds = [
   "archive.zip-extract",
   "utility.unit",
   "utility.time",
-  "utility.barcode",
   "utility.password",
 ];
 
@@ -39,7 +38,7 @@ test("production hides planned capabilities while keeping active capabilities", 
 });
 
 test("preview review mode returns planned capabilities", () => {
-  expect(getVisibleCapabilities(capabilityRegistry, { environment: "preview", previewRequested: true })).toHaveLength(71);
+  expect(getVisibleCapabilities(capabilityRegistry, { environment: "preview", previewRequested: true })).toHaveLength(70);
 });
 
 test("local mode requires an explicit preview request for planned capabilities", () => {

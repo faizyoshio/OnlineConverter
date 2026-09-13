@@ -4,7 +4,7 @@ const expectedCategoryCounts = {
   pdf: 27,
   image: 31,
   gif: 5,
-  utility: 6,
+  utility: 5,
   trust: 2,
 } as const;
 
@@ -23,7 +23,7 @@ const expectedIds = [
   "image.color-picker", "image.watermark", "image.color-extractor", "image.signature-resize",
   "gif.compress", "gif.make", "gif.apng-to-gif", "gif.to-apng", "gif.to-images",
   "archive.zip-create", "archive.zip-extract", "utility.unit", "utility.time",
-  "utility.barcode", "utility.password",
+  "utility.password",
   "trust.sign-pdf", "trust.blur-faces",
 ] as const;
 
@@ -33,10 +33,10 @@ function capability(id: string) {
   return manifest!;
 }
 
-test("declares 71 unique launch capabilities with only reviewed tools active", () => {
-  expect(capabilityRegistry).toHaveLength(71);
-  expect(new Set(capabilityRegistry.map((item) => item.id)).size).toBe(71);
-  expect(new Set(capabilityRegistry.map((item) => item.slug)).size).toBe(71);
+test("declares 70 unique launch capabilities with only reviewed tools active", () => {
+  expect(capabilityRegistry).toHaveLength(70);
+  expect(new Set(capabilityRegistry.map((item) => item.id)).size).toBe(70);
+  expect(new Set(capabilityRegistry.map((item) => item.slug)).size).toBe(70);
   expect(capabilityRegistry.filter((item) => item.releaseStatus === "active").map((item) => item.id)).toEqual([
     "pdf.merge",
     "pdf.split",
@@ -66,7 +66,6 @@ test("declares 71 unique launch capabilities with only reviewed tools active", (
     "archive.zip-extract",
     "utility.unit",
     "utility.time",
-    "utility.barcode",
     "utility.password",
   ]);
   expect(capabilityRegistry.filter((item) => item.releaseStatus === "planned")).toHaveLength(41);
@@ -3657,36 +3656,6 @@ test("matches the approved compatibility projection", () => {
             "kind": "time",
             "sensitive": false,
           },
-        },
-      },
-      {
-        "id": "utility.barcode",
-        "inputMode": "values",
-        "inputs": [],
-        "limits": {
-          "allowMixedKinds": false,
-          "maximumFiles": 0,
-          "minimumFiles": 0,
-          "profiles": [
-            "utility",
-          ],
-        },
-        "result": {
-          "files": [
-            {
-              "extension": ".png",
-              "fallback": "explicit-user-choice",
-              "kind": "png",
-              "mimeType": "image/png",
-            },
-            {
-              "extension": ".svg",
-              "fallback": "explicit-user-choice",
-              "kind": "svg",
-              "mimeType": "image/svg+xml",
-            },
-          ],
-          "mode": "files",
         },
       },
       {

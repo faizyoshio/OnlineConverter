@@ -28,7 +28,6 @@ test.each([
   "archive.zip-extract",
   "utility.unit",
   "utility.time",
-  "utility.barcode",
   "utility.password",
 ])("registers the newly reviewed adapter %s", (adapterKey) => {
   expect(createActiveEngineRouter().has(adapterKey)).toBe(true);
