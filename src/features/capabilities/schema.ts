@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-export const capabilityCategorySchema = z.enum(["pdf", "image", "media", "gif", "utility", "trust"]);
+export const capabilityCategorySchema = z.enum(["pdf", "image", "gif", "utility", "trust"]);
 export const resultContractSchema = z.enum(["exact-structural", "lossy-visual", "best-effort-semantic"]);
 export const releaseStatusSchema = z.enum(["planned", "active", "disabled"]);
 const optionValueSchema = z.union([z.string(), z.number(), z.boolean(), z.null()]);
@@ -76,7 +76,7 @@ export const capabilityManifestSchema = z.object({
   category: capabilityCategorySchema,
   aliases: z.array(z.string().min(2).max(48)).max(12),
   execution: z.literal("browser-worker"),
-  workerFamily: z.enum(["pdf", "image", "media", "archive", "ocr", "utility"]),
+  workerFamily: z.enum(["pdf", "image", "archive", "ocr", "utility"]),
   adapterKey: z.string().regex(/^[a-z]+\.[a-z0-9-]+$/),
   resultContract: resultContractSchema,
   releaseStatus: releaseStatusSchema,

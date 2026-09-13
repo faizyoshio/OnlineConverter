@@ -8,7 +8,7 @@ import { CategoryFilter } from "./category-filter";
 import { ToolCard } from "./tool-card";
 import { ToolSearch } from "./tool-search";
 
-const categoryOrder: readonly CapabilityCategory[] = ["pdf", "image", "media", "gif", "utility", "trust"];
+const categoryOrder: readonly CapabilityCategory[] = ["pdf", "image", "gif", "utility", "trust"];
 
 type ToolCatalogProps = {
   capabilities: readonly CapabilityManifest[];

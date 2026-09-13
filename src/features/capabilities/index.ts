@@ -1,7 +1,6 @@
 import { capabilityManifestSchema, type CapabilityManifest } from "./schema";
 import { gifCapabilities } from "./registry/gif";
 import { imageCapabilities } from "./registry/image";
-import { mediaCapabilities } from "./registry/media";
 import { pdfCapabilities } from "./registry/pdf";
 import { trustCapabilities } from "./registry/trust";
 import { utilityCapabilities } from "./registry/utility";
@@ -20,7 +19,6 @@ export function assertValidRegistry(input: readonly unknown[]): readonly Capabil
 export const capabilityRegistry = assertValidRegistry([
   ...pdfCapabilities,
   ...imageCapabilities,
-  ...mediaCapabilities,
   ...gifCapabilities,
   ...utilityCapabilities,
   ...trustCapabilities,

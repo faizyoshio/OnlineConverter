@@ -38,22 +38,6 @@ test("enforces batch count and aggregate byte boundaries", () => {
   expect(validateBatch([{ size: UNIVERSAL_LIMITS.batch.bytes + 1 }])).toEqual(expect.arrayContaining([expect.objectContaining({ field: "batchBytes" })]));
 });
 
-test("enforces video byte, duration, and dimension boundaries", () => {
-  const base = { kind: "mp4" as const, probeRule: "iso-bmff-brand" as const, bytes: UNIVERSAL_LIMITS.video.bytes, durationSeconds: 180, width: 1920, height: 1080 };
-  expectAtLimit("media.compress-video", base);
-  expectOverLimit("media.compress-video", { ...base, bytes: base.bytes + 1 }, "bytes");
-  expectOverLimit("media.compress-video", { ...base, durationSeconds: 181 }, "durationSeconds");
-  expectOverLimit("media.compress-video", { ...base, width: 1921 }, "width");
-  expectOverLimit("media.compress-video", { ...base, height: 1081 }, "height");
-});
-
-test("enforces audio byte and duration boundaries", () => {
-  const base = { kind: "mp3" as const, probeRule: "mp3-frame-or-id3" as const, bytes: UNIVERSAL_LIMITS.audio.bytes, durationSeconds: 900 };
-  expectAtLimit("media.compress-mp3", base);
-  expectOverLimit("media.compress-mp3", { ...base, bytes: base.bytes + 1 }, "bytes");
-  expectOverLimit("media.compress-mp3", { ...base, durationSeconds: 901 }, "durationSeconds");
-});
-
 test("enforces GIF byte, duration, and dimension boundaries", () => {
   const base = { kind: "gif" as const, probeRule: "gif-header" as const, bytes: UNIVERSAL_LIMITS.gif.bytes, durationSeconds: 30, width: 1280, height: 720 };
   expectAtLimit("gif.compress", base);

@@ -39,7 +39,7 @@ test("production hides planned capabilities while keeping active capabilities", 
 });
 
 test("preview review mode returns planned capabilities", () => {
-  expect(getVisibleCapabilities(capabilityRegistry, { environment: "preview", previewRequested: true })).toHaveLength(90);
+  expect(getVisibleCapabilities(capabilityRegistry, { environment: "preview", previewRequested: true })).toHaveLength(71);
 });
 
 test("local mode requires an explicit preview request for planned capabilities", () => {

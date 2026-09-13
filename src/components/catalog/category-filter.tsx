@@ -4,7 +4,6 @@ import type { CapabilityCategory } from "@/features/capabilities/schema";
 const categoryLabels: Record<CapabilityCategory, string> = {
   pdf: "PDF",
   image: "Images",
-  media: "Video & audio",
   gif: "GIF",
   utility: "Utilities",
   trust: "Trust & privacy",
