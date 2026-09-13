@@ -31,4 +31,19 @@ describe("image codec options", () => {
   test("rejects capability ids outside the reviewed codec set", () => {
     expect(() => parseImageCodecCapabilityId("image.unreviewed")).toThrow(/unknown image capability/i);
   });
+
+  test("resolves compress-jpeg and compress-webp for quality and maxFileSize modes", () => {
+    expect(resolveImageEncodeOptions("image.compress-jpeg", { quality: 80 })).toEqual({
+      mimeType: "image/jpeg",
+      quality: 0.8,
+    });
+    expect(resolveImageEncodeOptions("image.compress-jpeg", { compressionMode: "maxFileSize", maxFileSizeKb: 300 })).toEqual({
+      mimeType: "image/jpeg",
+      maxFileSizeKb: 300,
+    });
+    expect(resolveImageEncodeOptions("image.compress-webp", { compressionMode: "maxFileSize", maxFileSizeKb: 150 })).toEqual({
+      mimeType: "image/webp",
+      maxFileSizeKb: 150,
+    });
+  });
 });

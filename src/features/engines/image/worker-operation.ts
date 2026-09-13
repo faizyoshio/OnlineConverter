@@ -124,10 +124,39 @@ export async function processImageOperation(
     }
     ensureActive(context);
     context.reportProgress(0.8, "Encoding local image");
-    const blob = await canvas.convertToBlob({
-      type: outputOptions.mimeType,
-      ...(outputOptions.quality === undefined ? {} : { quality: outputOptions.quality }),
-    });
+    let blob: Blob;
+    if (outputOptions.maxFileSizeKb !== undefined && outputOptions.maxFileSizeKb > 0) {
+      const maxTargetBytes = outputOptions.maxFileSizeKb * 1024;
+      let low = 0.05;
+      let high = 0.95;
+      let bestBlob: Blob | null = null;
+      for (let i = 0; i < 6; i++) {
+        ensureActive(context);
+        const mid = Number(((low + high) / 2).toFixed(2));
+        const candidate = await canvas.convertToBlob({
+          type: outputOptions.mimeType,
+          quality: mid,
+        });
+        if (candidate.size <= maxTargetBytes) {
+          bestBlob = candidate;
+          low = mid;
+        } else {
+          high = mid;
+        }
+      }
+      if (!bestBlob) {
+        bestBlob = await canvas.convertToBlob({
+          type: outputOptions.mimeType,
+          quality: 0.05,
+        });
+      }
+      blob = bestBlob;
+    } else {
+      blob = await canvas.convertToBlob({
+        type: outputOptions.mimeType,
+        ...(outputOptions.quality === undefined ? {} : { quality: outputOptions.quality }),
+      });
+    }
     if (blob.type !== outputOptions.mimeType) throw new Error("Browser did not produce the requested image MIME type");
     ensureActive(context);
     context.reportProgress(0.95, "Finalizing image");

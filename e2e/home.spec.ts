@@ -385,6 +385,31 @@ test("compress WebP route processes image in browser worker", async ({ page }) =
   await expect(page.getByRole("link", { name: /download output-1.webp/i })).toBeVisible();
 });
 
+test("compress JPEG route renders custom collapsible compression settings and handles mode switching", async ({ page }) => {
+  await page.goto("/tools/compress-jpeg");
+
+  // Verify header
+  const header = page.locator(".compression-settings__header");
+  await expect(header).toBeVisible();
+  await expect(header).toHaveText(/compression settings \(optional\)/i);
+
+  // Verify default is Quality with slider and tooltip
+  await expect(page.locator(".compression-slider-tooltip")).toBeVisible();
+  await expect(page.locator(".compression-slider-tooltip")).toHaveText("75%");
+
+  // Switch to Max File Size mode
+  await page.locator(".compression-radio-label", { hasText: /max file size \(kb\)/i }).click();
+  const input = page.getByPlaceholder("Enter Max File Size");
+  await expect(input).toBeVisible();
+  await input.fill("300");
+
+  // Verify collapse toggle
+  await header.click();
+  await expect(page.locator(".compression-settings__body")).not.toBeVisible();
+  await header.click();
+  await expect(page.locator(".compression-settings__body")).toBeVisible();
+});
+
 test("resize image route resizes image in browser worker", async ({ page }) => {
   await page.goto("/tools/resize-image");
   const jpeg = await canvasImage(page, "image/jpeg");

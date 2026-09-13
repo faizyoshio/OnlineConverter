@@ -11,6 +11,7 @@ import { DropZone } from "./drop-zone";
 import { JobError } from "./job-error";
 import { JobProgress } from "./job-progress";
 import { ResultPanel } from "./result-panel";
+import { CompressionSettings } from "./compression-settings";
 
 export type ToolWorkspaceProps = {
   capability: CapabilityManifest;
@@ -89,7 +90,7 @@ export function ToolWorkspace({ capability, runner, renderOptions }: ToolWorkspa
     }
   }
 
-  function setOption(key: string, value: string | number | boolean): void {
+  function setOption(key: string, value: string | number | boolean | null): void {
     setOptions((current) => ({ ...current, [key]: value }));
   }
 
@@ -101,21 +102,30 @@ export function ToolWorkspace({ capability, runner, renderOptions }: ToolWorkspa
         <p>{capability.description}</p>
       </header>
       <DropZone capability={capability} disabled={busy} files={files} onFilesChange={selectFiles} />
-      <fieldset className="workspace-options" disabled={busy || validating}>
-        <legend>Options</legend>
-        {capability.optionFields.map((field) => {
-          const id = `option-${field.key}`;
-          const value = options[field.key];
-          if (field.control === "toggle") {
-            return <label key={field.key} htmlFor={id}><input checked={value === true} id={id} onChange={(event) => setOption(field.key, event.target.checked)} type="checkbox" /> {field.label}</label>;
-          }
-          if (field.control === "select") {
-            return <label key={field.key} htmlFor={id}>{field.label}<select id={id} onChange={(event) => setOption(field.key, event.target.value)} value={typeof value === "string" ? value : ""}>{field.choices?.map((choice) => <option key={String(choice.value)} value={String(choice.value)}>{choice.label}</option>)}</select></label>;
-          }
-          const numeric = field.control === "number" || field.control === "range";
-          return <label key={field.key} htmlFor={id}>{field.label}<input id={id} max={field.maximum} min={field.minimum} onChange={(event) => setOption(field.key, numeric ? Number(event.target.value) : event.target.value)} step={field.step} type={numeric ? field.control : "text"} value={value == null ? "" : String(value)} /></label>;
-        })}
-      </fieldset>
+      {capability.id === "image.compress-jpeg" || capability.id === "image.compress-webp" ? (
+        <CompressionSettings
+          capability={capability}
+          disabled={busy || validating}
+          options={options}
+          setOption={setOption}
+        />
+      ) : (
+        <fieldset className="workspace-options" disabled={busy || validating}>
+          <legend>Options</legend>
+          {capability.optionFields.map((field) => {
+            const id = `option-${field.key}`;
+            const value = options[field.key];
+            if (field.control === "toggle") {
+              return <label key={field.key} htmlFor={id}><input checked={value === true} id={id} onChange={(event) => setOption(field.key, event.target.checked)} type="checkbox" /> {field.label}</label>;
+            }
+            if (field.control === "select") {
+              return <label key={field.key} htmlFor={id}>{field.label}<select id={id} onChange={(event) => setOption(field.key, event.target.value)} value={typeof value === "string" ? value : ""}>{field.choices?.map((choice) => <option key={String(choice.value)} value={String(choice.value)}>{choice.label}</option>)}</select></label>;
+            }
+            const numeric = field.control === "number" || field.control === "range";
+            return <label key={field.key} htmlFor={id}>{field.label}<input id={id} max={field.maximum} min={field.minimum} onChange={(event) => setOption(field.key, numeric ? Number(event.target.value) : event.target.value)} step={field.step} type={numeric ? field.control : "text"} value={value == null ? "" : String(value)} /></label>;
+          })}
+        </fieldset>
+      )}
       {renderOptions ? <div className="workspace-options">{renderOptions({ disabled: busy || validating })}</div> : null}
       <JobError issues={issues} state={state} summaryRef={errorSummary} />
       <JobProgress state={state} />

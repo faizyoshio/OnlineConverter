@@ -150,7 +150,12 @@ export const imageCapabilities = Object.freeze([
     description: "Compress research figures and photos to meet journal portal file-size limits.",
     aliases: ["compress figure", "reduce figure size"],
     resultContract: "lossy-visual", inputMode: "files", inputs: [input("jpeg"), input("jfif")], result: filesResult(output("jpeg")),
-    optionFields: [numberOption("quality", "JPEG quality", 75, 1, 100), toggleOption("stripMetadata", "Strip nonessential metadata", true)],
+    optionFields: [
+      selectOption("compressionMode", "Compression mode", "quality", ["quality", "maxFileSize"]),
+      numberOption("maxFileSizeKb", "Max file size in KB", null, 1, 50000, 1, false),
+      numberOption("quality", "JPEG quality", 75, 1, 100),
+      toggleOption("stripMetadata", "Strip nonessential metadata", true),
+    ],
     limits: limits(["image"], 1, 1), warningCodes: ["lossy-output", "metadata-removed"],
   }),
   defineImage({
@@ -166,7 +171,12 @@ export const imageCapabilities = Object.freeze([
     description: "Compress WebP graphics with customizable quality for online publications and posters.",
     aliases: ["compress diagram", "reduce webp size"],
     resultContract: "lossy-visual", inputMode: "files", inputs: [input("webp")], result: filesResult(output("webp")),
-    optionFields: [numberOption("quality", "WebP quality", 75, 1, 100), toggleOption("preserveAlpha", "Preserve alpha", true)],
+    optionFields: [
+      selectOption("compressionMode", "Compression mode", "quality", ["quality", "maxFileSize"]),
+      numberOption("maxFileSizeKb", "Max file size in KB", null, 1, 50000, 1, false),
+      numberOption("quality", "WebP quality", 75, 1, 100),
+      toggleOption("preserveAlpha", "Preserve alpha", true),
+    ],
     limits: limits(["image"], 1, 1), warningCodes: ["lossy-output"],
   }),
   defineImage({

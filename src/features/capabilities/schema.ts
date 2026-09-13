@@ -221,12 +221,13 @@ export function selectOption(
 export function numberOption(
   key: string,
   label: string,
-  defaultValue: number,
+  defaultValue: number | null,
   minimum: number,
   maximum: number,
   step = 1,
+  required = true,
 ): OptionField {
-  return { key, label, control: "number", defaultValue, required: true, minimum, maximum, step };
+  return { key, label, control: "number", defaultValue, required, minimum, maximum, step };
 }
 
 export function rangeOption(
