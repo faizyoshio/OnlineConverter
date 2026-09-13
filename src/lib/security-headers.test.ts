@@ -1,11 +1,16 @@
 import { afterEach, expect, test } from "vitest";
 import nextConfig from "../../next.config";
 
+const originalNodeEnv = process.env.NODE_ENV;
 const originalVercelEnvironment = process.env.VERCEL_ENV;
 
 afterEach(() => {
   if (originalVercelEnvironment === undefined) delete process.env.VERCEL_ENV;
   else process.env.VERCEL_ENV = originalVercelEnvironment;
+
+  const env = process.env as Record<string, string | undefined>;
+  if (originalNodeEnv === undefined) delete env.NODE_ENV;
+  else env.NODE_ENV = originalNodeEnv;
 });
 
 test("sets fixed security headers for every route", async () => {
@@ -39,4 +44,23 @@ test("adds noindex policy on Vercel preview deployments", async () => {
   const allRoutes = rules?.find((rule) => rule.source === "/(.*)");
   const headers = new Map(allRoutes!.headers.map((header) => [header.key, header.value]));
   expect(headers.get("X-Robots-Tag")).toBe("noindex, nofollow");
+});
+
+test("omits unsafe-eval in Content-Security-Policy in production", async () => {
+  (process.env as Record<string, string | undefined>).NODE_ENV = "production";
+  const rules = await nextConfig.headers?.();
+  const allRoutes = rules?.find((rule) => rule.source === "/(.*)");
+  const headers = new Map(allRoutes!.headers.map((header) => [header.key, header.value]));
+  const csp = headers.get("Content-Security-Policy") ?? "";
+  expect(csp).toContain("script-src 'self' 'unsafe-inline'");
+  expect(csp).not.toContain("'unsafe-eval'");
+});
+
+test("includes unsafe-eval in Content-Security-Policy in development", async () => {
+  (process.env as Record<string, string | undefined>).NODE_ENV = "development";
+  const rules = await nextConfig.headers?.();
+  const allRoutes = rules?.find((rule) => rule.source === "/(.*)");
+  const headers = new Map(allRoutes!.headers.map((header) => [header.key, header.value]));
+  const csp = headers.get("Content-Security-Policy") ?? "";
+  expect(csp).toContain("script-src 'self' 'unsafe-inline' 'unsafe-eval'");
 });
