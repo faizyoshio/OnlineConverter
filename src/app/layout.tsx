@@ -1,5 +1,4 @@
 import type { Metadata, Viewport } from "next";
-import Link from "next/link";
 import "../styles/tokens.css";
 import "./globals.css";
 
@@ -30,18 +29,14 @@ export const metadata: Metadata = {
   },
 };
 
+import { SiteHeader } from "@/components/navigation/site-header";
+
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en">
       <body>
         <a className="skip-link" href="#main-content">Skip to main content</a>
-        <header className="site-header">
-          <Link className="brand" href="/">
-            <span aria-hidden="true" className="brand__mark">SK</span>
-            <span>ScholarKit</span>
-          </Link>
-          <p className="header-note">Private tools for research & study</p>
-        </header>
+        <SiteHeader />
         <main className="page-shell" id="main-content">{children}</main>
         <footer className="site-footer">
           <p>Built for local, browser-based research workflows.</p>

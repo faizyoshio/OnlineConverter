@@ -4,6 +4,8 @@ import { capabilityRegistry, validateOptionValues } from "./index";
 import { capabilityValidator } from "../validation/capability-validator";
 import { createActiveEngineRouter } from "../workers/active-router";
 import { VALID_PNG_BYTES } from "@/test/fixtures/pdf-inputs";
+import { VALID_JPEG_BYTES } from "@/test/fixtures/image-inputs";
+import { HEADERS } from "@/test/fixtures/headers";
 import { createDocx, createPptx, createXlsx } from "@/engines/office/openxml";
 
 function defaultOptions(capability: (typeof capabilityRegistry)[number]): Readonly<Record<string, unknown>> {
@@ -11,8 +13,11 @@ function defaultOptions(capability: (typeof capabilityRegistry)[number]): Readon
 }
 
 async function createSampleFiles(capabilityId: string): Promise<File[]> {
-  if (capabilityId === "pdf.image-to-pdf" || capabilityId === "pdf.scan") {
+  if (capabilityId === "pdf.image-to-pdf") {
     return [new File([VALID_PNG_BYTES], "sample.png", { type: "image/png" })];
+  }
+  if (capabilityId === "pdf.jpg-to-pdf") {
+    return [new File([VALID_JPEG_BYTES], "sample.jpg", { type: "image/jpeg" })];
   }
   if (capabilityId === "pdf.word-to-pdf") {
     const docxBytes = await createDocx(["Sample thesis draft"]);
@@ -25,6 +30,24 @@ async function createSampleFiles(capabilityId: string): Promise<File[]> {
   if (capabilityId === "pdf.excel-to-pdf") {
     const xlsxBytes = await createXlsx([["Col1", "Col2"], ["Val1", "Val2"]]);
     return [new File([xlsxBytes.buffer as ArrayBuffer], "sample.xlsx", { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" })];
+  }
+  if (capabilityId === "pdf.text-to-pdf") {
+    return [new File([HEADERS.text as BlobPart], "sample.txt", { type: "text/plain" })];
+  }
+  if (capabilityId === "image.compress-jpg" || capabilityId === "image.compress-jpeg" || capabilityId === "image.to-png") {
+    return [new File([VALID_JPEG_BYTES as BlobPart], "sample.jpg", { type: "image/jpeg" })];
+  }
+  if (capabilityId === "image.compress-webp" || capabilityId === "image.webp-to-jpg") {
+    return [new File([HEADERS.webp as BlobPart], "sample.webp", { type: "image/webp" })];
+  }
+  if (capabilityId === "image.compress-bmp") {
+    return [new File([HEADERS.bmp as BlobPart], "sample.bmp", { type: "image/bmp" })];
+  }
+  if (capabilityId === "image.compress-heic" || capabilityId === "image.heic-to-jpg") {
+    return [new File([HEADERS.heic as BlobPart], "sample.heic", { type: "image/heic" })];
+  }
+  if (capabilityId.startsWith("image.")) {
+    return [new File([VALID_PNG_BYTES], "sample.png", { type: "image/png" })];
   }
 
   const doc = await PDFDocument.create();
@@ -42,10 +65,14 @@ async function createSampleFiles(capabilityId: string): Promise<File[]> {
     return [pdfFile, pdf2];
   }
 
+  if (capabilityId === "pdf.merge-image") {
+    return [pdfFile, new File([VALID_PNG_BYTES], "sample.png", { type: "image/png" })];
+  }
+
   return [pdfFile];
 }
 
-describe("All 17 active tools end-to-end audit", () => {
+describe("All 38 active tools end-to-end audit", () => {
   beforeEach(() => {
     vi.stubGlobal(
       "createImageBitmap",
@@ -64,17 +91,25 @@ describe("All 17 active tools end-to-end audit", () => {
   const router = createActiveEngineRouter();
   const activeTools = capabilityRegistry.filter((c) => c.releaseStatus === "active");
 
-  test("contains exactly 17 active tools across 4 groups", () => {
-    expect(activeTools).toHaveLength(17);
-    const organizeTools = activeTools.filter((c) => c.group === "organize");
-    const optimizeTools = activeTools.filter((c) => c.group === "optimize");
+  test("contains exactly 38 active tools across 8 groups", () => {
+    expect(activeTools).toHaveLength(38);
+    const optimizePdfTools = activeTools.filter((c) => c.group === "optimize-pdf");
+    const mergeSplitTools = activeTools.filter((c) => c.group === "merge-split");
+    const viewEditTools = activeTools.filter((c) => c.group === "view-edit");
     const toPdfTools = activeTools.filter((c) => c.group === "to-pdf");
     const fromPdfTools = activeTools.filter((c) => c.group === "from-pdf");
+    const pdfSecurityTools = activeTools.filter((c) => c.group === "pdf-security");
+    const optimizeImageTools = activeTools.filter((c) => c.group === "optimize-image");
+    const convertImageTools = activeTools.filter((c) => c.group === "convert-image");
 
-    expect(organizeTools).toHaveLength(6);
-    expect(optimizeTools).toHaveLength(3);
-    expect(toPdfTools).toHaveLength(4);
-    expect(fromPdfTools).toHaveLength(4);
+    expect(optimizePdfTools).toHaveLength(1);
+    expect(mergeSplitTools).toHaveLength(3);
+    expect(viewEditTools).toHaveLength(7);
+    expect(toPdfTools).toHaveLength(6);
+    expect(fromPdfTools).toHaveLength(6);
+    expect(pdfSecurityTools).toHaveLength(2);
+    expect(optimizeImageTools).toHaveLength(7);
+    expect(convertImageTools).toHaveLength(6);
   });
 
   for (const tool of activeTools) {
@@ -84,8 +119,8 @@ describe("All 17 active tools end-to-end audit", () => {
       expect(() => validateOptionValues(tool, defaults)).not.toThrow();
 
       // 2. Adapter must be registered and loadable
-      expect(router.has(tool.id)).toBe(true);
-      const adapter = await router.load(tool.id);
+      expect(router.has(tool.adapterKey)).toBe(true);
+      const adapter = await router.load(tool.adapterKey);
       expect(adapter).toBeDefined();
 
       // 3. Inputs must pass cheap and adapter validation

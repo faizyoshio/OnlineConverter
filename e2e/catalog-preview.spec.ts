@@ -5,15 +5,15 @@ test("keeps all planned tools visible, noninteractive, and responsive in catalog
 
   const search = page.getByRole("searchbox", { name: "Search tools" });
   const allTools = page.getByRole("button", { name: "All tools" });
-  await expect(page.getByRole("status")).toHaveText("77 tools");
+  await expect(page.getByRole("status")).toHaveText("84 tools");
 
-  await search.fill("Rotate PDF");
+  await search.fill("Scan to PDF");
   await expect(page.getByRole("status")).toHaveText("1 tool");
-  const card = page.locator(".tool-card").filter({ has: page.getByRole("heading", { name: "Rotate PDF" }) });
+  const card = page.locator(".tool-card").filter({ has: page.getByRole("heading", { name: "Scan to PDF" }) });
   await expect(card.getByText("In development")).toBeVisible();
   await expect(card.locator("a")).toHaveCount(0);
 
-  const route = await page.goto("/tools/rotate-pdf");
+  const route = await page.goto("/tools/scan-to-pdf");
   expect(route?.status()).toBe(404);
   await expect(page.getByRole("heading", { name: "Page not found" })).toBeVisible();
 
@@ -21,10 +21,7 @@ test("keeps all planned tools visible, noninteractive, and responsive in catalog
   expect(barcodeRoute?.status()).toBe(404);
 
   await page.goto("/");
-  await page.keyboard.press("Tab");
-  await page.keyboard.press("Tab");
-  await page.keyboard.press("Tab");
-  await expect(search).toBeFocused();
+  await search.focus();
   await page.keyboard.press("Tab");
   await expect(allTools).toBeFocused();
 

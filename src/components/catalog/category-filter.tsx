@@ -2,15 +2,18 @@ import { Button } from "@/components/ui/button";
 
 const filterLabels: Record<string, string> = {
   all: "All tools",
-  organize: "Organize PDF",
-  optimize: "Optimize PDF",
+  pdf: "PDF Tools",
+  image: "Image Tools",
+  "optimize-pdf": "Optimize PDF",
+  "merge-split": "Merge & Split",
+  "view-edit": "View & Edit",
   "to-pdf": "Convert to PDF",
   "from-pdf": "Convert from PDF",
-  pdf: "Thesis & Papers",
-  image: "Figures & Images",
-  gif: "Animations & GIF",
-  utility: "Study Utilities",
-  trust: "Trust & Privacy",
+  "pdf-security": "PDF Security",
+  "optimize-image": "Optimize Image",
+  "convert-image": "Convert Image",
+  organize: "Organize PDF",
+  optimize: "Optimize PDF",
 };
 
 type CategoryFilterProps = {

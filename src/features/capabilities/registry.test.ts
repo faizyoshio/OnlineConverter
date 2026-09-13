@@ -1,25 +1,39 @@
 import { assertValidRegistry, capabilityRegistry, getCapabilityBySlug, validateOptionValues } from "./index";
 
 const expectedCategoryCounts = {
-  pdf: 34,
-  image: 31,
+  pdf: 38,
+  image: 34,
   gif: 5,
   utility: 5,
   trust: 2,
 } as const;
 
+const expectedActiveIds = [
+  "pdf.compress", "pdf.merge", "pdf.merge-image", "pdf.split", "pdf.crop", "pdf.organize",
+  "pdf.rotate", "pdf.delete-pages", "pdf.extract-pages", "pdf.extract-images", "pdf.page-numbers",
+  "pdf.image-to-pdf", "pdf.jpg-to-pdf", "pdf.word-to-pdf", "pdf.powerpoint-to-pdf", "pdf.excel-to-pdf",
+  "pdf.text-to-pdf", "pdf.to-image", "pdf.to-jpg", "pdf.pdf-to-word", "pdf.pdf-to-powerpoint",
+  "pdf.pdf-to-excel", "pdf.to-text", "pdf.unlock", "pdf.protect",
+  "image.compress", "image.compress-jpg", "image.compress-png", "image.compress-jpeg", "image.compress-webp",
+  "image.compress-heic", "image.compress-bmp", "image.to-jpg", "image.to-png", "image.to-jpeg",
+  "image.to-webp", "image.webp-to-jpg", "image.heic-to-jpg",
+] as const;
+
 const expectedIds = [
-  "pdf.merge", "pdf.split", "pdf.delete-pages", "pdf.extract-pages", "pdf.organize", "pdf.scan",
-  "pdf.compress", "pdf.repair", "pdf.ocr", "pdf.image-to-pdf", "pdf.word-to-pdf", "pdf.powerpoint-to-pdf",
-  "pdf.excel-to-pdf", "pdf.to-jpg", "pdf.pdf-to-word", "pdf.pdf-to-powerpoint", "pdf.pdf-to-excel",
-  "pdf.merge-image", "pdf.add-content", "pdf.annotate", "pdf.rotate", "pdf.crop", "pdf.resize",
-  "pdf.page-numbers", "pdf.watermark", "pdf.flatten", "pdf.compare", "pdf.forms", "pdf.converter",
-  "pdf.to-image", "pdf.to-text", "pdf.html-to-pdf", "pdf.heic-to-pdf", "pdf.text-to-pdf",
-  "image.converter", "image.to-jpg", "image.jpg-to-modern", "image.to-png", "image.to-webp",
-  "image.webp-to-jpg", "image.webp-to-png", "image.jfif-to-png", "image.heic-to-jpg",
+  "pdf.compress", "pdf.merge", "pdf.merge-image", "pdf.split", "pdf.crop", "pdf.organize",
+  "pdf.rotate", "pdf.delete-pages", "pdf.extract-pages", "pdf.extract-images", "pdf.page-numbers",
+  "pdf.image-to-pdf", "pdf.jpg-to-pdf", "pdf.word-to-pdf", "pdf.powerpoint-to-pdf", "pdf.excel-to-pdf",
+  "pdf.text-to-pdf", "pdf.to-image", "pdf.to-jpg", "pdf.pdf-to-word", "pdf.pdf-to-powerpoint",
+  "pdf.pdf-to-excel", "pdf.to-text", "pdf.unlock", "pdf.protect",
+  "pdf.scan", "pdf.repair", "pdf.ocr", "pdf.add-content", "pdf.annotate",
+  "pdf.resize", "pdf.watermark", "pdf.flatten", "pdf.compare", "pdf.forms", "pdf.converter",
+  "pdf.html-to-pdf", "pdf.heic-to-pdf",
+  "image.compress", "image.compress-jpg", "image.compress-png", "image.compress-jpeg", "image.compress-webp",
+  "image.compress-heic", "image.compress-bmp", "image.to-jpg", "image.to-png", "image.to-jpeg",
+  "image.to-webp", "image.webp-to-jpg", "image.heic-to-jpg",
+  "image.converter", "image.jpg-to-modern", "image.webp-to-png", "image.jfif-to-png",
   "image.heic-to-png", "image.png-to-svg", "image.svg-converter", "image.html-to-image",
-  "image.compress", "image.compress-jpeg", "image.compress-png", "image.compress-webp",
-  "image.compress-bmp", "image.resize", "image.crop", "image.circle-crop", "image.rotate",
+  "image.resize", "image.crop", "image.circle-crop", "image.rotate",
   "image.flip", "image.merge", "image.enlarge", "image.photo-editor", "image.meme",
   "image.color-picker", "image.watermark", "image.color-extractor", "image.signature-resize",
   "gif.compress", "gif.make", "gif.apng-to-gif", "gif.to-apng", "gif.to-images",
@@ -34,30 +48,12 @@ function capability(id: string) {
   return manifest!;
 }
 
-test("declares 77 unique launch capabilities with only reviewed tools active", () => {
-  expect(capabilityRegistry).toHaveLength(77);
-  expect(new Set(capabilityRegistry.map((item) => item.id)).size).toBe(77);
-  expect(new Set(capabilityRegistry.map((item) => item.slug)).size).toBe(77);
-  expect(capabilityRegistry.filter((item) => item.releaseStatus === "active").map((item) => item.id)).toEqual([
-    "pdf.merge",
-    "pdf.split",
-    "pdf.delete-pages",
-    "pdf.extract-pages",
-    "pdf.organize",
-    "pdf.scan",
-    "pdf.compress",
-    "pdf.repair",
-    "pdf.ocr",
-    "pdf.image-to-pdf",
-    "pdf.word-to-pdf",
-    "pdf.powerpoint-to-pdf",
-    "pdf.excel-to-pdf",
-    "pdf.to-jpg",
-    "pdf.pdf-to-word",
-    "pdf.pdf-to-powerpoint",
-    "pdf.pdf-to-excel",
-  ]);
-  expect(capabilityRegistry.filter((item) => item.releaseStatus === "planned")).toHaveLength(60);
+test("declares 84 unique launch capabilities with only reviewed tools active", () => {
+  expect(capabilityRegistry).toHaveLength(84);
+  expect(new Set(capabilityRegistry.map((item) => item.id)).size).toBe(84);
+  expect(new Set(capabilityRegistry.map((item) => item.slug)).size).toBe(84);
+  expect(capabilityRegistry.filter((item) => item.releaseStatus === "active").map((item) => item.id)).toEqual(expectedActiveIds);
+  expect(capabilityRegistry.filter((item) => item.releaseStatus === "planned")).toHaveLength(46);
 });
 
 test("keeps the approved manifest order", () => {
@@ -153,6 +149,41 @@ test("matches the approved compatibility projection", () => {
   expect(projection).toMatchInlineSnapshot(`
     [
       {
+        "id": "pdf.compress",
+        "inputMode": "files",
+        "inputs": [
+          {
+            "extensions": [
+              ".pdf",
+            ],
+            "kind": "pdf",
+            "mimeTypes": [
+              "application/pdf",
+            ],
+            "probeRule": "pdf-header",
+          },
+        ],
+        "limits": {
+          "allowMixedKinds": false,
+          "maximumFiles": 1,
+          "minimumFiles": 1,
+          "profiles": [
+            "pdf",
+          ],
+        },
+        "result": {
+          "files": [
+            {
+              "extension": ".pdf",
+              "fallback": "reject",
+              "kind": "pdf",
+              "mimeType": "application/pdf",
+            },
+          ],
+          "mode": "files",
+        },
+      },
+      {
         "id": "pdf.merge",
         "inputMode": "files",
         "inputs": [
@@ -173,6 +204,74 @@ test("matches the approved compatibility projection", () => {
           "minimumFiles": 2,
           "profiles": [
             "pdf",
+            "batch",
+          ],
+        },
+        "result": {
+          "files": [
+            {
+              "extension": ".pdf",
+              "fallback": "reject",
+              "kind": "pdf",
+              "mimeType": "application/pdf",
+            },
+          ],
+          "mode": "files",
+        },
+      },
+      {
+        "id": "pdf.merge-image",
+        "inputMode": "files",
+        "inputs": [
+          {
+            "extensions": [
+              ".pdf",
+            ],
+            "kind": "pdf",
+            "mimeTypes": [
+              "application/pdf",
+            ],
+            "probeRule": "pdf-header",
+          },
+          {
+            "extensions": [
+              ".jpg",
+              ".jpeg",
+            ],
+            "kind": "jpeg",
+            "mimeTypes": [
+              "image/jpeg",
+            ],
+            "probeRule": "jpeg-soi",
+          },
+          {
+            "extensions": [
+              ".png",
+            ],
+            "kind": "png",
+            "mimeTypes": [
+              "image/png",
+            ],
+            "probeRule": "png-signature",
+          },
+          {
+            "extensions": [
+              ".webp",
+            ],
+            "kind": "webp",
+            "mimeTypes": [
+              "image/webp",
+            ],
+            "probeRule": "webp-riff",
+          },
+        ],
+        "limits": {
+          "allowMixedKinds": true,
+          "maximumFiles": 20,
+          "minimumFiles": 2,
+          "profiles": [
+            "pdf",
+            "image",
             "batch",
           ],
         },
@@ -224,6 +323,111 @@ test("matches the approved compatibility projection", () => {
               "fallback": "explicit-user-choice",
               "kind": "zip",
               "mimeType": "application/zip",
+            },
+          ],
+          "mode": "files",
+        },
+      },
+      {
+        "id": "pdf.crop",
+        "inputMode": "files",
+        "inputs": [
+          {
+            "extensions": [
+              ".pdf",
+            ],
+            "kind": "pdf",
+            "mimeTypes": [
+              "application/pdf",
+            ],
+            "probeRule": "pdf-header",
+          },
+        ],
+        "limits": {
+          "allowMixedKinds": false,
+          "maximumFiles": 1,
+          "minimumFiles": 1,
+          "profiles": [
+            "pdf",
+          ],
+        },
+        "result": {
+          "files": [
+            {
+              "extension": ".pdf",
+              "fallback": "reject",
+              "kind": "pdf",
+              "mimeType": "application/pdf",
+            },
+          ],
+          "mode": "files",
+        },
+      },
+      {
+        "id": "pdf.organize",
+        "inputMode": "files",
+        "inputs": [
+          {
+            "extensions": [
+              ".pdf",
+            ],
+            "kind": "pdf",
+            "mimeTypes": [
+              "application/pdf",
+            ],
+            "probeRule": "pdf-header",
+          },
+        ],
+        "limits": {
+          "allowMixedKinds": false,
+          "maximumFiles": 1,
+          "minimumFiles": 1,
+          "profiles": [
+            "pdf",
+          ],
+        },
+        "result": {
+          "files": [
+            {
+              "extension": ".pdf",
+              "fallback": "reject",
+              "kind": "pdf",
+              "mimeType": "application/pdf",
+            },
+          ],
+          "mode": "files",
+        },
+      },
+      {
+        "id": "pdf.rotate",
+        "inputMode": "files",
+        "inputs": [
+          {
+            "extensions": [
+              ".pdf",
+            ],
+            "kind": "pdf",
+            "mimeTypes": [
+              "application/pdf",
+            ],
+            "probeRule": "pdf-header",
+          },
+        ],
+        "limits": {
+          "allowMixedKinds": false,
+          "maximumFiles": 1,
+          "minimumFiles": 1,
+          "profiles": [
+            "pdf",
+          ],
+        },
+        "result": {
+          "files": [
+            {
+              "extension": ".pdf",
+              "fallback": "reject",
+              "kind": "pdf",
+              "mimeType": "application/pdf",
             },
           ],
           "mode": "files",
@@ -306,7 +510,42 @@ test("matches the approved compatibility projection", () => {
         },
       },
       {
-        "id": "pdf.organize",
+        "id": "pdf.extract-images",
+        "inputMode": "files",
+        "inputs": [
+          {
+            "extensions": [
+              ".pdf",
+            ],
+            "kind": "pdf",
+            "mimeTypes": [
+              "application/pdf",
+            ],
+            "probeRule": "pdf-header",
+          },
+        ],
+        "limits": {
+          "allowMixedKinds": false,
+          "maximumFiles": 1,
+          "minimumFiles": 1,
+          "profiles": [
+            "pdf",
+          ],
+        },
+        "result": {
+          "files": [
+            {
+              "extension": ".zip",
+              "fallback": "reject",
+              "kind": "zip",
+              "mimeType": "application/zip",
+            },
+          ],
+          "mode": "files",
+        },
+      },
+      {
+        "id": "pdf.page-numbers",
         "inputMode": "files",
         "inputs": [
           {
@@ -335,175 +574,6 @@ test("matches the approved compatibility projection", () => {
               "fallback": "reject",
               "kind": "pdf",
               "mimeType": "application/pdf",
-            },
-          ],
-          "mode": "files",
-        },
-      },
-      {
-        "id": "pdf.scan",
-        "inputMode": "camera-or-files",
-        "inputs": [
-          {
-            "extensions": [
-              ".jpg",
-              ".jpeg",
-            ],
-            "kind": "jpeg",
-            "mimeTypes": [
-              "image/jpeg",
-            ],
-            "probeRule": "jpeg-soi",
-          },
-          {
-            "extensions": [
-              ".png",
-            ],
-            "kind": "png",
-            "mimeTypes": [
-              "image/png",
-            ],
-            "probeRule": "png-signature",
-          },
-          {
-            "extensions": [
-              ".webp",
-            ],
-            "kind": "webp",
-            "mimeTypes": [
-              "image/webp",
-            ],
-            "probeRule": "webp-riff",
-          },
-        ],
-        "limits": {
-          "allowMixedKinds": false,
-          "maximumFiles": 20,
-          "minimumFiles": 1,
-          "profiles": [
-            "image",
-            "batch",
-          ],
-        },
-        "result": {
-          "files": [
-            {
-              "extension": ".pdf",
-              "fallback": "reject",
-              "kind": "pdf",
-              "mimeType": "application/pdf",
-            },
-          ],
-          "mode": "files",
-        },
-      },
-      {
-        "id": "pdf.compress",
-        "inputMode": "files",
-        "inputs": [
-          {
-            "extensions": [
-              ".pdf",
-            ],
-            "kind": "pdf",
-            "mimeTypes": [
-              "application/pdf",
-            ],
-            "probeRule": "pdf-header",
-          },
-        ],
-        "limits": {
-          "allowMixedKinds": false,
-          "maximumFiles": 1,
-          "minimumFiles": 1,
-          "profiles": [
-            "pdf",
-          ],
-        },
-        "result": {
-          "files": [
-            {
-              "extension": ".pdf",
-              "fallback": "reject",
-              "kind": "pdf",
-              "mimeType": "application/pdf",
-            },
-          ],
-          "mode": "files",
-        },
-      },
-      {
-        "id": "pdf.repair",
-        "inputMode": "files",
-        "inputs": [
-          {
-            "extensions": [
-              ".pdf",
-            ],
-            "kind": "pdf",
-            "mimeTypes": [
-              "application/pdf",
-            ],
-            "probeRule": "pdf-header",
-          },
-        ],
-        "limits": {
-          "allowMixedKinds": false,
-          "maximumFiles": 1,
-          "minimumFiles": 1,
-          "profiles": [
-            "pdf",
-          ],
-        },
-        "result": {
-          "files": [
-            {
-              "extension": ".pdf",
-              "fallback": "reject",
-              "kind": "pdf",
-              "mimeType": "application/pdf",
-            },
-          ],
-          "mode": "files",
-        },
-      },
-      {
-        "id": "pdf.ocr",
-        "inputMode": "files",
-        "inputs": [
-          {
-            "extensions": [
-              ".pdf",
-            ],
-            "kind": "pdf",
-            "mimeTypes": [
-              "application/pdf",
-            ],
-            "probeRule": "pdf-header",
-          },
-        ],
-        "limits": {
-          "allowMixedKinds": false,
-          "maximumFiles": 1,
-          "minimumFiles": 1,
-          "profiles": [
-            "pdf",
-            "ocr",
-          ],
-        },
-        "result": {
-          "files": [
-            {
-              "extension": ".pdf",
-              "fallback": "reject",
-              "kind": "pdf",
-              "mimeType": "application/pdf",
-            },
-            {
-              "extension": ".txt",
-              "fallback": "reject",
-              "kind": "text",
-              "mimeType": "text/plain",
             },
           ],
           "mode": "files",
@@ -543,6 +613,53 @@ test("matches the approved compatibility projection", () => {
               "image/webp",
             ],
             "probeRule": "webp-riff",
+          },
+          {
+            "extensions": [
+              ".bmp",
+            ],
+            "kind": "bmp",
+            "mimeTypes": [
+              "image/bmp",
+            ],
+            "probeRule": "bmp-header",
+          },
+        ],
+        "limits": {
+          "allowMixedKinds": false,
+          "maximumFiles": 20,
+          "minimumFiles": 1,
+          "profiles": [
+            "image",
+            "batch",
+          ],
+        },
+        "result": {
+          "files": [
+            {
+              "extension": ".pdf",
+              "fallback": "reject",
+              "kind": "pdf",
+              "mimeType": "application/pdf",
+            },
+          ],
+          "mode": "files",
+        },
+      },
+      {
+        "id": "pdf.jpg-to-pdf",
+        "inputMode": "files",
+        "inputs": [
+          {
+            "extensions": [
+              ".jpg",
+              ".jpeg",
+            ],
+            "kind": "jpeg",
+            "mimeTypes": [
+              "image/jpeg",
+            ],
+            "probeRule": "jpeg-soi",
           },
         ],
         "limits": {
@@ -672,6 +789,89 @@ test("matches the approved compatibility projection", () => {
               "fallback": "reject",
               "kind": "pdf",
               "mimeType": "application/pdf",
+            },
+          ],
+          "mode": "files",
+        },
+      },
+      {
+        "id": "pdf.text-to-pdf",
+        "inputMode": "files",
+        "inputs": [
+          {
+            "extensions": [
+              ".txt",
+            ],
+            "kind": "text",
+            "mimeTypes": [
+              "text/plain",
+            ],
+            "probeRule": "utf8-text",
+          },
+        ],
+        "limits": {
+          "allowMixedKinds": false,
+          "maximumFiles": 1,
+          "minimumFiles": 1,
+          "profiles": [
+            "pdf",
+          ],
+        },
+        "result": {
+          "files": [
+            {
+              "extension": ".pdf",
+              "fallback": "reject",
+              "kind": "pdf",
+              "mimeType": "application/pdf",
+            },
+          ],
+          "mode": "files",
+        },
+      },
+      {
+        "id": "pdf.to-image",
+        "inputMode": "files",
+        "inputs": [
+          {
+            "extensions": [
+              ".pdf",
+            ],
+            "kind": "pdf",
+            "mimeTypes": [
+              "application/pdf",
+            ],
+            "probeRule": "pdf-header",
+          },
+        ],
+        "limits": {
+          "allowMixedKinds": false,
+          "maximumFiles": 1,
+          "minimumFiles": 1,
+          "profiles": [
+            "pdf",
+          ],
+        },
+        "result": {
+          "files": [
+            {
+              "extension": ".png",
+              "fallback": "explicit-user-choice",
+              "kind": "png",
+              "mimeType": "image/png",
+            },
+            {
+              "extension": ".jpg",
+              "fallback": "explicit-user-choice",
+              "kind": "jpeg",
+              "mimeType": "image/jpeg",
+            },
+            {
+              "extension": ".zip",
+              "fallback": "listed-fallback",
+              "fallbackKind": "png",
+              "kind": "zip",
+              "mimeType": "application/zip",
             },
           ],
           "mode": "files",
@@ -825,7 +1025,7 @@ test("matches the approved compatibility projection", () => {
         },
       },
       {
-        "id": "pdf.merge-image",
+        "id": "pdf.to-text",
         "inputMode": "files",
         "inputs": [
           {
@@ -838,6 +1038,101 @@ test("matches the approved compatibility projection", () => {
             ],
             "probeRule": "pdf-header",
           },
+        ],
+        "limits": {
+          "allowMixedKinds": false,
+          "maximumFiles": 1,
+          "minimumFiles": 1,
+          "profiles": [
+            "pdf",
+          ],
+        },
+        "result": {
+          "files": [
+            {
+              "extension": ".txt",
+              "fallback": "reject",
+              "kind": "text",
+              "mimeType": "text/plain",
+            },
+          ],
+          "mode": "files",
+        },
+      },
+      {
+        "id": "pdf.unlock",
+        "inputMode": "files",
+        "inputs": [
+          {
+            "extensions": [
+              ".pdf",
+            ],
+            "kind": "pdf",
+            "mimeTypes": [
+              "application/pdf",
+            ],
+            "probeRule": "pdf-header",
+          },
+        ],
+        "limits": {
+          "allowMixedKinds": false,
+          "maximumFiles": 1,
+          "minimumFiles": 1,
+          "profiles": [
+            "pdf",
+          ],
+        },
+        "result": {
+          "files": [
+            {
+              "extension": ".pdf",
+              "fallback": "reject",
+              "kind": "pdf",
+              "mimeType": "application/pdf",
+            },
+          ],
+          "mode": "files",
+        },
+      },
+      {
+        "id": "pdf.protect",
+        "inputMode": "files",
+        "inputs": [
+          {
+            "extensions": [
+              ".pdf",
+            ],
+            "kind": "pdf",
+            "mimeTypes": [
+              "application/pdf",
+            ],
+            "probeRule": "pdf-header",
+          },
+        ],
+        "limits": {
+          "allowMixedKinds": false,
+          "maximumFiles": 1,
+          "minimumFiles": 1,
+          "profiles": [
+            "pdf",
+          ],
+        },
+        "result": {
+          "files": [
+            {
+              "extension": ".pdf",
+              "fallback": "reject",
+              "kind": "pdf",
+              "mimeType": "application/pdf",
+            },
+          ],
+          "mode": "files",
+        },
+      },
+      {
+        "id": "pdf.scan",
+        "inputMode": "camera-or-files",
+        "inputs": [
           {
             "extensions": [
               ".jpg",
@@ -869,25 +1164,12 @@ test("matches the approved compatibility projection", () => {
             ],
             "probeRule": "webp-riff",
           },
-          {
-            "extensions": [
-              ".heic",
-              ".heif",
-            ],
-            "kind": "heic",
-            "mimeTypes": [
-              "image/heic",
-              "image/heif",
-            ],
-            "probeRule": "heic-brand",
-          },
         ],
         "limits": {
-          "allowMixedKinds": true,
+          "allowMixedKinds": false,
           "maximumFiles": 20,
-          "minimumFiles": 2,
+          "minimumFiles": 1,
           "profiles": [
-            "pdf",
             "image",
             "batch",
           ],
@@ -899,6 +1181,83 @@ test("matches the approved compatibility projection", () => {
               "fallback": "reject",
               "kind": "pdf",
               "mimeType": "application/pdf",
+            },
+          ],
+          "mode": "files",
+        },
+      },
+      {
+        "id": "pdf.repair",
+        "inputMode": "files",
+        "inputs": [
+          {
+            "extensions": [
+              ".pdf",
+            ],
+            "kind": "pdf",
+            "mimeTypes": [
+              "application/pdf",
+            ],
+            "probeRule": "pdf-header",
+          },
+        ],
+        "limits": {
+          "allowMixedKinds": false,
+          "maximumFiles": 1,
+          "minimumFiles": 1,
+          "profiles": [
+            "pdf",
+          ],
+        },
+        "result": {
+          "files": [
+            {
+              "extension": ".pdf",
+              "fallback": "reject",
+              "kind": "pdf",
+              "mimeType": "application/pdf",
+            },
+          ],
+          "mode": "files",
+        },
+      },
+      {
+        "id": "pdf.ocr",
+        "inputMode": "files",
+        "inputs": [
+          {
+            "extensions": [
+              ".pdf",
+            ],
+            "kind": "pdf",
+            "mimeTypes": [
+              "application/pdf",
+            ],
+            "probeRule": "pdf-header",
+          },
+        ],
+        "limits": {
+          "allowMixedKinds": false,
+          "maximumFiles": 1,
+          "minimumFiles": 1,
+          "profiles": [
+            "pdf",
+            "ocr",
+          ],
+        },
+        "result": {
+          "files": [
+            {
+              "extension": ".pdf",
+              "fallback": "reject",
+              "kind": "pdf",
+              "mimeType": "application/pdf",
+            },
+            {
+              "extension": ".txt",
+              "fallback": "reject",
+              "kind": "text",
+              "mimeType": "text/plain",
             },
           ],
           "mode": "files",
@@ -1007,112 +1366,7 @@ test("matches the approved compatibility projection", () => {
         },
       },
       {
-        "id": "pdf.rotate",
-        "inputMode": "files",
-        "inputs": [
-          {
-            "extensions": [
-              ".pdf",
-            ],
-            "kind": "pdf",
-            "mimeTypes": [
-              "application/pdf",
-            ],
-            "probeRule": "pdf-header",
-          },
-        ],
-        "limits": {
-          "allowMixedKinds": false,
-          "maximumFiles": 1,
-          "minimumFiles": 1,
-          "profiles": [
-            "pdf",
-          ],
-        },
-        "result": {
-          "files": [
-            {
-              "extension": ".pdf",
-              "fallback": "reject",
-              "kind": "pdf",
-              "mimeType": "application/pdf",
-            },
-          ],
-          "mode": "files",
-        },
-      },
-      {
-        "id": "pdf.crop",
-        "inputMode": "files",
-        "inputs": [
-          {
-            "extensions": [
-              ".pdf",
-            ],
-            "kind": "pdf",
-            "mimeTypes": [
-              "application/pdf",
-            ],
-            "probeRule": "pdf-header",
-          },
-        ],
-        "limits": {
-          "allowMixedKinds": false,
-          "maximumFiles": 1,
-          "minimumFiles": 1,
-          "profiles": [
-            "pdf",
-          ],
-        },
-        "result": {
-          "files": [
-            {
-              "extension": ".pdf",
-              "fallback": "reject",
-              "kind": "pdf",
-              "mimeType": "application/pdf",
-            },
-          ],
-          "mode": "files",
-        },
-      },
-      {
         "id": "pdf.resize",
-        "inputMode": "files",
-        "inputs": [
-          {
-            "extensions": [
-              ".pdf",
-            ],
-            "kind": "pdf",
-            "mimeTypes": [
-              "application/pdf",
-            ],
-            "probeRule": "pdf-header",
-          },
-        ],
-        "limits": {
-          "allowMixedKinds": false,
-          "maximumFiles": 1,
-          "minimumFiles": 1,
-          "profiles": [
-            "pdf",
-          ],
-        },
-        "result": {
-          "files": [
-            {
-              "extension": ".pdf",
-              "fallback": "reject",
-              "kind": "pdf",
-              "mimeType": "application/pdf",
-            },
-          ],
-          "mode": "files",
-        },
-      },
-      {
-        "id": "pdf.page-numbers",
         "inputMode": "files",
         "inputs": [
           {
@@ -1443,89 +1697,6 @@ test("matches the approved compatibility projection", () => {
         },
       },
       {
-        "id": "pdf.to-image",
-        "inputMode": "files",
-        "inputs": [
-          {
-            "extensions": [
-              ".pdf",
-            ],
-            "kind": "pdf",
-            "mimeTypes": [
-              "application/pdf",
-            ],
-            "probeRule": "pdf-header",
-          },
-        ],
-        "limits": {
-          "allowMixedKinds": false,
-          "maximumFiles": 1,
-          "minimumFiles": 1,
-          "profiles": [
-            "pdf",
-          ],
-        },
-        "result": {
-          "files": [
-            {
-              "extension": ".png",
-              "fallback": "explicit-user-choice",
-              "kind": "png",
-              "mimeType": "image/png",
-            },
-            {
-              "extension": ".jpg",
-              "fallback": "explicit-user-choice",
-              "kind": "jpeg",
-              "mimeType": "image/jpeg",
-            },
-            {
-              "extension": ".zip",
-              "fallback": "listed-fallback",
-              "fallbackKind": "png",
-              "kind": "zip",
-              "mimeType": "application/zip",
-            },
-          ],
-          "mode": "files",
-        },
-      },
-      {
-        "id": "pdf.to-text",
-        "inputMode": "files",
-        "inputs": [
-          {
-            "extensions": [
-              ".pdf",
-            ],
-            "kind": "pdf",
-            "mimeTypes": [
-              "application/pdf",
-            ],
-            "probeRule": "pdf-header",
-          },
-        ],
-        "limits": {
-          "allowMixedKinds": false,
-          "maximumFiles": 1,
-          "minimumFiles": 1,
-          "profiles": [
-            "pdf",
-          ],
-        },
-        "result": {
-          "files": [
-            {
-              "extension": ".txt",
-              "fallback": "reject",
-              "kind": "text",
-              "mimeType": "text/plain",
-            },
-          ],
-          "mode": "files",
-        },
-      },
-      {
         "id": "pdf.html-to-pdf",
         "inputMode": "files",
         "inputs": [
@@ -1600,42 +1771,7 @@ test("matches the approved compatibility projection", () => {
         },
       },
       {
-        "id": "pdf.text-to-pdf",
-        "inputMode": "files",
-        "inputs": [
-          {
-            "extensions": [
-              ".txt",
-            ],
-            "kind": "text",
-            "mimeTypes": [
-              "text/plain",
-            ],
-            "probeRule": "utf8-text",
-          },
-        ],
-        "limits": {
-          "allowMixedKinds": false,
-          "maximumFiles": 1,
-          "minimumFiles": 1,
-          "profiles": [
-            "pdf",
-          ],
-        },
-        "result": {
-          "files": [
-            {
-              "extension": ".pdf",
-              "fallback": "reject",
-              "kind": "pdf",
-              "mimeType": "application/pdf",
-            },
-          ],
-          "mode": "files",
-        },
-      },
-      {
-        "id": "image.converter",
+        "id": "image.compress",
         "inputMode": "files",
         "inputs": [
           {
@@ -1679,39 +1815,62 @@ test("matches the approved compatibility projection", () => {
             ],
             "probeRule": "bmp-header",
           },
+        ],
+        "limits": {
+          "allowMixedKinds": false,
+          "maximumFiles": 1,
+          "minimumFiles": 1,
+          "profiles": [
+            "image",
+          ],
+        },
+        "result": {
+          "files": [
+            {
+              "extension": ".jpg",
+              "fallback": "listed-fallback",
+              "fallbackKind": "webp",
+              "kind": "jpeg",
+              "mimeType": "image/jpeg",
+            },
+            {
+              "extension": ".png",
+              "fallback": "listed-fallback",
+              "fallbackKind": "webp",
+              "kind": "png",
+              "mimeType": "image/png",
+            },
+            {
+              "extension": ".webp",
+              "fallback": "reject",
+              "kind": "webp",
+              "mimeType": "image/webp",
+            },
+            {
+              "extension": ".bmp",
+              "fallback": "listed-fallback",
+              "fallbackKind": "webp",
+              "kind": "bmp",
+              "mimeType": "image/bmp",
+            },
+          ],
+          "mode": "files",
+        },
+      },
+      {
+        "id": "image.compress-jpg",
+        "inputMode": "files",
+        "inputs": [
           {
             "extensions": [
-              ".jfif",
-              ".jfi",
-              ".jif",
+              ".jpg",
+              ".jpeg",
             ],
-            "kind": "jfif",
+            "kind": "jpeg",
             "mimeTypes": [
               "image/jpeg",
             ],
             "probeRule": "jpeg-soi",
-          },
-          {
-            "extensions": [
-              ".heic",
-              ".heif",
-            ],
-            "kind": "heic",
-            "mimeTypes": [
-              "image/heic",
-              "image/heif",
-            ],
-            "probeRule": "heic-brand",
-          },
-          {
-            "extensions": [
-              ".svg",
-            ],
-            "kind": "svg",
-            "mimeTypes": [
-              "image/svg+xml",
-            ],
-            "probeRule": "sanitized-svg",
           },
         ],
         "limits": {
@@ -1726,10 +1885,194 @@ test("matches the approved compatibility projection", () => {
           "files": [
             {
               "extension": ".jpg",
-              "fallback": "explicit-user-choice",
+              "fallback": "reject",
               "kind": "jpeg",
               "mimeType": "image/jpeg",
             },
+          ],
+          "mode": "files",
+        },
+      },
+      {
+        "id": "image.compress-png",
+        "inputMode": "files",
+        "inputs": [
+          {
+            "extensions": [
+              ".png",
+            ],
+            "kind": "png",
+            "mimeTypes": [
+              "image/png",
+            ],
+            "probeRule": "png-signature",
+          },
+        ],
+        "limits": {
+          "allowMixedKinds": false,
+          "maximumFiles": 1,
+          "minimumFiles": 1,
+          "profiles": [
+            "image",
+          ],
+        },
+        "result": {
+          "files": [
+            {
+              "extension": ".png",
+              "fallback": "reject",
+              "kind": "png",
+              "mimeType": "image/png",
+            },
+          ],
+          "mode": "files",
+        },
+      },
+      {
+        "id": "image.compress-jpeg",
+        "inputMode": "files",
+        "inputs": [
+          {
+            "extensions": [
+              ".jpg",
+              ".jpeg",
+            ],
+            "kind": "jpeg",
+            "mimeTypes": [
+              "image/jpeg",
+            ],
+            "probeRule": "jpeg-soi",
+          },
+          {
+            "extensions": [
+              ".jfif",
+              ".jfi",
+              ".jif",
+            ],
+            "kind": "jfif",
+            "mimeTypes": [
+              "image/jpeg",
+            ],
+            "probeRule": "jpeg-soi",
+          },
+        ],
+        "limits": {
+          "allowMixedKinds": false,
+          "maximumFiles": 1,
+          "minimumFiles": 1,
+          "profiles": [
+            "image",
+          ],
+        },
+        "result": {
+          "files": [
+            {
+              "extension": ".jpg",
+              "fallback": "reject",
+              "kind": "jpeg",
+              "mimeType": "image/jpeg",
+            },
+          ],
+          "mode": "files",
+        },
+      },
+      {
+        "id": "image.compress-webp",
+        "inputMode": "files",
+        "inputs": [
+          {
+            "extensions": [
+              ".webp",
+            ],
+            "kind": "webp",
+            "mimeTypes": [
+              "image/webp",
+            ],
+            "probeRule": "webp-riff",
+          },
+        ],
+        "limits": {
+          "allowMixedKinds": false,
+          "maximumFiles": 1,
+          "minimumFiles": 1,
+          "profiles": [
+            "image",
+          ],
+        },
+        "result": {
+          "files": [
+            {
+              "extension": ".webp",
+              "fallback": "reject",
+              "kind": "webp",
+              "mimeType": "image/webp",
+            },
+          ],
+          "mode": "files",
+        },
+      },
+      {
+        "id": "image.compress-heic",
+        "inputMode": "files",
+        "inputs": [
+          {
+            "extensions": [
+              ".heic",
+              ".heif",
+            ],
+            "kind": "heic",
+            "mimeTypes": [
+              "image/heic",
+              "image/heif",
+            ],
+            "probeRule": "heic-brand",
+          },
+        ],
+        "limits": {
+          "allowMixedKinds": false,
+          "maximumFiles": 1,
+          "minimumFiles": 1,
+          "profiles": [
+            "image",
+          ],
+        },
+        "result": {
+          "files": [
+            {
+              "extension": ".jpg",
+              "fallback": "reject",
+              "kind": "jpeg",
+              "mimeType": "image/jpeg",
+            },
+          ],
+          "mode": "files",
+        },
+      },
+      {
+        "id": "image.compress-bmp",
+        "inputMode": "files",
+        "inputs": [
+          {
+            "extensions": [
+              ".bmp",
+            ],
+            "kind": "bmp",
+            "mimeTypes": [
+              "image/bmp",
+            ],
+            "probeRule": "bmp-header",
+          },
+        ],
+        "limits": {
+          "allowMixedKinds": false,
+          "maximumFiles": 1,
+          "minimumFiles": 1,
+          "profiles": [
+            "image",
+          ],
+        },
+        "result": {
+          "files": [
             {
               "extension": ".png",
               "fallback": "explicit-user-choice",
@@ -1836,48 +2179,6 @@ test("matches the approved compatibility projection", () => {
         },
       },
       {
-        "id": "image.jpg-to-modern",
-        "inputMode": "files",
-        "inputs": [
-          {
-            "extensions": [
-              ".jpg",
-              ".jpeg",
-            ],
-            "kind": "jpeg",
-            "mimeTypes": [
-              "image/jpeg",
-            ],
-            "probeRule": "jpeg-soi",
-          },
-        ],
-        "limits": {
-          "allowMixedKinds": false,
-          "maximumFiles": 1,
-          "minimumFiles": 1,
-          "profiles": [
-            "image",
-          ],
-        },
-        "result": {
-          "files": [
-            {
-              "extension": ".png",
-              "fallback": "explicit-user-choice",
-              "kind": "png",
-              "mimeType": "image/png",
-            },
-            {
-              "extension": ".webp",
-              "fallback": "explicit-user-choice",
-              "kind": "webp",
-              "mimeType": "image/webp",
-            },
-          ],
-          "mode": "files",
-        },
-      },
-      {
         "id": "image.to-png",
         "inputMode": "files",
         "inputs": [
@@ -1962,6 +2263,73 @@ test("matches the approved compatibility projection", () => {
               "fallback": "reject",
               "kind": "png",
               "mimeType": "image/png",
+            },
+          ],
+          "mode": "files",
+        },
+      },
+      {
+        "id": "image.to-jpeg",
+        "inputMode": "files",
+        "inputs": [
+          {
+            "extensions": [
+              ".png",
+            ],
+            "kind": "png",
+            "mimeTypes": [
+              "image/png",
+            ],
+            "probeRule": "png-signature",
+          },
+          {
+            "extensions": [
+              ".webp",
+            ],
+            "kind": "webp",
+            "mimeTypes": [
+              "image/webp",
+            ],
+            "probeRule": "webp-riff",
+          },
+          {
+            "extensions": [
+              ".bmp",
+            ],
+            "kind": "bmp",
+            "mimeTypes": [
+              "image/bmp",
+            ],
+            "probeRule": "bmp-header",
+          },
+          {
+            "extensions": [
+              ".jfif",
+              ".jfi",
+              ".jif",
+            ],
+            "kind": "jfif",
+            "mimeTypes": [
+              "image/jpeg",
+            ],
+            "probeRule": "jpeg-soi",
+          },
+        ],
+        "limits": {
+          "allowMixedKinds": false,
+          "maximumFiles": 1,
+          "minimumFiles": 1,
+          "profiles": [
+            "image",
+          ],
+        },
+        "result": {
+          "files": [
+            {
+              "extension": ".jpg",
+              "fallback": "reject",
+              "kind": "jpeg",
+              "mimeType": "image/jpeg",
             },
           ],
           "mode": "files",
@@ -2093,6 +2461,197 @@ test("matches the approved compatibility projection", () => {
         },
       },
       {
+        "id": "image.heic-to-jpg",
+        "inputMode": "files",
+        "inputs": [
+          {
+            "extensions": [
+              ".heic",
+              ".heif",
+            ],
+            "kind": "heic",
+            "mimeTypes": [
+              "image/heic",
+              "image/heif",
+            ],
+            "probeRule": "heic-brand",
+          },
+        ],
+        "limits": {
+          "allowMixedKinds": false,
+          "maximumFiles": 1,
+          "minimumFiles": 1,
+          "profiles": [
+            "image",
+          ],
+        },
+        "result": {
+          "files": [
+            {
+              "extension": ".jpg",
+              "fallback": "reject",
+              "kind": "jpeg",
+              "mimeType": "image/jpeg",
+            },
+          ],
+          "mode": "files",
+        },
+      },
+      {
+        "id": "image.converter",
+        "inputMode": "files",
+        "inputs": [
+          {
+            "extensions": [
+              ".jpg",
+              ".jpeg",
+            ],
+            "kind": "jpeg",
+            "mimeTypes": [
+              "image/jpeg",
+            ],
+            "probeRule": "jpeg-soi",
+          },
+          {
+            "extensions": [
+              ".png",
+            ],
+            "kind": "png",
+            "mimeTypes": [
+              "image/png",
+            ],
+            "probeRule": "png-signature",
+          },
+          {
+            "extensions": [
+              ".webp",
+            ],
+            "kind": "webp",
+            "mimeTypes": [
+              "image/webp",
+            ],
+            "probeRule": "webp-riff",
+          },
+          {
+            "extensions": [
+              ".bmp",
+            ],
+            "kind": "bmp",
+            "mimeTypes": [
+              "image/bmp",
+            ],
+            "probeRule": "bmp-header",
+          },
+          {
+            "extensions": [
+              ".jfif",
+              ".jfi",
+              ".jif",
+            ],
+            "kind": "jfif",
+            "mimeTypes": [
+              "image/jpeg",
+            ],
+            "probeRule": "jpeg-soi",
+          },
+          {
+            "extensions": [
+              ".heic",
+              ".heif",
+            ],
+            "kind": "heic",
+            "mimeTypes": [
+              "image/heic",
+              "image/heif",
+            ],
+            "probeRule": "heic-brand",
+          },
+          {
+            "extensions": [
+              ".svg",
+            ],
+            "kind": "svg",
+            "mimeTypes": [
+              "image/svg+xml",
+            ],
+            "probeRule": "sanitized-svg",
+          },
+        ],
+        "limits": {
+          "allowMixedKinds": false,
+          "maximumFiles": 1,
+          "minimumFiles": 1,
+          "profiles": [
+            "image",
+          ],
+        },
+        "result": {
+          "files": [
+            {
+              "extension": ".jpg",
+              "fallback": "explicit-user-choice",
+              "kind": "jpeg",
+              "mimeType": "image/jpeg",
+            },
+            {
+              "extension": ".png",
+              "fallback": "explicit-user-choice",
+              "kind": "png",
+              "mimeType": "image/png",
+            },
+            {
+              "extension": ".webp",
+              "fallback": "explicit-user-choice",
+              "kind": "webp",
+              "mimeType": "image/webp",
+            },
+          ],
+          "mode": "files",
+        },
+      },
+      {
+        "id": "image.jpg-to-modern",
+        "inputMode": "files",
+        "inputs": [
+          {
+            "extensions": [
+              ".jpg",
+              ".jpeg",
+            ],
+            "kind": "jpeg",
+            "mimeTypes": [
+              "image/jpeg",
+            ],
+            "probeRule": "jpeg-soi",
+          },
+        ],
+        "limits": {
+          "allowMixedKinds": false,
+          "maximumFiles": 1,
+          "minimumFiles": 1,
+          "profiles": [
+            "image",
+          ],
+        },
+        "result": {
+          "files": [
+            {
+              "extension": ".png",
+              "fallback": "explicit-user-choice",
+              "kind": "png",
+              "mimeType": "image/png",
+            },
+            {
+              "extension": ".webp",
+              "fallback": "explicit-user-choice",
+              "kind": "webp",
+              "mimeType": "image/webp",
+            },
+          ],
+          "mode": "files",
+        },
+      },
+      {
         "id": "image.webp-to-png",
         "inputMode": "files",
         "inputs": [
@@ -2170,43 +2729,6 @@ test("matches the approved compatibility projection", () => {
               "fallback": "reject",
               "kind": "png",
               "mimeType": "image/png",
-            },
-          ],
-          "mode": "files",
-        },
-      },
-      {
-        "id": "image.heic-to-jpg",
-        "inputMode": "files",
-        "inputs": [
-          {
-            "extensions": [
-              ".heic",
-              ".heif",
-            ],
-            "kind": "heic",
-            "mimeTypes": [
-              "image/heic",
-              "image/heif",
-            ],
-            "probeRule": "heic-brand",
-          },
-        ],
-        "limits": {
-          "allowMixedKinds": false,
-          "maximumFiles": 1,
-          "minimumFiles": 1,
-          "profiles": [
-            "image",
-          ],
-        },
-        "result": {
-          "files": [
-            {
-              "extension": ".jpg",
-              "fallback": "reject",
-              "kind": "jpeg",
-              "mimeType": "image/jpeg",
             },
           ],
           "mode": "files",
@@ -2363,252 +2885,6 @@ test("matches the approved compatibility projection", () => {
               "kind": "jpeg",
               "mimeType": "image/jpeg",
             },
-            {
-              "extension": ".png",
-              "fallback": "explicit-user-choice",
-              "kind": "png",
-              "mimeType": "image/png",
-            },
-            {
-              "extension": ".webp",
-              "fallback": "explicit-user-choice",
-              "kind": "webp",
-              "mimeType": "image/webp",
-            },
-          ],
-          "mode": "files",
-        },
-      },
-      {
-        "id": "image.compress",
-        "inputMode": "files",
-        "inputs": [
-          {
-            "extensions": [
-              ".jpg",
-              ".jpeg",
-            ],
-            "kind": "jpeg",
-            "mimeTypes": [
-              "image/jpeg",
-            ],
-            "probeRule": "jpeg-soi",
-          },
-          {
-            "extensions": [
-              ".png",
-            ],
-            "kind": "png",
-            "mimeTypes": [
-              "image/png",
-            ],
-            "probeRule": "png-signature",
-          },
-          {
-            "extensions": [
-              ".webp",
-            ],
-            "kind": "webp",
-            "mimeTypes": [
-              "image/webp",
-            ],
-            "probeRule": "webp-riff",
-          },
-          {
-            "extensions": [
-              ".bmp",
-            ],
-            "kind": "bmp",
-            "mimeTypes": [
-              "image/bmp",
-            ],
-            "probeRule": "bmp-header",
-          },
-        ],
-        "limits": {
-          "allowMixedKinds": false,
-          "maximumFiles": 1,
-          "minimumFiles": 1,
-          "profiles": [
-            "image",
-          ],
-        },
-        "result": {
-          "files": [
-            {
-              "extension": ".jpg",
-              "fallback": "listed-fallback",
-              "fallbackKind": "webp",
-              "kind": "jpeg",
-              "mimeType": "image/jpeg",
-            },
-            {
-              "extension": ".png",
-              "fallback": "listed-fallback",
-              "fallbackKind": "webp",
-              "kind": "png",
-              "mimeType": "image/png",
-            },
-            {
-              "extension": ".webp",
-              "fallback": "reject",
-              "kind": "webp",
-              "mimeType": "image/webp",
-            },
-            {
-              "extension": ".bmp",
-              "fallback": "listed-fallback",
-              "fallbackKind": "webp",
-              "kind": "bmp",
-              "mimeType": "image/bmp",
-            },
-          ],
-          "mode": "files",
-        },
-      },
-      {
-        "id": "image.compress-jpeg",
-        "inputMode": "files",
-        "inputs": [
-          {
-            "extensions": [
-              ".jpg",
-              ".jpeg",
-            ],
-            "kind": "jpeg",
-            "mimeTypes": [
-              "image/jpeg",
-            ],
-            "probeRule": "jpeg-soi",
-          },
-          {
-            "extensions": [
-              ".jfif",
-              ".jfi",
-              ".jif",
-            ],
-            "kind": "jfif",
-            "mimeTypes": [
-              "image/jpeg",
-            ],
-            "probeRule": "jpeg-soi",
-          },
-        ],
-        "limits": {
-          "allowMixedKinds": false,
-          "maximumFiles": 1,
-          "minimumFiles": 1,
-          "profiles": [
-            "image",
-          ],
-        },
-        "result": {
-          "files": [
-            {
-              "extension": ".jpg",
-              "fallback": "reject",
-              "kind": "jpeg",
-              "mimeType": "image/jpeg",
-            },
-          ],
-          "mode": "files",
-        },
-      },
-      {
-        "id": "image.compress-png",
-        "inputMode": "files",
-        "inputs": [
-          {
-            "extensions": [
-              ".png",
-            ],
-            "kind": "png",
-            "mimeTypes": [
-              "image/png",
-            ],
-            "probeRule": "png-signature",
-          },
-        ],
-        "limits": {
-          "allowMixedKinds": false,
-          "maximumFiles": 1,
-          "minimumFiles": 1,
-          "profiles": [
-            "image",
-          ],
-        },
-        "result": {
-          "files": [
-            {
-              "extension": ".png",
-              "fallback": "reject",
-              "kind": "png",
-              "mimeType": "image/png",
-            },
-          ],
-          "mode": "files",
-        },
-      },
-      {
-        "id": "image.compress-webp",
-        "inputMode": "files",
-        "inputs": [
-          {
-            "extensions": [
-              ".webp",
-            ],
-            "kind": "webp",
-            "mimeTypes": [
-              "image/webp",
-            ],
-            "probeRule": "webp-riff",
-          },
-        ],
-        "limits": {
-          "allowMixedKinds": false,
-          "maximumFiles": 1,
-          "minimumFiles": 1,
-          "profiles": [
-            "image",
-          ],
-        },
-        "result": {
-          "files": [
-            {
-              "extension": ".webp",
-              "fallback": "reject",
-              "kind": "webp",
-              "mimeType": "image/webp",
-            },
-          ],
-          "mode": "files",
-        },
-      },
-      {
-        "id": "image.compress-bmp",
-        "inputMode": "files",
-        "inputs": [
-          {
-            "extensions": [
-              ".bmp",
-            ],
-            "kind": "bmp",
-            "mimeTypes": [
-              "image/bmp",
-            ],
-            "probeRule": "bmp-header",
-          },
-        ],
-        "limits": {
-          "allowMixedKinds": false,
-          "maximumFiles": 1,
-          "minimumFiles": 1,
-          "profiles": [
-            "image",
-          ],
-        },
-        "result": {
-          "files": [
             {
               "extension": ".png",
               "fallback": "explicit-user-choice",

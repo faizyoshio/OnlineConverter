@@ -1,4 +1,4 @@
-import { mergePdfs, rotatePdfPages, splitPdf, deletePdfPages, extractPdfPages, organizePdf, addPageNumbers, watermarkPdf, imageWatermarkPdf, textToPdf, imagesToPdf, cropPdfPages, resizePdfPagesToA4, flattenPdf, compressPdf, repairPdf } from "@/engines/pdf/operations";
+import { mergePdfs, rotatePdfPages, splitPdf, deletePdfPages, extractPdfPages, organizePdf, addPageNumbers, watermarkPdf, imageWatermarkPdf, textToPdf, imagesToPdf, cropPdfPages, resizePdfPagesToA4, flattenPdf, compressPdf, repairPdf, mergePdfsAndImages, extractPdfImages, unlockPdf, protectPdf } from "@/engines/pdf/operations";
 import { createDocx, extractTextFromDocx, createPptx, extractTextFromPptx, createXlsx, extractDataFromXlsx } from "@/engines/office/openxml";
 import { createZip } from "@/engines/utility/operations";
 import type { LocalWorkerResult } from "@/features/workers/protocol";
@@ -364,6 +364,7 @@ export async function processPdfOperation(context: LocalWorkerOperationContext):
       };
     }
 
+    case "pdf.jpg-to-pdf":
     case "pdf.image-to-pdf": {
       reportProgress(0.1, "Loading images");
       const images = await Promise.all(inputs.map(rasterForPdf));
@@ -627,6 +628,70 @@ export async function processPdfOperation(context: LocalWorkerOperationContext):
         mode: "files",
         outputs: [{ blob: blobFromBytes(xlsxBytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet") }],
         metadata: { resultMode: "files", outputMimeTypes: ["application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"], outputBytes: [xlsxBytes.length] },
+      };
+    }
+
+    case "pdf.merge-image": {
+      reportProgress(0.1, "Reading files");
+      const items = await Promise.all(
+        inputs.map(async (file) => ({
+          name: file.name,
+          bytes: new Uint8Array(await file.arrayBuffer()),
+        }))
+      );
+      if (isCancelled()) return { mode: "files", outputs: [], metadata: { resultMode: "files", outputMimeTypes: [], outputBytes: [] } };
+      reportProgress(0.5, "Merging PDFs and images");
+      const result = await mergePdfsAndImages(items);
+      reportProgress(0.9, "Finalizing");
+      const doc = await (await import("pdf-lib")).PDFDocument.load(result);
+      return {
+        mode: "files",
+        outputs: [{ blob: blobFromBytes(result, "application/pdf") }],
+        metadata: { resultMode: "files", outputMimeTypes: ["application/pdf"], outputBytes: [result.length], pages: doc.getPageCount() },
+      };
+    }
+
+    case "pdf.extract-images": {
+      reportProgress(0.1, "Analyzing PDF");
+      const buffer = new Uint8Array(await inputs[0]!.arrayBuffer());
+      if (isCancelled()) return { mode: "files", outputs: [], metadata: { resultMode: "files", outputMimeTypes: [], outputBytes: [] } };
+      reportProgress(0.5, "Extracting images");
+      const images = await extractPdfImages(buffer);
+      reportProgress(0.8, "Creating archive");
+      const zipBytes = await createZip(images, { deflateLevel: 6 });
+      return {
+        mode: "files",
+        outputs: [{ blob: blobFromBytes(zipBytes, "application/zip") }],
+        metadata: { resultMode: "files", outputMimeTypes: ["application/zip"], outputBytes: [zipBytes.length] },
+      };
+    }
+
+    case "pdf.unlock": {
+      reportProgress(0.1, "Loading encrypted PDF");
+      const buffer = new Uint8Array(await inputs[0]!.arrayBuffer());
+      if (isCancelled()) return { mode: "files", outputs: [], metadata: { resultMode: "files", outputMimeTypes: [], outputBytes: [] } };
+      reportProgress(0.5, "Removing restrictions and unlocking");
+      const result = await unlockPdf(buffer);
+      const doc = await (await import("pdf-lib")).PDFDocument.load(result);
+      return {
+        mode: "files",
+        outputs: [{ blob: blobFromBytes(result, "application/pdf") }],
+        metadata: { resultMode: "files", outputMimeTypes: ["application/pdf"], outputBytes: [result.length], pages: doc.getPageCount() },
+      };
+    }
+
+    case "pdf.protect": {
+      reportProgress(0.1, "Loading PDF");
+      const buffer = new Uint8Array(await inputs[0]!.arrayBuffer());
+      const password = String(options.password ?? "password");
+      if (isCancelled()) return { mode: "files", outputs: [], metadata: { resultMode: "files", outputMimeTypes: [], outputBytes: [] } };
+      reportProgress(0.5, "Encrypting document");
+      const result = await protectPdf(buffer, password);
+      const doc = await (await import("pdf-lib")).PDFDocument.load(result);
+      return {
+        mode: "files",
+        outputs: [{ blob: blobFromBytes(result, "application/pdf") }],
+        metadata: { resultMode: "files", outputMimeTypes: ["application/pdf"], outputBytes: [result.length], pages: doc.getPageCount() },
       };
     }
 

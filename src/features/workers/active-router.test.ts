@@ -9,24 +9,12 @@ test("registers exactly the release-gated adapters", () => {
   }
 });
 
-test.each([
-  "pdf.merge",
-  "pdf.split",
-  "pdf.delete-pages",
-  "pdf.extract-pages",
-  "pdf.organize",
-  "pdf.scan",
-  "pdf.compress",
-  "pdf.repair",
-  "pdf.ocr",
-  "pdf.image-to-pdf",
-  "pdf.word-to-pdf",
-  "pdf.powerpoint-to-pdf",
-  "pdf.excel-to-pdf",
-  "pdf.to-jpg",
-  "pdf.pdf-to-word",
-  "pdf.pdf-to-powerpoint",
-  "pdf.pdf-to-excel",
-])("registers the active adapter %s", (adapterKey) => {
-  expect(createActiveEngineRouter().has(adapterKey)).toBe(true);
-});
+const activeCapabilities = capabilityRegistry.filter((cap) => cap.releaseStatus === "active");
+
+test.each(activeCapabilities.map((cap) => [cap.id, cap.adapterKey]))(
+  "registers the active adapter for %s (%s)",
+  (_id, adapterKey) => {
+    expect(createActiveEngineRouter().has(adapterKey)).toBe(true);
+  },
+);
+

@@ -5,8 +5,18 @@ export type ImageCapabilityId =
   | "image.jfif-to-png"
   | "image.rotate"
   | "image.flip"
+  | "image.compress"
+  | "image.compress-jpg"
+  | "image.compress-png"
   | "image.compress-jpeg"
   | "image.compress-webp"
+  | "image.compress-heic"
+  | "image.compress-bmp"
+  | "image.to-jpg"
+  | "image.to-png"
+  | "image.to-jpeg"
+  | "image.to-webp"
+  | "image.heic-to-jpg"
   | "image.resize"
   | "image.crop"
   | "image.circle-crop";
@@ -33,8 +43,18 @@ export function parseImageCodecCapabilityId(value: string): ImageCapabilityId {
     || value === "image.jfif-to-png"
     || value === "image.rotate"
     || value === "image.flip"
+    || value === "image.compress"
+    || value === "image.compress-jpg"
+    || value === "image.compress-png"
     || value === "image.compress-jpeg"
     || value === "image.compress-webp"
+    || value === "image.compress-heic"
+    || value === "image.compress-bmp"
+    || value === "image.to-jpg"
+    || value === "image.to-png"
+    || value === "image.to-jpeg"
+    || value === "image.to-webp"
+    || value === "image.heic-to-jpg"
     || value === "image.resize"
     || value === "image.crop"
     || value === "image.circle-crop"
@@ -129,13 +149,19 @@ function targetFileSize(options: Readonly<Record<string, unknown>>): number {
   return raw;
 }
 
-  if (capabilityId === "image.compress-jpeg") {
+  if (capabilityId === "image.compress") {
+    return { mimeType: "image/jpeg", quality: 0.8 };
+  }
+  if (capabilityId === "image.compress-jpg" || capabilityId === "image.compress-jpeg") {
     const isMaxFileSize = options.compressionMode === "maxFileSize";
     return {
       mimeType: "image/jpeg",
       quality: isMaxFileSize ? undefined : percentage(options, "quality", 75),
       maxFileSizeKb: isMaxFileSize ? targetFileSize(options) : undefined,
     };
+  }
+  if (capabilityId === "image.compress-png") {
+    return { mimeType: "image/png" };
   }
   if (capabilityId === "image.compress-webp") {
     const isMaxFileSize = options.compressionMode === "maxFileSize";
@@ -144,6 +170,25 @@ function targetFileSize(options: Readonly<Record<string, unknown>>): number {
       quality: isMaxFileSize ? undefined : percentage(options, "quality", 75),
       maxFileSizeKb: isMaxFileSize ? targetFileSize(options) : undefined,
     };
+  }
+  if (capabilityId === "image.compress-heic" || capabilityId === "image.heic-to-jpg") {
+    return { mimeType: "image/jpeg", quality: percentage(options, "quality", 85) };
+  }
+  if (capabilityId === "image.compress-bmp") {
+    return { mimeType: "image/png" };
+  }
+  if (capabilityId === "image.to-jpg" || capabilityId === "image.to-jpeg") {
+    return {
+      mimeType: "image/jpeg",
+      quality: percentage(options, "quality", 85),
+      background: color(options, "alphaBackground", "#ffffff"),
+    };
+  }
+  if (capabilityId === "image.to-png") {
+    return { mimeType: "image/png" };
+  }
+  if (capabilityId === "image.to-webp") {
+    return { mimeType: "image/webp", quality: percentage(options, "quality", 85) };
   }
   if (capabilityId === "image.resize") {
     const target = resolveTargetMime(options.target);

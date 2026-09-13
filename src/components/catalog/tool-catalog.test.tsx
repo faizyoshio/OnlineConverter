@@ -5,18 +5,22 @@ import { ToolCatalog } from "./tool-catalog";
 
 const activeTools = capabilityRegistry.filter((c) => c.releaseStatus === "active");
 
-test("renders 4 category group sections on default view", () => {
+test("renders 8 category group sections on default view", () => {
   render(<ToolCatalog capabilities={activeTools} previewMode={false} />);
-  expect(screen.getByText("ORGANIZE PDF")).toBeVisible();
   expect(screen.getByText("OPTIMIZE PDF")).toBeVisible();
+  expect(screen.getByText("MERGE & SPLIT")).toBeVisible();
+  expect(screen.getByText("VIEW & EDIT")).toBeVisible();
   expect(screen.getByText("CONVERT TO PDF")).toBeVisible();
   expect(screen.getByText("CONVERT FROM PDF")).toBeVisible();
+  expect(screen.getByText("PDF SECURITY")).toBeVisible();
+  expect(screen.getByText("OPTIMIZE IMAGE")).toBeVisible();
+  expect(screen.getByText("CONVERT IMAGE")).toBeVisible();
 });
 
 test("filters by group and clears empty result", async () => {
   const user = userEvent.setup();
   render(<ToolCatalog capabilities={activeTools} previewMode={false} />);
-  await user.click(screen.getByRole("button", { name: "Organize PDF" }));
+  await user.click(screen.getByRole("button", { name: "Merge & Split" }));
   expect(screen.getByText("Merge PDF")).toBeVisible();
   expect(screen.getByText("Split PDF")).toBeVisible();
 
@@ -24,7 +28,7 @@ test("filters by group and clears empty result", async () => {
   expect(screen.getByText(/no tools match/i)).toBeVisible();
 
   await user.click(screen.getByRole("button", { name: /clear filters/i }));
-  expect(screen.getByRole("status")).toHaveTextContent("17 tools");
+  expect(screen.getByRole("status")).toHaveTextContent("38 tools");
 });
 
 test("announces the result count", () => {
@@ -35,5 +39,5 @@ test("announces the result count", () => {
 test("renders active tools as links", () => {
   const active = activeTools[0]!;
   render(<ToolCatalog capabilities={[active]} previewMode={false} />);
-  expect(screen.getByRole("link", { name: /merge pdf/i })).toHaveAttribute("href", "/tools/merge-pdf");
+  expect(screen.getByRole("link", { name: new RegExp(active.title, "i") })).toHaveAttribute("href", `/tools/${active.slug}`);
 });

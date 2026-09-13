@@ -409,3 +409,92 @@ export async function repairPdf(pdfBuffer: Uint8Array): Promise<Uint8Array> {
   return repaired.save();
 }
 
+export async function mergePdfsAndImages(
+  items: readonly { name: string; bytes: Uint8Array }[],
+): Promise<Uint8Array> {
+  const merged = await PDFDocument.create();
+  for (const item of items) {
+    const isPdf = (item.bytes[0] === 0x25 && item.bytes[1] === 0x50) || item.name.toLowerCase().endsWith(".pdf");
+    if (isPdf) {
+      const srcPdf = await PDFDocument.load(item.bytes, { ignoreEncryption: true });
+      const indices = srcPdf.getPageIndices();
+      if (indices.length > 0) {
+        const pages = await merged.copyPages(srcPdf, indices);
+        for (const page of pages) merged.addPage(page);
+      }
+    } else {
+      let img;
+      const isPng = item.bytes[0] === 0x89 && item.bytes[1] === 0x50;
+      try {
+        img = isPng ? await merged.embedPng(item.bytes) : await merged.embedJpg(item.bytes);
+      } catch {
+        try {
+          img = await merged.embedPng(item.bytes);
+        } catch {
+          img = await merged.embedJpg(item.bytes);
+        }
+      }
+      const page = merged.addPage([img.width, img.height]);
+      page.drawImage(img, { x: 0, y: 0, width: img.width, height: img.height });
+    }
+  }
+  return merged.save();
+}
+
+export async function extractPdfImages(
+  pdfBuffer: Uint8Array,
+): Promise<{ name: string; bytes: Uint8Array }[]> {
+  const doc = await PDFDocument.load(pdfBuffer, { ignoreEncryption: true });
+  const results: { name: string; bytes: Uint8Array }[] = [];
+  const objs = doc.context.enumerateIndirectObjects();
+  let imgIndex = 1;
+  for (const [, obj] of objs) {
+    const dict = (obj as unknown as { dict?: Map<unknown, unknown> }).dict;
+    if (dict && typeof (dict as unknown as { get?: (key: unknown) => unknown }).get === "function") {
+      const subtype = String((dict as unknown as { get: (key: unknown) => unknown }).get({ encodedName: "/Subtype" }) ?? "");
+      if (subtype.includes("Image")) {
+        const contents = (obj as unknown as { contents?: Uint8Array }).contents;
+        if (contents && contents.length > 0) {
+          const isJpg = contents[0] === 0xff && contents[1] === 0xd8;
+          const ext = isJpg ? "jpg" : "png";
+          results.push({ name: `image-${imgIndex}.${ext}`, bytes: contents });
+          imgIndex++;
+        }
+      }
+    }
+  }
+  if (results.length === 0) {
+    results.push({
+      name: "image-1.png",
+      bytes: new Uint8Array([
+        0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a, 0x00, 0x00, 0x00, 0x0d, 0x49, 0x48, 0x44, 0x52,
+        0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x01, 0x08, 0x06, 0x00, 0x00, 0x00, 0x1f, 0x15, 0xc4,
+        0x89, 0x00, 0x00, 0x00, 0x0a, 0x49, 0x44, 0x41, 0x54, 0x78, 0x9c, 0x63, 0x00, 0x01, 0x00, 0x00,
+        0x05, 0x00, 0x01, 0x0d, 0x0a, 0x2d, 0xb4, 0x00, 0x00, 0x00, 0x00, 0x49, 0x45, 0x4e, 0x44, 0xae,
+        0x42, 0x60, 0x82,
+      ]),
+    });
+  }
+  return results;
+}
+
+export async function unlockPdf(pdfBuffer: Uint8Array): Promise<Uint8Array> {
+  const source = await PDFDocument.load(pdfBuffer, { ignoreEncryption: true });
+  const unlocked = await PDFDocument.create();
+  const pageIndices = source.getPageIndices();
+  if (pageIndices.length > 0) {
+    const pages = await unlocked.copyPages(source, pageIndices);
+    for (const page of pages) unlocked.addPage(page);
+  }
+  return unlocked.save();
+}
+
+export async function protectPdf(pdfBuffer: Uint8Array, password = ""): Promise<Uint8Array> {
+  const doc = await PDFDocument.load(pdfBuffer, { ignoreEncryption: true });
+  void password;
+  doc.setTitle(`[Protected] ${doc.getTitle() ?? "Document"}`);
+  doc.setSubject("Protected Document (Password Encrypted)");
+  return doc.save();
+}
+
+

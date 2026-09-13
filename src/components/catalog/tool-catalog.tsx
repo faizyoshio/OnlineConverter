@@ -3,17 +3,22 @@
 import { useDeferredValue, useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { searchCapabilities } from "@/features/capabilities/search";
-import type { CapabilityCategory, CapabilityManifest } from "@/features/capabilities/schema";
+import type { CapabilityManifest } from "@/features/capabilities/schema";
 import { CategoryFilter } from "./category-filter";
 import { ToolCard } from "./tool-card";
 import { ToolSearch } from "./tool-search";
 
-const categoryOrder: readonly CapabilityCategory[] = ["pdf", "image", "gif", "utility", "trust"];
 const groupOrder = [
-  { id: "organize", title: "ORGANIZE PDF" },
-  { id: "optimize", title: "OPTIMIZE PDF" },
+  { id: "optimize-pdf", title: "OPTIMIZE PDF" },
+  { id: "merge-split", title: "MERGE & SPLIT" },
+  { id: "view-edit", title: "VIEW & EDIT" },
   { id: "to-pdf", title: "CONVERT TO PDF" },
   { id: "from-pdf", title: "CONVERT FROM PDF" },
+  { id: "pdf-security", title: "PDF SECURITY" },
+  { id: "optimize-image", title: "OPTIMIZE IMAGE" },
+  { id: "convert-image", title: "CONVERT IMAGE" },
+  { id: "organize", title: "ORGANIZE PDF" },
+  { id: "optimize", title: "OPTIMIZE PDF" },
 ] as const;
 
 type ToolCatalogProps = {
@@ -28,17 +33,15 @@ export function ToolCatalog({ capabilities, previewMode }: ToolCatalogProps) {
 
   const filterOptions = useMemo(() => {
     const list: string[] = [];
-    for (const g of groupOrder) {
-      if (capabilities.some((item) => item.group === g.id)) {
-        list.push(g.id);
-      }
+    if (capabilities.some((item) => item.category === "pdf")) {
+      list.push("pdf");
     }
-    for (const cat of categoryOrder) {
-      if (!list.length && capabilities.some((item) => item.category === cat)) {
-        list.push(cat);
-      }
-      if (capabilities.some((item) => item.category === cat && !item.group) && !list.includes(cat)) {
-        list.push(cat);
+    if (capabilities.some((item) => item.category === "image")) {
+      list.push("image");
+    }
+    for (const g of groupOrder) {
+      if (capabilities.some((item) => item.group === g.id) && !list.includes(g.id)) {
+        list.push(g.id);
       }
     }
     return list;

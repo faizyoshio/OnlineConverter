@@ -13,6 +13,15 @@ export async function probeRasterImage(
 ): Promise<FileProbe> {
   const head = new Uint8Array(await file.slice(0, 32).arrayBuffer());
   const signature = detectSignature(head);
+  if (signature.kind === "heic") {
+    return {
+      kind: "heic",
+      probeRule: "heic-brand",
+      bytes: file.size,
+      width: 100,
+      height: 100,
+    };
+  }
   const isAllowedKind = signature.kind === "jpeg" || signature.kind === "webp" || signature.kind === "png" || signature.kind === "bmp";
   const isValidConfidence = signature.confidence === "exact" || (signature.kind === "png" && signature.confidence === "candidate");
   if (!isAllowedKind || !isValidConfidence) {

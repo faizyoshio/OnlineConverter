@@ -1,6 +1,7 @@
 import { expect, test } from "@playwright/test";
 import { PDFDocument } from "pdf-lib";
 import { VALID_PNG_BYTES } from "../src/test/fixtures/pdf-inputs";
+import { VALID_JPEG_BYTES } from "../src/test/fixtures/image-inputs";
 import { createDocx, createPptx, createXlsx } from "../src/engines/office/openxml";
 
 async function createSamplePdf(pageCount = 1): Promise<Buffer> {
@@ -12,16 +13,39 @@ async function createSamplePdf(pageCount = 1): Promise<Buffer> {
   return Buffer.from(bytes);
 }
 
-test("home page explains the privacy boundary and displays 4 PDF categories", async ({ page }) => {
+test("home page explains the privacy boundary and displays 8 categories", async ({ page }) => {
   await page.goto("/");
   await expect(page.getByRole("heading", { level: 1 })).toHaveText(/academic & research toolkit/i);
   await expect(page.getByText(/files never leave your device/i)).toBeVisible();
 
-  // Verify the 4 category headers
-  await expect(page.locator(".catalog-group-title", { hasText: "ORGANIZE PDF" })).toBeVisible();
+  // Verify the 8 category headers
   await expect(page.locator(".catalog-group-title", { hasText: "OPTIMIZE PDF" })).toBeVisible();
+  await expect(page.locator(".catalog-group-title", { hasText: "MERGE & SPLIT" })).toBeVisible();
+  await expect(page.locator(".catalog-group-title", { hasText: "VIEW & EDIT" })).toBeVisible();
   await expect(page.locator(".catalog-group-title", { hasText: "CONVERT TO PDF" })).toBeVisible();
   await expect(page.locator(".catalog-group-title", { hasText: "CONVERT FROM PDF" })).toBeVisible();
+  await expect(page.locator(".catalog-group-title", { hasText: "PDF SECURITY" })).toBeVisible();
+  await expect(page.locator(".catalog-group-title", { hasText: "OPTIMIZE IMAGE" })).toBeVisible();
+  await expect(page.locator(".catalog-group-title", { hasText: "CONVERT IMAGE" })).toBeVisible();
+});
+
+test("header mega-menu opens and navigates to tools", async ({ page }) => {
+  await page.goto("/");
+
+  const pdfBtn = page.locator(".site-header").getByRole("button", { name: /PDF Tools/i });
+  await expect(pdfBtn).toBeVisible();
+  await pdfBtn.click();
+  await expect(page.locator(".mega-menu")).toBeVisible();
+  await expect(page.locator(".mega-menu").getByRole("link", { name: "Merge PDF", exact: true })).toBeVisible();
+  await expect(page.locator(".mega-menu").getByRole("link", { name: "Compress PDF", exact: true })).toBeVisible();
+  await expect(page.locator(".mega-menu").getByRole("link", { name: "Unlock PDF", exact: true })).toBeVisible();
+
+  const imgBtn = page.locator(".site-header").getByRole("button", { name: /Image Tools/i });
+  await expect(imgBtn).toBeVisible();
+  await imgBtn.click();
+  await expect(page.locator(".mega-menu").getByRole("link", { name: "Compress Image", exact: true })).toBeVisible();
+  await expect(page.locator(".mega-menu").getByRole("link", { name: "Compress JPG", exact: true })).toBeVisible();
+  await expect(page.locator(".mega-menu").getByRole("link", { name: "Image to JPG", exact: true })).toBeVisible();
 });
 
 // ----------------------------------------------------------------------------
@@ -61,7 +85,7 @@ test("split PDF route processes file in browser worker", async ({ page }) => {
 test("remove pages route processes selected pages in browser worker", async ({ page }) => {
   const doc = await createSamplePdf(3);
 
-  await page.goto("/tools/remove-pages");
+  await page.goto("/tools/remove-pdf-pages");
   await page.getByLabel(/pages to delete/i).fill("2");
   await page.getByLabel(/choose files/i).setInputFiles({
     name: "source.pdf",
@@ -76,7 +100,7 @@ test("remove pages route processes selected pages in browser worker", async ({ p
 test("extract pages route creates a ZIP when separate PDFs are selected", async ({ page }) => {
   const doc = await createSamplePdf(3);
 
-  await page.goto("/tools/extract-pages");
+  await page.goto("/tools/extract-pdf-pages");
   await page.getByLabel(/pages to extract/i).fill("1,3");
   await page.getByLabel(/create one combined pdf/i).uncheck();
   await page.getByLabel(/choose files/i).setInputFiles({
@@ -103,12 +127,14 @@ test("organize PDF route processes in browser worker", async ({ page }) => {
   await expect(page.getByRole("link", { name: /download output-1.pdf/i })).toBeVisible();
 });
 
-test("scan to PDF route converts images to PDF", async ({ page }) => {
-  await page.goto("/tools/scan-to-pdf");
+test("rotate PDF route rotates pages in browser worker", async ({ page }) => {
+  const doc = await createSamplePdf(1);
+
+  await page.goto("/tools/rotate-pdf");
   await page.getByLabel(/choose files/i).setInputFiles({
-    name: "scan.png",
-    mimeType: "image/png",
-    buffer: Buffer.from(VALID_PNG_BYTES),
+    name: "source.pdf",
+    mimeType: "application/pdf",
+    buffer: doc,
   });
   await expect(page.getByRole("button", { name: /run conversion/i })).toBeEnabled();
   await page.getByRole("button", { name: /run conversion/i }).click();
@@ -116,7 +142,7 @@ test("scan to PDF route converts images to PDF", async ({ page }) => {
 });
 
 // ----------------------------------------------------------------------------
-// 2. OPTIMIZE PDF
+// 2. OPTIMIZE PDF & IMAGES
 // ----------------------------------------------------------------------------
 
 test("compress PDF route displays 4 compression preset cards and compresses PDF", async ({ page }) => {
@@ -146,33 +172,16 @@ test("compress PDF route displays 4 compression preset cards and compresses PDF"
   await expect(page.getByRole("link", { name: /download output-1.pdf/i })).toBeVisible();
 });
 
-test("repair PDF route processes file in browser worker", async ({ page }) => {
-  const doc = await createSamplePdf(1);
-
-  await page.goto("/tools/repair-pdf");
+test("compress image route processes image in browser worker", async ({ page }) => {
+  await page.goto("/tools/compress-image");
   await page.getByLabel(/choose files/i).setInputFiles({
-    name: "source.pdf",
-    mimeType: "application/pdf",
-    buffer: doc,
+    name: "sample.png",
+    mimeType: "image/png",
+    buffer: Buffer.from(VALID_PNG_BYTES),
   });
   await expect(page.getByRole("button", { name: /run conversion/i })).toBeEnabled();
   await page.getByRole("button", { name: /run conversion/i }).click();
-  await expect(page.getByRole("link", { name: /download output-1.pdf/i })).toBeVisible();
-});
-
-test("OCR PDF route recognizes text in browser worker", async ({ page }) => {
-  const doc = await createSamplePdf(1);
-
-  await page.goto("/tools/ocr-pdf");
-  await page.getByLabel(/choose files/i).setInputFiles({
-    name: "source.pdf",
-    mimeType: "application/pdf",
-    buffer: doc,
-  });
-  await expect(page.getByRole("button", { name: /run conversion/i })).toBeEnabled();
-  await page.getByRole("button", { name: /run conversion/i }).click();
-  await expect(page.getByRole("link", { name: /download output-1.pdf/i })).toBeVisible();
-  await expect(page.getByRole("link", { name: /download output-2.txt/i })).toBeVisible();
+  await expect(page.getByRole("link", { name: /download output-1/i })).toBeVisible();
 });
 
 // ----------------------------------------------------------------------------
@@ -182,9 +191,9 @@ test("OCR PDF route recognizes text in browser worker", async ({ page }) => {
 test("JPG to PDF route converts image to PDF", async ({ page }) => {
   await page.goto("/tools/jpg-to-pdf");
   await page.getByLabel(/choose files/i).setInputFiles({
-    name: "source.png",
-    mimeType: "image/png",
-    buffer: Buffer.from(VALID_PNG_BYTES),
+    name: "source.jpg",
+    mimeType: "image/jpeg",
+    buffer: Buffer.from(VALID_JPEG_BYTES),
   });
   await expect(page.getByRole("button", { name: /run conversion/i })).toBeEnabled();
   await page.getByRole("button", { name: /run conversion/i }).click();

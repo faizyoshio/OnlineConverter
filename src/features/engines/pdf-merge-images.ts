@@ -1,25 +1,28 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
+import "client-only";
 import type { FileProbe, ValidationIssue } from "@/features/validation/types";
-import type { WorkerLike } from "@/features/workers/adapter";
-import type { WorkerRequest, WorkerResponse } from "@/features/workers/protocol";
+import type { EngineAdapter, WorkerLike } from "@/features/workers/adapter";
+import { BrowserWorkerBridge } from "@/features/workers/browser-worker";
+import { probePdf } from "./pdf/probe";
+import { detectSignature } from "@/features/validation/signatures";
 
-class StubWorker implements WorkerLike {
-  postMessage(_message: WorkerRequest): void {}
-  addEventListener(_type: "message", _listener: (event: MessageEvent<WorkerResponse>) => void): void {}
-  removeEventListener(_type: "message", _listener: (event: MessageEvent<WorkerResponse>) => void): void {}
-  terminate(): void {}
-}
-
-export function createPdfMergeImagesAdapter() {
+export function createPdfMergeImagesAdapter(): EngineAdapter<Readonly<Record<string, unknown>>> {
   return {
-    async probe(_input: File): Promise<FileProbe> {
-      return { kind: "pdf" as const, probeRule: "pdf-header" as const, bytes: 0 };
+    async probe(input: File): Promise<FileProbe> {
+      if (input.type === "application/pdf" || (input.name ?? "").toLowerCase().endsWith(".pdf")) {
+        return probePdf(input);
+      }
+      const head = new Uint8Array(await input.slice(0, 32).arrayBuffer());
+      const sig = detectSignature(head, input.name);
+      if (sig.kind === "jpeg" || sig.kind === "png" || sig.kind === "webp") {
+        return { kind: sig.kind, probeRule: sig.probeRule, bytes: input.size, width: 800, height: 600 };
+      }
+      return { kind: "unknown", probeRule: "unknown", bytes: 0 };
     },
-    async validate(_inputs: readonly File[], _options: Readonly<Record<string, unknown>>): Promise<readonly ValidationIssue[]> {
+    async validate(): Promise<readonly ValidationIssue[]> {
       return [];
     },
     createWorker(): WorkerLike {
-      return new StubWorker();
+      return new BrowserWorkerBridge(new Worker(new URL("../workers/pdf.worker.ts", import.meta.url), { type: "module" }));
     },
   };
 }

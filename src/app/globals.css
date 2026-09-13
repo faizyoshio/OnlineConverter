@@ -110,12 +110,135 @@ h3 {
 }
 
 .site-header {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  border-bottom: var(--line);
+}
+
+.site-header__main {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: var(--space-4);
   min-height: 5.25rem;
-  border-bottom: var(--line);
+  width: 100%;
+}
+
+.site-nav {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.nav-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 0.45rem 0.85rem;
+  border: var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--ink);
+  font-weight: 800;
+  font-size: 0.95rem;
+  cursor: pointer;
+  box-shadow: 2px 2px 0 var(--ink);
+  transition: background 0.15s, transform 0.1s, box-shadow 0.1s;
+}
+
+.nav-btn:hover,
+.nav-btn--active {
+  background: var(--yellow);
+  transform: translate(-1px, -1px);
+  box-shadow: 3px 3px 0 var(--ink);
+}
+
+.nav-btn__chevron {
+  font-size: 0.65rem;
+  color: var(--muted);
+}
+
+.mega-menu {
+  position: absolute;
+  top: calc(100% + 2px);
+  left: 0;
+  right: 0;
+  z-index: 120;
+  background: #18181b;
+  border: 2px solid var(--ink);
+  border-radius: var(--radius-md);
+  box-shadow: 6px 6px 0 var(--ink);
+  padding: var(--space-5);
+  color: #f4f4f5;
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+.mega-menu__container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  gap: var(--space-5);
+}
+
+.mega-menu__column {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.mega-menu__group-title {
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  color: #a1a1aa;
+  text-transform: uppercase;
+  margin: 0;
+  padding-bottom: var(--space-2);
+  border-bottom: 1px solid #3f3f46;
+}
+
+.mega-menu__tool-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.mega-menu__tool-link {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 0.35rem 0.4rem;
+  border-radius: var(--radius-sm);
+  text-decoration: none;
+  color: #f4f4f5;
+  font-size: 0.88rem;
+  font-weight: 600;
+  transition: background 0.15s, color 0.15s, transform 0.1s;
+}
+
+.mega-menu__tool-link:hover {
+  background: #27272a;
+  color: #38bdf8;
+  transform: translateX(2px);
+}
+
+.mega-menu__tool-icon {
+  display: inline-grid;
+  place-items: center;
+  width: 1.6rem;
+  height: 1.6rem;
+  background: #0284c7;
+  color: #ffffff;
+  border-radius: 4px;
+  flex-shrink: 0;
+}
+
+.mega-menu__tool-name {
+  line-height: 1.3;
 }
 
 .brand {

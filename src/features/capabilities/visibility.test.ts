@@ -1,25 +1,13 @@
 import { capabilityRegistry } from "./index";
 import { getVisibleCapabilities } from "./visibility";
 
-const activeIds = [
-  "pdf.merge",
-  "pdf.split",
-  "pdf.delete-pages",
-  "pdf.extract-pages",
-  "pdf.organize",
-  "pdf.scan",
-  "pdf.compress",
-  "pdf.repair",
-  "pdf.ocr",
-  "pdf.image-to-pdf",
-  "pdf.word-to-pdf",
-  "pdf.powerpoint-to-pdf",
-  "pdf.excel-to-pdf",
-  "pdf.to-jpg",
-  "pdf.pdf-to-word",
-  "pdf.pdf-to-powerpoint",
-  "pdf.pdf-to-excel",
-];
+const activeIds = capabilityRegistry
+  .filter((item) => item.releaseStatus === "active")
+  .map((item) => item.id);
+
+test("has exactly 38 active tools in capabilityRegistry", () => {
+  expect(activeIds).toHaveLength(38);
+});
 
 test("production hides planned capabilities while keeping active capabilities", () => {
   expect(getVisibleCapabilities(capabilityRegistry, { environment: "production", previewRequested: true }).map((item) => item.id)).toEqual(activeIds);
