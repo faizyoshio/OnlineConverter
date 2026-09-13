@@ -65,8 +65,11 @@ describe("ToolWorkspace", () => {
     render(<ToolWorkspace capability={capability("utility.unit")} runner={harness.runner} />);
 
     expect(screen.queryByLabelText(/choose files/i)).not.toBeInTheDocument();
+    await user.clear(screen.getByLabelText(/^value$/i));
     await user.type(screen.getByLabelText(/^value$/i), "1");
+    await user.clear(screen.getByLabelText(/from unit/i));
     await user.type(screen.getByLabelText(/from unit/i), "km");
+    await user.clear(screen.getByLabelText(/to unit/i));
     await user.type(screen.getByLabelText(/to unit/i), "m");
     await user.click(screen.getByRole("button", { name: /run conversion/i }));
 
@@ -101,6 +104,7 @@ describe("ToolWorkspace", () => {
     const harness = createRunnerHarness();
     render(<ToolWorkspace capability={capability("pdf.split")} runner={harness.runner} />);
 
+    await user.clear(screen.getByLabelText(/page ranges/i));
     await user.type(screen.getByLabelText(/page ranges/i), "1-2");
     await user.upload(screen.getByLabelText(/choose files/i), new File(["%PDF"], "source.pdf", { type: "application/pdf" }));
 

@@ -145,7 +145,17 @@ export function resolveImageEncodeOptions(
   if (capabilityId === "image.crop") {
     const target = resolveTargetMime(options.target);
     let cropBox: { x: number; y: number; width: number; height: number } | undefined;
-    if (options.cropBox && typeof options.cropBox === "object") {
+    if (typeof options.cropBox === "string") {
+      const parts = options.cropBox.split(",").map((part) => Number(part.trim()));
+      if (
+        parts.length === 4
+        && parts.every((n) => Number.isFinite(n) && n >= 0)
+        && parts[2]! > 0
+        && parts[3]! > 0
+      ) {
+        cropBox = { x: parts[0]!, y: parts[1]!, width: parts[2]!, height: parts[3]! };
+      }
+    } else if (options.cropBox && typeof options.cropBox === "object") {
       const box = options.cropBox as Record<string, unknown>;
       if (
         typeof box.x === "number"

@@ -52,7 +52,7 @@ export const pdfCapabilities = Object.freeze([
     resultContract: "exact-structural", inputMode: "files", inputs: [pdfFile()],
     releaseStatus: "active",
     result: filesResult(output("pdf", "explicit-user-choice"), output("zip", "explicit-user-choice")),
-    optionFields: [pageRangeOption("ranges", "Page ranges", null), toggleOption("onePerRange", "One PDF per range (ZIP)", true)],
+    optionFields: [pageRangeOption("ranges", "Page ranges", "1"), toggleOption("onePerRange", "One PDF per range (ZIP)", true)],
     limits: limits(["pdf"], 1, 1),
   }),
   definePdf({
@@ -114,7 +114,7 @@ export const pdfCapabilities = Object.freeze([
     releaseStatus: "active",
     description: "Delete selected PDF pages while requiring at least one page to remain in the document.",
     resultContract: "exact-structural", inputMode: "files", inputs: [pdfFile()], result: pdfResult(),
-    optionFields: [pageRangeOption("pages", "Pages to delete", null)],
+    optionFields: [pageRangeOption("pages", "Pages to delete", "1")],
     limits: limits(["pdf"], 1, 1),
   }),
   definePdf({
@@ -123,7 +123,7 @@ export const pdfCapabilities = Object.freeze([
     description: "Extract selected pages into one combined PDF or a ZIP containing separate documents.",
     resultContract: "exact-structural", inputMode: "files", inputs: [pdfFile()],
     result: filesResult(output("pdf", "explicit-user-choice"), output("zip", "explicit-user-choice")),
-    optionFields: [pageRangeOption("pages", "Pages to extract", null), toggleOption("combinedPdf", "Create one combined PDF", true)],
+    optionFields: [pageRangeOption("pages", "Pages to extract", "1"), toggleOption("combinedPdf", "Create one combined PDF", true)],
     limits: limits(["pdf"], 1, 1),
   }),
   definePdf({

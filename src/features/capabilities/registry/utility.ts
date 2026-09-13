@@ -38,9 +38,9 @@ export const utilityCapabilities = Object.freeze([
     category: "utility", workerFamily: "utility", resultContract: "exact-structural", inputMode: "values", inputs: [],
     result: valueResult("number"),
     optionFields: [
-      { key: "value", label: "Value", control: "number", defaultValue: null, required: true },
+      { key: "value", label: "Value", control: "number", defaultValue: 1, required: true },
       selectOption("category", "Unit category", "length", ["length", "area", "volume", "mass", "temperature", "speed", "pressure", "energy", "power", "data-size", "angle"]),
-      textOption("fromUnit", "From unit", null), textOption("toUnit", "To unit", null),
+      textOption("fromUnit", "From unit", "m"), textOption("toUnit", "To unit", "km"),
       selectOption("precision", "Precision", "auto", ["auto"]), numberOption("maxSignificantDigits", "Maximum significant digits", 8, 1, 8),
     ],
     limits: limits(["utility"], 0, 0),
@@ -51,7 +51,7 @@ export const utilityCapabilities = Object.freeze([
     description: "Convert a date and time between IANA zones while showing the exact zone and UTC offset used.",
     category: "utility", workerFamily: "utility", resultContract: "exact-structural", inputMode: "values", inputs: [],
     result: valueResult("time"),
-    optionFields: [textOption("dateTime", "Date and time", null), textOption("fromZone", "From time zone", "local"), textOption("toZone", "To time zone", "UTC"), toggleOption("isoPreview", "Show ISO preview", true)],
+    optionFields: [textOption("dateTime", "Date and time", "2026-01-01T12:00"), textOption("fromZone", "From time zone", "local"), textOption("toZone", "To time zone", "UTC"), toggleOption("isoPreview", "Show ISO preview", true)],
     limits: limits(["utility"], 0, 0),
   }),
   capability({
@@ -60,7 +60,7 @@ export const utilityCapabilities = Object.freeze([
     description: "Generate a validated local barcode as PNG or SVG without sending its text to a server.",
     category: "utility", workerFamily: "utility", resultContract: "exact-structural", inputMode: "values", inputs: [],
     result: filesResult(output("png", "explicit-user-choice"), output("svg", "explicit-user-choice")),
-    optionFields: [textOption("text", "Barcode text", null), selectOption("format", "Barcode format", "code-128", ["code-128", "code-39", "ean-13", "ean-8", "upc-a", "itf-14", "codabar", "qr"]), selectOption("target", "Output format", "png", ["png", "svg"]), numberOption("quietZonePx", "Quiet zone", 10, 0, 100)],
+    optionFields: [textOption("text", "Barcode text", "12345678"), selectOption("format", "Barcode format", "code-128", ["code-128", "code-39", "ean-13", "ean-8", "upc-a", "itf-14", "codabar", "qr"]), selectOption("target", "Output format", "png", ["png", "svg"]), numberOption("quietZonePx", "Quiet zone", 10, 0, 100)],
     limits: limits(["utility"], 0, 0), browserRequirements: ["canvas", "offscreen-canvas"], unsupportedCodes: ["invalid-barcode-value"],
   }),
   capability({

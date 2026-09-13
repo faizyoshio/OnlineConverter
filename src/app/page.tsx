@@ -12,7 +12,7 @@ function getCatalogEnvironment(): CatalogEnvironment {
 
 export default function HomePage() {
   const environment = getCatalogEnvironment();
-  const previewRequested = process.env.CATALOG_PREVIEW === "1" || environment === "local";
+  const previewRequested = process.env.CATALOG_PREVIEW === "1";
   const visibleCapabilities = getVisibleCapabilities(capabilityRegistry, { environment, previewRequested });
 
   return (

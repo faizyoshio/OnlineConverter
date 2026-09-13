@@ -57,7 +57,7 @@ export const imageCapabilities = Object.freeze([
     description: "Convert a local JPEG to PNG or WebP with an explicit modern output selection.",
     resultContract: "lossy-visual", inputMode: "files", inputs: [input("jpeg")],
     result: filesResult(output("png", "explicit-user-choice"), output("webp", "explicit-user-choice")),
-    optionFields: [selectOption("target", "Target format", null, ["png", "webp"]), numberOption("webpQuality", "WebP quality", 85, 1, 100)],
+    optionFields: [selectOption("target", "Target format", "png", ["png", "webp"]), numberOption("webpQuality", "WebP quality", 85, 1, 100)],
     limits: limits(["image"], 1, 1), warningCodes: ["lossy-output"],
   }),
   defineImage({
@@ -178,11 +178,11 @@ export const imageCapabilities = Object.freeze([
     resultContract: "lossy-visual", inputMode: "files", inputs: rasterInputs(),
     result: filesResult(output("jpeg", "explicit-user-choice"), output("png", "explicit-user-choice"), output("webp", "explicit-user-choice"), output("bmp", "explicit-user-choice")),
     optionFields: [
-      { key: "width", label: "Width", control: "number", defaultValue: null, required: true, minimum: 1, maximum: 20000, step: 1 },
-      { key: "height", label: "Height", control: "number", defaultValue: null, required: true, minimum: 1, maximum: 20000, step: 1 },
+      { key: "width", label: "Width", control: "number", defaultValue: 800, required: true, minimum: 1, maximum: 20000, step: 1 },
+      { key: "height", label: "Height", control: "number", defaultValue: 600, required: false, minimum: 1, maximum: 20000, step: 1 },
       toggleOption("aspectLock", "Lock aspect ratio", true),
       selectOption("resampling", "Resampling", "lanczos", ["lanczos"]),
-      selectOption("target", "Target format", null, ["jpeg", "png", "webp", "bmp"]),
+      selectOption("target", "Target format", "png", ["jpeg", "png", "webp", "bmp"]),
     ],
     limits: limits(["image"], 1, 1), warningCodes: ["lossy-output"],
   }),
@@ -192,7 +192,7 @@ export const imageCapabilities = Object.freeze([
     description: "Crop a supported local raster image within its source bounds and choose the output format.",
     resultContract: "lossy-visual", inputMode: "files", inputs: rasterInputs(),
     result: filesResult(output("jpeg", "explicit-user-choice"), output("png", "explicit-user-choice"), output("webp", "explicit-user-choice"), output("bmp", "explicit-user-choice")),
-    optionFields: [cropBoxOption("cropBox", "Crop box", null), selectOption("target", "Target format", null, ["jpeg", "png", "webp", "bmp"])],
+    optionFields: [cropBoxOption("cropBox", "Crop coordinates (x, y, width, height)", "0,0,500,500"), selectOption("target", "Target format", "png", ["jpeg", "png", "webp", "bmp"])],
     limits: limits(["image"], 1, 1), warningCodes: ["lossy-output"],
   }),
   defineImage({
@@ -210,7 +210,7 @@ export const imageCapabilities = Object.freeze([
     description: "Rotate a supported local raster image ninety degrees clockwise by default.",
     resultContract: "lossy-visual", inputMode: "files", inputs: rasterInputs(),
     result: filesResult(output("jpeg", "explicit-user-choice"), output("png", "explicit-user-choice"), output("webp", "explicit-user-choice"), output("bmp", "explicit-user-choice")),
-    optionFields: [selectOption("degrees", "Rotation", "90", ["90", "180", "270"]), selectOption("target", "Target format", null, ["jpeg", "png", "webp", "bmp"])],
+    optionFields: [selectOption("degrees", "Rotation", "90", ["90", "180", "270"]), selectOption("target", "Target format", "png", ["jpeg", "png", "webp", "bmp"])],
     limits: limits(["image"], 1, 1), warningCodes: ["lossy-output"],
   }),
   defineImage({
@@ -219,7 +219,7 @@ export const imageCapabilities = Object.freeze([
     description: "Flip a supported local raster image horizontally by default and choose its output format.",
     resultContract: "lossy-visual", inputMode: "files", inputs: rasterInputs(),
     result: filesResult(output("jpeg", "explicit-user-choice"), output("png", "explicit-user-choice"), output("webp", "explicit-user-choice"), output("bmp", "explicit-user-choice")),
-    optionFields: [selectOption("direction", "Flip direction", "horizontal", ["horizontal", "vertical"]), selectOption("target", "Target format", null, ["jpeg", "png", "webp", "bmp"])],
+    optionFields: [selectOption("direction", "Flip direction", "horizontal", ["horizontal", "vertical"]), selectOption("target", "Target format", "png", ["jpeg", "png", "webp", "bmp"])],
     limits: limits(["image"], 1, 1), warningCodes: ["lossy-output"],
   }),
   defineImage({
