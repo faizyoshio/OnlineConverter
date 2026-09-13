@@ -185,7 +185,7 @@ export function CompressionSettings({
                     disabled={disabled}
                     className="compression-slider-input"
                     style={{
-                      background: `linear-gradient(to right, #5584f7 0%, #5584f7 ${percent}%, #525866 ${percent}%, #525866 100%)`,
+                      background: `linear-gradient(to right, var(--ink) 0%, var(--ink) ${percent}%, #ded4cc ${percent}%, #ded4cc 100%)`,
                     }}
                     aria-label={`Quality ${quality}%`}
                   />

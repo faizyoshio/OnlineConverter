@@ -704,12 +704,12 @@ h3 {
   box-shadow: none;
 }
 
-/* Custom Compression Settings Component */
+/* Custom Compression Settings Component - Matched to Site Neo-Brutalist Theme */
 .compression-settings {
   border: var(--line);
   border-radius: var(--radius-sm);
-  background: #1e2430;
-  box-shadow: 4px 4px 0 var(--ink);
+  background: var(--surface);
+  box-shadow: var(--shadow-hard);
   overflow: hidden;
 }
 
@@ -718,24 +718,28 @@ h3 {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background: #5584f7;
-  color: #0d1322;
+  background: var(--yellow);
+  color: var(--ink);
   border: none;
   padding: 0.85rem 1.25rem;
-  font-size: 1rem;
+  font-size: 1.05rem;
   font-weight: 800;
   text-align: left;
   cursor: pointer;
   user-select: none;
-  transition: filter 0.15s ease;
+  transition: filter 0.1s ease;
+}
+
+.compression-settings__header[aria-expanded="true"] {
+  border-bottom: var(--line);
 }
 
 .compression-settings__header:hover {
-  filter: brightness(1.05);
+  filter: brightness(0.97);
 }
 
 .compression-settings__chevron {
-  color: #ffffff;
+  color: var(--ink);
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -743,10 +747,10 @@ h3 {
 
 .compression-settings__body {
   padding: 1.25rem 1.5rem;
-  background: #1e2430;
+  background: var(--surface);
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: 1.25rem;
 }
 
 .compression-settings__main-row {
@@ -767,8 +771,8 @@ h3 {
   display: inline-flex;
   align-items: center;
   gap: 0.65rem;
-  color: #f1f5f9;
-  font-weight: 600;
+  color: var(--ink);
+  font-weight: 700;
   font-size: 0.95rem;
   cursor: pointer;
   user-select: none;
@@ -784,12 +788,13 @@ h3 {
   width: 1.25rem;
   height: 1.25rem;
   border-radius: 50%;
-  border: 2px solid #5a6478;
+  border: 2px solid var(--ink);
   display: inline-flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
   pointer-events: none;
+  background: #ffffff;
   transition: border-color 0.15s ease;
 }
 
@@ -797,20 +802,16 @@ h3 {
   pointer-events: none;
 }
 
-.compression-radio-input:checked + .compression-radio-custom {
-  border-color: #5584f7;
-}
-
 .compression-radio-input:checked + .compression-radio-custom::after {
   content: "";
   width: 0.625rem;
   height: 0.625rem;
   border-radius: 50%;
-  background: #5584f7;
+  background: var(--ink);
 }
 
 .compression-radio-input:focus-visible + .compression-radio-custom {
-  outline: 2px solid #ffffff;
+  outline: 3px solid var(--ink);
   outline-offset: 2px;
 }
 
@@ -818,8 +819,8 @@ h3 {
   width: 1.15rem;
   height: 1.15rem;
   border-radius: 50%;
-  border: 1px solid #738096;
-  color: #b8c4d6;
+  border: 1.5px solid var(--muted);
+  color: var(--muted);
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -827,12 +828,13 @@ h3 {
   font-weight: 800;
   cursor: help;
   user-select: none;
-  transition: color 0.15s ease, border-color 0.15s ease;
+  transition: color 0.15s ease, border-color 0.15s ease, background 0.15s ease;
 }
 
 .compression-help-icon:hover {
-  color: #ffffff;
-  border-color: #ffffff;
+  color: var(--ink);
+  border-color: var(--ink);
+  background: var(--paper);
 }
 
 .compression-settings__control-area {
@@ -849,25 +851,24 @@ h3 {
 .compression-text-input {
   width: 100%;
   height: 2.75rem;
-  background: #141720;
-  border: 1px solid #282f42;
+  background: #ffffff;
+  border: var(--line);
   border-radius: var(--radius-sm);
   padding: 0 1rem;
-  color: #ffffff;
+  color: var(--ink);
   font-size: 0.95rem;
-  font-weight: 600;
+  font-weight: 700;
   outline: none;
-  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  transition: box-shadow 0.15s ease;
 }
 
 .compression-text-input::placeholder {
-  color: #6b7a90;
+  color: var(--muted);
   font-weight: 500;
 }
 
 .compression-text-input:focus {
-  border-color: #5584f7;
-  box-shadow: 0 0 0 2px rgba(85, 132, 247, 0.35);
+  box-shadow: var(--focus-ring);
 }
 
 .compression-slider-container {
@@ -880,16 +881,15 @@ h3 {
   position: absolute;
   top: 0;
   transform: translateX(-50%);
-  background: #14161d;
+  background: var(--ink);
   color: #ffffff;
-  padding: 0.25rem 0.75rem;
-  border-radius: 6px;
-  font-size: 0.85rem;
+  padding: 0.2rem 0.65rem;
+  border-radius: 4px;
+  font-size: 0.82rem;
   font-weight: 800;
   white-space: nowrap;
   pointer-events: none;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
+  box-shadow: 2px 2px 0 rgba(0, 0, 0, 0.25);
 }
 
 .compression-slider-tooltip-arrow {
@@ -901,33 +901,34 @@ h3 {
   height: 0;
   border-left: 5px solid transparent;
   border-right: 5px solid transparent;
-  border-top: 5px solid #14161d;
+  border-top: 5px solid var(--ink);
 }
 
 .compression-slider-input {
   -webkit-appearance: none;
   appearance: none;
   width: 100%;
-  height: 0.5rem;
+  height: 0.55rem;
   border-radius: 9999px;
+  border: 1px solid var(--ink);
   outline: none;
   cursor: pointer;
 }
 
 .compression-slider-input:focus-visible {
-  outline: 2px solid #5584f7;
-  outline-offset: 4px;
+  outline: 3px solid var(--ink);
+  outline-offset: 3px;
 }
 
 .compression-slider-input::-webkit-slider-thumb {
   -webkit-appearance: none;
   appearance: none;
-  width: 1.25rem;
-  height: 1.25rem;
+  width: 1.35rem;
+  height: 1.35rem;
   border-radius: 50%;
-  background: #5584f7;
-  border: 2.5px solid #ffffff;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
+  background: var(--yellow);
+  border: 2px solid var(--ink);
+  box-shadow: 2px 2px 0 var(--ink);
   cursor: pointer;
   transition: transform 0.1s ease;
 }
@@ -937,12 +938,12 @@ h3 {
 }
 
 .compression-slider-input::-moz-range-thumb {
-  width: 1.25rem;
-  height: 1.25rem;
+  width: 1.35rem;
+  height: 1.35rem;
   border-radius: 50%;
-  background: #5584f7;
-  border: 2.5px solid #ffffff;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
+  background: var(--yellow);
+  border: 2px solid var(--ink);
+  box-shadow: 2px 2px 0 var(--ink);
   cursor: pointer;
   transition: transform 0.1s ease;
 }
@@ -952,7 +953,7 @@ h3 {
 }
 
 .compression-settings__secondary {
-  border-top: 1px solid #2a3346;
+  border-top: 1px solid #e0d4cc;
   padding-top: 0.75rem;
   margin-top: 0.25rem;
 }
@@ -961,19 +962,20 @@ h3 {
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  color: #a3b3c9;
-  font-size: 0.88rem;
+  color: var(--ink);
+  font-size: 0.9rem;
+  font-weight: 700;
   cursor: pointer;
 }
 
 .compression-secondary-checkbox-label:hover {
-  color: #ffffff;
+  color: var(--ink);
 }
 
 .compression-checkbox-input {
-  accent-color: #5584f7;
-  width: 1rem;
-  height: 1rem;
+  accent-color: var(--coral);
+  width: 1.15rem;
+  height: 1.15rem;
   cursor: pointer;
 }
 
