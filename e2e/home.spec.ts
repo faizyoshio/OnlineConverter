@@ -364,3 +364,81 @@ test("password generator route returns a local value without a download", async 
   await expect(result.locator("output")).toHaveText(/.{32}/);
   await expect(result.getByRole("link", { name: /download/i })).toHaveCount(0);
 });
+
+test("flatten PDF route processes a PDF in browser worker", async ({ page }) => {
+  const doc = await PDFDocument.create();
+  doc.addPage([612, 792]);
+  await page.goto("/tools/flatten-pdf");
+  await page.getByLabel(/choose files/i).setInputFiles({
+    name: "source.pdf",
+    mimeType: "application/pdf",
+    buffer: Buffer.from(await doc.save()),
+  });
+  await expect(page.getByRole("button", { name: /run conversion/i })).toBeEnabled();
+  await page.getByRole("button", { name: /run conversion/i }).click();
+  await expect(page.getByRole("link", { name: /download output-1.pdf/i })).toBeVisible();
+});
+
+test("compress JPEG route processes image in browser worker", async ({ page }) => {
+  await page.goto("/tools/compress-jpeg");
+  const jpeg = await canvasImage(page, "image/jpeg");
+  await page.getByLabel(/choose files/i).setInputFiles({ name: "source.jpg", mimeType: "image/jpeg", buffer: jpeg });
+  await expect(page.getByRole("button", { name: /run conversion/i })).toBeEnabled();
+  await page.getByRole("button", { name: /run conversion/i }).click();
+  await expect(page.getByRole("link", { name: /download output-1.jpg/i })).toBeVisible();
+});
+
+test("compress WebP route processes image in browser worker", async ({ page }) => {
+  await page.goto("/tools/compress-webp");
+  const webp = await canvasImage(page, "image/webp");
+  await page.getByLabel(/choose files/i).setInputFiles({ name: "source.webp", mimeType: "image/webp", buffer: webp });
+  await expect(page.getByRole("button", { name: /run conversion/i })).toBeEnabled();
+  await page.getByRole("button", { name: /run conversion/i }).click();
+  await expect(page.getByRole("link", { name: /download output-1.webp/i })).toBeVisible();
+});
+
+test("resize image route resizes image in browser worker", async ({ page }) => {
+  await page.goto("/tools/resize-image");
+  const jpeg = await canvasImage(page, "image/jpeg");
+  await page.getByLabel(/choose files/i).setInputFiles({ name: "source.jpg", mimeType: "image/jpeg", buffer: jpeg });
+  await expect(page.getByRole("button", { name: /run conversion/i })).toBeEnabled();
+  await page.getByRole("button", { name: /run conversion/i }).click();
+  await expect(page.getByRole("link", { name: /download output-1.png/i })).toBeVisible();
+});
+
+test("crop image route crops image in browser worker", async ({ page }) => {
+  await page.goto("/tools/crop-image");
+  const jpeg = await canvasImage(page, "image/jpeg");
+  await page.getByLabel(/choose files/i).setInputFiles({ name: "source.jpg", mimeType: "image/jpeg", buffer: jpeg });
+  await expect(page.getByRole("button", { name: /run conversion/i })).toBeEnabled();
+  await page.getByRole("button", { name: /run conversion/i }).click();
+  await expect(page.getByRole("link", { name: /download output-1.png/i })).toBeVisible();
+});
+
+test("circle crop image route applies circular mask in browser worker", async ({ page }) => {
+  await page.goto("/tools/circle-crop-image");
+  const webp = await canvasImage(page, "image/webp");
+  await page.getByLabel(/choose files/i).setInputFiles({ name: "source.webp", mimeType: "image/webp", buffer: webp });
+  await expect(page.getByRole("button", { name: /run conversion/i })).toBeEnabled();
+  await page.getByRole("button", { name: /run conversion/i }).click();
+  await expect(page.getByRole("link", { name: /download output-1.png/i })).toBeVisible();
+});
+
+test("rotate image route rotates image in browser worker", async ({ page }) => {
+  await page.goto("/tools/rotate-image");
+  const jpeg = await canvasImage(page, "image/jpeg");
+  await page.getByLabel(/choose files/i).setInputFiles({ name: "source.jpg", mimeType: "image/jpeg", buffer: jpeg });
+  await expect(page.getByRole("button", { name: /run conversion/i })).toBeEnabled();
+  await page.getByRole("button", { name: /run conversion/i }).click();
+  await expect(page.getByRole("link", { name: /download output-1.png/i })).toBeVisible();
+});
+
+test("flip image route flips image in browser worker", async ({ page }) => {
+  await page.goto("/tools/flip-image");
+  const jpeg = await canvasImage(page, "image/jpeg");
+  await page.getByLabel(/choose files/i).setInputFiles({ name: "source.jpg", mimeType: "image/jpeg", buffer: jpeg });
+  await expect(page.getByRole("button", { name: /run conversion/i })).toBeEnabled();
+  await page.getByRole("button", { name: /run conversion/i }).click();
+  await expect(page.getByRole("link", { name: /download output-1.png/i })).toBeVisible();
+});
+

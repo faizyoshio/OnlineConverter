@@ -5,7 +5,7 @@ test("keeps all planned tools visible, noninteractive, and responsive in catalog
 
   const search = page.getByRole("searchbox", { name: "Search tools" });
   const allTools = page.getByRole("button", { name: "All tools" });
-  await expect(page.getByRole("status")).toHaveText("90 tools");
+  await expect(page.getByRole("status")).toHaveText("71 tools");
 
   await search.fill("PDF to JPG");
   await expect(page.getByRole("status")).toHaveText("1 tool");
