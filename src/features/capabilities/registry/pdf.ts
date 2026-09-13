@@ -31,8 +31,8 @@ const pdfResult = () => filesResult(output("pdf"));
 export const pdfCapabilities = Object.freeze([
   definePdf({
     id: "pdf.merge", slug: "merge-pdf", title: "Merge PDF",
-    description: "Combine two or more local PDF files into one ordered PDF without uploading them.",
-    aliases: ["combine pdf"], resultContract: "exact-structural", inputMode: "files",
+    description: "Combine thesis chapters, appendix sections, or research papers into one ordered PDF without uploading them.",
+    aliases: ["combine pdf", "merge thesis", "combine chapters"], resultContract: "exact-structural", inputMode: "files",
     releaseStatus: "active",
     inputs: [pdfFile()], result: pdfResult(),
     optionFields: [selectOption("order", "Page order", "input-order", ["input-order", "drag-order"]), pageRangeOption("pages", "Included pages", "all")],
@@ -48,7 +48,8 @@ export const pdfCapabilities = Object.freeze([
   }),
   definePdf({
     id: "pdf.split", slug: "split-pdf", title: "Split PDF",
-    description: "Split a local PDF by explicit page ranges, packaged in a ZIP, or keep selected pages in one PDF.",
+    description: "Split research papers or thesis drafts by page ranges, packaged in a ZIP or kept as selected pages in one PDF.",
+    aliases: ["split thesis", "extract chapter"],
     resultContract: "exact-structural", inputMode: "files", inputs: [pdfFile()],
     releaseStatus: "active",
     result: filesResult(output("pdf", "explicit-user-choice"), output("zip", "explicit-user-choice")),
@@ -80,7 +81,8 @@ export const pdfCapabilities = Object.freeze([
   definePdf({
     id: "pdf.organize", slug: "organize-pdf", title: "Organize PDF",
     releaseStatus: "active",
-    description: "Reorder, duplicate, or delete PDF pages with the original page order shown initially.",
+    description: "Reorder manuscript pages, duplicate reference sheets, or delete draft sections with original order shown initially.",
+    aliases: ["reorder pages", "thesis page order"],
     resultContract: "exact-structural", inputMode: "files", inputs: [pdfFile()], result: pdfResult(),
     optionFields: [textOption("operations", "New page order (for example 3,1,2; use none to keep original)", "none"), selectOption("initialOrder", "Initial order", "original", ["original"])],
     limits: limits(["pdf"], 1, 1),
@@ -88,7 +90,8 @@ export const pdfCapabilities = Object.freeze([
   definePdf({
     id: "pdf.rotate", slug: "rotate-pdf", title: "Rotate PDF",
     releaseStatus: "active",
-    description: "Rotate selected pages in a local PDF, defaulting to ninety degrees clockwise.",
+    description: "Rotate scanned journal articles, landscape charts, or thesis diagrams clockwise.",
+    aliases: ["rotate pages", "fix landscape chart"],
     resultContract: "exact-structural", inputMode: "files", inputs: [pdfFile()], result: pdfResult(),
     optionFields: [pageRangeOption("pages", "Selected pages", "all"), selectOption("degrees", "Rotation", "90", ["90", "180", "270"])],
     limits: limits(["pdf"], 1, 1),
@@ -96,7 +99,8 @@ export const pdfCapabilities = Object.freeze([
   definePdf({
     id: "pdf.crop", slug: "crop-pdf", title: "Crop PDF",
     releaseStatus: "active",
-    description: "Apply a visible crop box to the current PDF page or optionally to every page.",
+    description: "Trim scanner borders, margins, or unwanted headers from research papers and thesis drafts.",
+    aliases: ["crop thesis", "trim margins", "remove scanner border"],
     resultContract: "exact-structural", inputMode: "files", inputs: [pdfFile()], result: pdfResult(),
     optionFields: [cropBoxOption("cropBox", "Crop margins in mm (left, top, right, bottom)", "10,10,10,10"), pageRangeOption("pages", "Pages", "1"), toggleOption("applyToAll", "Apply to all pages", false)],
     limits: limits(["pdf"], 1, 1), browserRequirements: ["canvas"],
@@ -104,7 +108,8 @@ export const pdfCapabilities = Object.freeze([
   definePdf({
     id: "pdf.resize", slug: "resize-pdf", title: "Resize PDF",
     releaseStatus: "active",
-    description: "Resize PDF pages to A4 by default with fitted content centered on each page.",
+    description: "Standardize manuscript and paper pages to A4 dimensions with fitted content centered on each page.",
+    aliases: ["a4 format", "resize thesis", "standardize paper size"],
     resultContract: "exact-structural", inputMode: "files", inputs: [pdfFile()], result: pdfResult(),
     optionFields: [selectOption("pageSize", "Page size", "a4", ["a4"]), selectOption("fit", "Content fit", "fit", ["fit"]), selectOption("alignment", "Alignment", "center", ["center"])],
     limits: limits(["pdf"], 1, 1),
@@ -112,7 +117,8 @@ export const pdfCapabilities = Object.freeze([
   definePdf({
     id: "pdf.delete-pages", slug: "delete-pdf-pages", title: "Delete PDF Pages",
     releaseStatus: "active",
-    description: "Delete selected PDF pages while requiring at least one page to remain in the document.",
+    description: "Remove blank sheets, review notes, or unwanted pages from manuscripts and thesis documents.",
+    aliases: ["remove pages", "delete blank sheets"],
     resultContract: "exact-structural", inputMode: "files", inputs: [pdfFile()], result: pdfResult(),
     optionFields: [pageRangeOption("pages", "Pages to delete", "1")],
     limits: limits(["pdf"], 1, 1),
@@ -120,7 +126,8 @@ export const pdfCapabilities = Object.freeze([
   definePdf({
     id: "pdf.extract-pages", slug: "extract-pdf-pages", title: "Extract PDF Pages",
     releaseStatus: "active",
-    description: "Extract selected pages into one combined PDF or a ZIP containing separate documents.",
+    description: "Extract selected research chapters or paper sections into separate PDF files or a single document.",
+    aliases: ["extract chapter", "pull pages"],
     resultContract: "exact-structural", inputMode: "files", inputs: [pdfFile()],
     result: filesResult(output("pdf", "explicit-user-choice"), output("zip", "explicit-user-choice")),
     optionFields: [pageRangeOption("pages", "Pages to extract", "1"), toggleOption("combinedPdf", "Create one combined PDF", true)],
@@ -129,14 +136,16 @@ export const pdfCapabilities = Object.freeze([
   definePdf({
     id: "pdf.page-numbers", slug: "page-numbers", title: "Add Page Numbers",
     releaseStatus: "active",
-    description: "Add Arabic page numbers starting at one in the bottom center of each PDF page.",
+    description: "Add academic page numbers to thesis drafts, research reports, and paper manuscripts in the bottom center.",
+    aliases: ["thesis pagination", "manuscript page numbers", "add page numbers"],
     resultContract: "exact-structural", inputMode: "files", inputs: [pdfFile()], result: pdfResult(),
     optionFields: [selectOption("position", "Position", "bottom-center", ["bottom-center"]), numberOption("start", "Start number", 1, 1, 100000), selectOption("style", "Number style", "arabic", ["arabic"])],
     limits: limits(["pdf"], 1, 1),
   }),
   definePdf({
     id: "pdf.watermark", slug: "watermark-pdf", title: "Watermark PDF",
-    description: "Apply centered local text or image watermarks at thirty percent opacity to PDF pages.",
+    description: "Apply draft, confidential, or institutional watermarks to unpublished research manuscripts.",
+    aliases: ["draft watermark", "thesis watermark", "confidential research"],
     resultContract: "exact-structural", inputMode: "files",
     inputs: [pdfFile(), input("jpeg"), input("png"), input("webp")], result: pdfResult(),
     releaseStatus: "active",
@@ -146,7 +155,8 @@ export const pdfCapabilities = Object.freeze([
   definePdf({
     id: "pdf.flatten", slug: "flatten-pdf", title: "Flatten PDF",
     releaseStatus: "active",
-    description: "Flatten annotations and AcroForm appearances across all pages of a local PDF.",
+    description: "Flatten annotations, comments, and form fields before journal or conference portal submission.",
+    aliases: ["flatten thesis", "submission pdf", "flatten annotations"],
     resultContract: "exact-structural", inputMode: "files", inputs: [pdfFile()], result: pdfResult(),
     optionFields: [toggleOption("annotations", "Flatten annotations", true), toggleOption("formAppearances", "Flatten form appearances", true), pageRangeOption("pages", "Pages", "all")],
     limits: limits(["pdf"], 1, 1), warningCodes: ["interactive-fields-removed"],
@@ -222,7 +232,8 @@ export const pdfCapabilities = Object.freeze([
   }),
   definePdf({
     id: "pdf.image-to-pdf", slug: "image-to-pdf", title: "Image to PDF",
-    description: "Combine JPEG, PNG, or WebP images into an ordered A4 PDF with twelve millimeter margins.",
+    description: "Combine research plots, figures, and diagram images into an ordered publication-ready A4 PDF.",
+    aliases: ["figures to pdf", "plots to pdf", "images to pdf"],
     resultContract: "exact-structural", inputMode: "files", inputs: [input("jpeg"), input("png"), input("webp")], result: pdfResult(),
     releaseStatus: "active",
     optionFields: [selectOption("pageSize", "Page size", "a4", ["a4"]), selectOption("fit", "Image fit", "contain", ["contain"]), numberOption("marginMm", "Margin", 12, 0, 50), selectOption("order", "Input order", "input-order", ["input-order", "drag-order"])],
@@ -237,7 +248,8 @@ export const pdfCapabilities = Object.freeze([
   }),
   definePdf({
     id: "pdf.text-to-pdf", slug: "text-to-pdf", title: "Text to PDF",
-    description: "Convert UTF-8 plain text to a wrapped A4 portrait PDF using a twelve-point system font.",
+    description: "Convert UTF-8 plain text, code listings, or lecture notes to a clean formatted A4 portrait PDF.",
+    aliases: ["notes to pdf", "code to pdf", "txt to pdf"],
     resultContract: "exact-structural", inputMode: "files", inputs: [input("text")], result: pdfResult(),
     releaseStatus: "active",
     optionFields: [selectOption("pageSize", "Page size", "a4", ["a4"]), selectOption("orientation", "Orientation", "portrait", ["portrait"]), numberOption("fontSizePt", "Font size", 12, 6, 72), toggleOption("wrap", "Wrap text", true)],

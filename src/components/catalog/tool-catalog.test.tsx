@@ -20,7 +20,7 @@ test("announces the result count", () => {
 test("filters by category and clears an empty result", async () => {
   const user = userEvent.setup();
   render(<ToolCatalog capabilities={capabilityRegistry.slice(0, 30)} previewMode />);
-  await user.click(screen.getByRole("button", { name: "Images" }));
+  await user.click(screen.getByRole("button", { name: "Figures & Images" }));
   await user.type(screen.getByRole("searchbox", { name: /search tools/i }), "video");
   expect(screen.getByText(/no tools match/i)).toBeVisible();
   await user.click(screen.getByRole("button", { name: /clear filters/i }));

@@ -2,11 +2,11 @@ import { Button } from "@/components/ui/button";
 import type { CapabilityCategory } from "@/features/capabilities/schema";
 
 const categoryLabels: Record<CapabilityCategory, string> = {
-  pdf: "PDF",
-  image: "Images",
-  gif: "GIF",
-  utility: "Utilities",
-  trust: "Trust & privacy",
+  pdf: "Thesis & Papers",
+  image: "Figures & Images",
+  gif: "Animations & GIF",
+  utility: "Study Utilities",
+  trust: "Trust & Privacy",
 };
 
 type CategoryFilterProps = {

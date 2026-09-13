@@ -49,7 +49,7 @@ describe("site helpers", () => {
     const metadata = toolMetadata(active, new URL("https://converter.example"));
     expect(toolPath(active.slug)).toBe(`/tools/${active.slug}`);
     expect(metadata).toMatchObject({
-      title: `${active.title} | OnlineConverter`,
+      title: `${active.title} | ScholarKit`,
       description: active.description,
       alternates: { canonical: `https://converter.example/tools/${active.slug}` },
     });

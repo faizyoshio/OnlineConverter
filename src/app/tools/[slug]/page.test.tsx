@@ -38,7 +38,7 @@ test("generates static routes for active tools only", () => {
 
 test("emits metadata only for active tool routes", async () => {
   await expect(generateMetadata({ params: Promise.resolve({ slug: "merge-pdf" }) })).resolves.toMatchObject({
-    title: "Merge PDF | OnlineConverter",
+    title: "Merge PDF | ScholarKit",
   });
   await expect(generateMetadata({ params: Promise.resolve({ slug: "compress-pdf" }) })).resolves.toEqual({});
 });

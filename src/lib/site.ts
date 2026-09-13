@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { capabilityRegistry, type CapabilityManifest } from "@/features/capabilities";
 
-export const SITE_NAME = "OnlineConverter";
+export const SITE_NAME = "ScholarKit";
 
 export type SiteEnvironment = "local" | "preview" | "production";
 
@@ -20,7 +20,7 @@ function defaultSiteUrl(environment: SiteEnvironment): string | undefined {
   if (process.env.SITE_URL) return process.env.SITE_URL;
   if (process.env.VERCEL_PROJECT_PRODUCTION_URL) return `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`;
   if (process.env.VERCEL_URL) return `https://${process.env.VERCEL_URL}`;
-  if (environment === "production") return "https://onlineconverter.vercel.app";
+  if (environment === "production") return "https://scholarkit.vercel.app";
   return undefined;
 }
 

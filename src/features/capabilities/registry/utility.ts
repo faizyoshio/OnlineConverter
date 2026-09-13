@@ -16,7 +16,8 @@ export const utilityCapabilities = Object.freeze([
   capability({
     id: "archive.zip-create", slug: "zip-maker", title: "ZIP Maker",
     releaseStatus: "active",
-    description: "Create a local ZIP from one to twenty files while preserving selected relative names.",
+    description: "Bundle code, datasets, or supplementary materials into a local ZIP archive without uploading.",
+    aliases: ["supplementary zip", "dataset zip", "code archive"],
     category: "utility", workerFamily: "archive", resultContract: "exact-structural", inputMode: "files",
     inputs: [input("binary")], result: filesResult(output("zip")),
     optionFields: [toggleOption("preserveRelativeNames", "Preserve relative names", true), numberOption("deflateLevel", "Deflate level", 6, 0, 9)],
@@ -25,7 +26,8 @@ export const utilityCapabilities = Object.freeze([
   capability({
     id: "archive.zip-extract", slug: "zip-extractor", title: "ZIP Extractor",
     releaseStatus: "active",
-    description: "Extract safe local ZIP entries individually or bundle selected entries into a new ZIP.",
+    description: "Extract research data packages, assignment submissions, or paper bundles locally.",
+    aliases: ["unzip data", "extract supplementary"],
     category: "utility", workerFamily: "archive", resultContract: "exact-structural", inputMode: "files",
     inputs: [input("zip")], result: selectedEntriesResult(output("binary"), output("zip")),
     optionFields: [toggleOption("selectAllSafe", "Select all safe entries", true), toggleOption("flatten", "Flatten folders", false)],
@@ -34,7 +36,8 @@ export const utilityCapabilities = Object.freeze([
   capability({
     id: "utility.unit", slug: "unit-converter", title: "Unit Converter",
     releaseStatus: "active",
-    description: "Convert a numeric value between supported measurement units with controlled precision.",
+    description: "Convert numeric scientific and engineering values between measurement units with controlled precision.",
+    aliases: ["scientific unit converter", "physics units", "engineering units"],
     category: "utility", workerFamily: "utility", resultContract: "exact-structural", inputMode: "values", inputs: [],
     result: valueResult("number"),
     optionFields: [
@@ -48,7 +51,8 @@ export const utilityCapabilities = Object.freeze([
   capability({
     id: "utility.time", slug: "time-converter", title: "Time Converter",
     releaseStatus: "active",
-    description: "Convert a date and time between IANA zones while showing the exact zone and UTC offset used.",
+    description: "Convert date and time between IANA zones for conference submission deadlines and defense schedules.",
+    aliases: ["conference deadline", "submission timezone", "utc converter"],
     category: "utility", workerFamily: "utility", resultContract: "exact-structural", inputMode: "values", inputs: [],
     result: valueResult("time"),
     optionFields: [textOption("dateTime", "Date and time", "2026-01-01T12:00"), textOption("fromZone", "From time zone", "local"), textOption("toZone", "To time zone", "UTC"), toggleOption("isoPreview", "Show ISO preview", true)],

@@ -54,7 +54,8 @@ export const imageCapabilities = Object.freeze([
   defineImage({
     id: "image.jpg-to-modern", slug: "jpg-to-png-webp", title: "JPG to PNG or WebP",
     releaseStatus: "active",
-    description: "Convert a local JPEG to PNG or WebP with an explicit modern output selection.",
+    description: "Convert research charts and figure JPGs to lossless PNG or modern WebP format.",
+    aliases: ["figure to png", "chart to webp"],
     resultContract: "lossy-visual", inputMode: "files", inputs: [input("jpeg")],
     result: filesResult(output("png", "explicit-user-choice"), output("webp", "explicit-user-choice")),
     optionFields: [selectOption("target", "Target format", "png", ["png", "webp"]), numberOption("webpQuality", "WebP quality", 85, 1, 100)],
@@ -79,7 +80,8 @@ export const imageCapabilities = Object.freeze([
   defineImage({
     id: "image.webp-to-jpg", slug: "webp-to-jpg", title: "WebP to JPG",
     releaseStatus: "active",
-    description: "Convert a local WebP image to JPEG with a white background behind transparent pixels.",
+    description: "Convert WebP research graphics to publication-standard JPEG format with a white background.",
+    aliases: ["figure to jpg", "diagram to jpg"],
     resultContract: "lossy-visual", inputMode: "files", inputs: [input("webp")], result: filesResult(output("jpeg")),
     optionFields: [colorOption("alphaBackground", "Alpha background", "#ffffff"), numberOption("quality", "JPEG quality", 85, 1, 100)],
     limits: limits(["image"], 1, 1), warningCodes: ["lossy-output"],
@@ -87,14 +89,16 @@ export const imageCapabilities = Object.freeze([
   defineImage({
     id: "image.webp-to-png", slug: "webp-to-png", title: "WebP to PNG",
     releaseStatus: "active",
-    description: "Convert a local WebP image to PNG while retaining all available alpha transparency.",
+    description: "Convert WebP diagrams and figures to lossless PNG while retaining all alpha transparency.",
+    aliases: ["diagram to png", "figure to png"],
     resultContract: "lossy-visual", inputMode: "files", inputs: [input("webp")], result: filesResult(output("png")),
     optionFields: [toggleOption("preserveAlpha", "Preserve alpha", true)], limits: limits(["image"], 1, 1), warningCodes: ["lossy-output"],
   }),
   defineImage({
     id: "image.jfif-to-png", slug: "jfif-to-png", title: "JFIF to PNG",
     releaseStatus: "active",
-    description: "Convert a local JFIF or JPEG image to PNG while preserving its original dimensions.",
+    description: "Convert camera or microscope JFIF image files to standard lossless PNG format.",
+    aliases: ["microscope jfif to png", "figure jfif to png"],
     resultContract: "lossy-visual", inputMode: "files", inputs: [input("jfif"), input("jpeg")], result: filesResult(output("png")),
     optionFields: [toggleOption("preserveDimensions", "Preserve dimensions", true)], limits: limits(["image"], 1, 1), warningCodes: ["lossy-output"],
   }),
@@ -143,7 +147,8 @@ export const imageCapabilities = Object.freeze([
   defineImage({
     id: "image.compress-jpeg", slug: "compress-jpeg", title: "Compress JPEG",
     releaseStatus: "active",
-    description: "Compress JPEG or JFIF files at quality seventy-five and remove nonessential metadata.",
+    description: "Compress research figures and photos to meet journal portal file-size limits.",
+    aliases: ["compress figure", "reduce figure size"],
     resultContract: "lossy-visual", inputMode: "files", inputs: [input("jpeg"), input("jfif")], result: filesResult(output("jpeg")),
     optionFields: [numberOption("quality", "JPEG quality", 75, 1, 100), toggleOption("stripMetadata", "Strip nonessential metadata", true)],
     limits: limits(["image"], 1, 1), warningCodes: ["lossy-output", "metadata-removed"],
@@ -158,7 +163,8 @@ export const imageCapabilities = Object.freeze([
   defineImage({
     id: "image.compress-webp", slug: "compress-webp", title: "Compress WebP",
     releaseStatus: "active",
-    description: "Compress a local WebP image at quality seventy-five while preserving transparency.",
+    description: "Compress WebP graphics with customizable quality for online publications and posters.",
+    aliases: ["compress diagram", "reduce webp size"],
     resultContract: "lossy-visual", inputMode: "files", inputs: [input("webp")], result: filesResult(output("webp")),
     optionFields: [numberOption("quality", "WebP quality", 75, 1, 100), toggleOption("preserveAlpha", "Preserve alpha", true)],
     limits: limits(["image"], 1, 1), warningCodes: ["lossy-output"],
@@ -174,7 +180,8 @@ export const imageCapabilities = Object.freeze([
   defineImage({
     id: "image.resize", slug: "resize-image", title: "Resize Image",
     releaseStatus: "active",
-    description: "Resize a supported local raster image with aspect lock and high-quality Lanczos resampling.",
+    description: "Resize research figures, plots, and charts to exact pixel dimensions with Lanczos resampling.",
+    aliases: ["resize figure", "resize plot", "journal figure dimensions"],
     resultContract: "lossy-visual", inputMode: "files", inputs: rasterInputs(),
     result: filesResult(output("jpeg", "explicit-user-choice"), output("png", "explicit-user-choice"), output("webp", "explicit-user-choice"), output("bmp", "explicit-user-choice")),
     optionFields: [
@@ -189,7 +196,8 @@ export const imageCapabilities = Object.freeze([
   defineImage({
     id: "image.crop", slug: "crop-image", title: "Crop Image",
     releaseStatus: "active",
-    description: "Crop a supported local raster image within its source bounds and choose the output format.",
+    description: "Crop graphs, microscope images, or chart legends to focus on relevant scientific data.",
+    aliases: ["crop graph", "crop figure", "crop legend"],
     resultContract: "lossy-visual", inputMode: "files", inputs: rasterInputs(),
     result: filesResult(output("jpeg", "explicit-user-choice"), output("png", "explicit-user-choice"), output("webp", "explicit-user-choice"), output("bmp", "explicit-user-choice")),
     optionFields: [cropBoxOption("cropBox", "Crop coordinates (x, y, width, height)", "0,0,500,500"), selectOption("target", "Target format", "png", ["jpeg", "png", "webp", "bmp"])],
@@ -198,7 +206,8 @@ export const imageCapabilities = Object.freeze([
   defineImage({
     id: "image.circle-crop", slug: "circle-crop-image", title: "Circle Crop Image",
     releaseStatus: "active",
-    description: "Create a centered circular crop from a local image with transparent pixels outside it.",
+    description: "Create a circular crop for author profile photos or circular microscopy specimens.",
+    aliases: ["author photo crop", "microscopy circle crop"],
     resultContract: "lossy-visual", inputMode: "files", inputs: editableInputs(),
     result: filesResult(output("png", "explicit-user-choice"), output("webp", "explicit-user-choice")),
     optionFields: [selectOption("crop", "Crop mode", "centered-square", ["centered-square"]), toggleOption("transparentOutside", "Transparent outside", true), selectOption("target", "Target format", "png", ["png", "webp"])],
@@ -207,7 +216,8 @@ export const imageCapabilities = Object.freeze([
   defineImage({
     id: "image.rotate", slug: "rotate-image", title: "Rotate Image",
     releaseStatus: "active",
-    description: "Rotate a supported local raster image ninety degrees clockwise by default.",
+    description: "Rotate scientific figures, plots, and scanned diagrams ninety degrees clockwise.",
+    aliases: ["rotate figure", "rotate graph"],
     resultContract: "lossy-visual", inputMode: "files", inputs: rasterInputs(),
     result: filesResult(output("jpeg", "explicit-user-choice"), output("png", "explicit-user-choice"), output("webp", "explicit-user-choice"), output("bmp", "explicit-user-choice")),
     optionFields: [selectOption("degrees", "Rotation", "90", ["90", "180", "270"]), selectOption("target", "Target format", "png", ["jpeg", "png", "webp", "bmp"])],
@@ -216,7 +226,8 @@ export const imageCapabilities = Object.freeze([
   defineImage({
     id: "image.flip", slug: "flip-image", title: "Flip Image",
     releaseStatus: "active",
-    description: "Flip a supported local raster image horizontally by default and choose its output format.",
+    description: "Flip scientific figures, plots, or diagrams horizontally or vertically.",
+    aliases: ["flip figure", "mirror plot"],
     resultContract: "lossy-visual", inputMode: "files", inputs: rasterInputs(),
     result: filesResult(output("jpeg", "explicit-user-choice"), output("png", "explicit-user-choice"), output("webp", "explicit-user-choice"), output("bmp", "explicit-user-choice")),
     optionFields: [selectOption("direction", "Flip direction", "horizontal", ["horizontal", "vertical"]), selectOption("target", "Target format", "png", ["jpeg", "png", "webp", "bmp"])],

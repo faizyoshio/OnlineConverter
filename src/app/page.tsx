@@ -19,16 +19,16 @@ export default function HomePage() {
     <>
       <section aria-labelledby="home-title" className="hero">
         <div>
-          <h1 id="home-title">Convert files locally in your browser</h1>
-          <p className="hero__lead">A clear, searchable catalog for everyday file work—without routing your files through a conversion server.</p>
+          <h1 id="home-title">Convert files locally — Academic &amp; Research Toolkit</h1>
+          <p className="hero__lead">A local-first toolkit for students, researchers, and academics. Format thesis chapters, paginate manuscripts, optimize publication figures, and meet portal submission limits—without uploading your research to external servers.</p>
         </div>
         <aside className="privacy-panel" aria-label="Privacy promise">
           <strong>Files never leave your device.</strong>
-          <p>Conversion engines run in browser workers. Planned tools stay visibly unavailable until their real adapters pass the launch gate.</p>
+          <p>All processing runs inside local browser workers. Your unpublished manuscripts, thesis drafts, and confidential lab data stay 100% private and protected from plagiarism risks.</p>
           <ul className="privacy-list">
-            <li>No uploads for conversion</li>
-            <li>Anonymous-first workflow</li>
-            <li>Truthful quality labels</li>
+            <li>Zero uploads to external servers</li>
+            <li>Safe for unpublished thesis & research drafts</li>
+            <li>Meets journal & university portal requirements</li>
           </ul>
         </aside>
       </section>
