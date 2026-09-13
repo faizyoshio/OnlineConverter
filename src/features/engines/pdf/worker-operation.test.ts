@@ -306,4 +306,33 @@ describe("PDF worker operations", () => {
     expect(output.getPage(0).getSize()).toEqual(expect.objectContaining({ width: expect.closeTo(595.28, 2), height: expect.closeTo(841.89, 2) }));
     expect(stages).toContain("Resizing pages");
   });
+
+  test("flattens PDF form fields through worker operation context", async () => {
+    const stages: string[] = [];
+    const doc = await PDFDocument.create();
+    const page = doc.addPage([200, 200]);
+    const form = doc.getForm();
+    const textField = form.createTextField("worker.name");
+    textField.setText("Antigravity Form Value");
+    textField.addToPage(page, { x: 20, y: 100, width: 160, height: 20 });
+    const bytes = await doc.save();
+    const inputFile = new File([Uint8Array.from(bytes).buffer], "form.pdf", { type: "application/pdf" });
+
+    const result = await processPdfOperation({
+      capabilityId: "pdf.flatten",
+      jobId: "job-flatten",
+      inputs: [inputFile],
+      options: { formAppearances: true, annotations: true },
+      isCancelled: () => false,
+      reportProgress: (_value, stage) => stages.push(stage),
+    });
+
+    expect(result.mode).toBe("files");
+    if (result.mode !== "files") throw new Error("Expected file result");
+    const output = await PDFDocument.load(await result.outputs[0]!.blob.arrayBuffer());
+    expect(output.getPageCount()).toBe(1);
+    expect(output.getForm().getFields().length).toBe(0);
+    expect(stages).toContain("Flattening PDF");
+    expect(stages).toContain("Finalizing");
+  });
 });

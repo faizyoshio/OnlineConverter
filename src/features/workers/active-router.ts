@@ -14,6 +14,7 @@ export function createActiveEngineRouter(): EngineRouter {
   router.register("pdf.organize", async () => (await import("@/features/engines/pdf-organize")).createPdfOrganizeAdapter());
   router.register("pdf.page-numbers", async () => (await import("@/features/engines/pdf-page-numbers")).createPdfPageNumbersAdapter());
   router.register("pdf.watermark", async () => (await import("@/features/engines/pdf-watermark")).createPdfWatermarkAdapter());
+  router.register("pdf.flatten", async () => (await import("@/features/engines/pdf-flatten")).createPdfFlattenAdapter());
   router.register("pdf.text-to-pdf", async () => (await import("@/features/engines/text-to-pdf")).createTextToPdfAdapter());
   router.register("pdf.image-to-pdf", async () => (await import("@/features/engines/image-to-pdf")).createImageToPdfAdapter());
   router.register("image.jpg-to-modern", async () => (await import("@/features/engines/image-jpg-to-png")).createImageJpgToPngAdapter());

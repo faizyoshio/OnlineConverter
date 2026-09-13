@@ -13,6 +13,7 @@ test("generates static routes for active tools only", () => {
     { slug: "extract-pdf-pages" },
     { slug: "page-numbers" },
     { slug: "watermark-pdf" },
+    { slug: "flatten-pdf" },
     { slug: "image-to-pdf" },
     { slug: "text-to-pdf" },
     { slug: "jpg-to-png-webp" },

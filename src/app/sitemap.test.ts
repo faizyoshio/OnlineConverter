@@ -26,6 +26,7 @@ test("includes home and only active capabilities", () => {
     { url: "http://localhost:3000/tools/extract-pdf-pages" },
     { url: "http://localhost:3000/tools/page-numbers" },
     { url: "http://localhost:3000/tools/watermark-pdf" },
+    { url: "http://localhost:3000/tools/flatten-pdf" },
     { url: "http://localhost:3000/tools/image-to-pdf" },
     { url: "http://localhost:3000/tools/text-to-pdf" },
     { url: "http://localhost:3000/tools/jpg-to-png-webp" },

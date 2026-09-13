@@ -12,6 +12,7 @@ import {
   textToPdf,
   cropPdfPages,
   resizePdfPagesToA4,
+  flattenPdf,
 } from "./operations";
 
 async function createSamplePdf(pageCount: number = 3): Promise<Uint8Array> {
@@ -145,5 +146,31 @@ describe("PDF Operations Engine", () => {
 
     const resized = await resizePdfPagesToA4(await source.save());
     await expect(PDFDocument.load(resized)).resolves.toEqual(expect.objectContaining({}));
+  });
+
+  test("flattenPdf flattens form fields and preserves page structure", async () => {
+    const doc = await PDFDocument.create();
+    const page = doc.addPage([300, 300]);
+    page.drawText("Form test", { x: 50, y: 250, size: 12 });
+    const form = doc.getForm();
+    const textField = form.createTextField("sample.name");
+    textField.setText("Antigravity User");
+    textField.addToPage(page, { x: 50, y: 200, width: 200, height: 20 });
+    const bytesWithForm = await doc.save();
+
+    const loadedBefore = await PDFDocument.load(bytesWithForm);
+    expect(loadedBefore.getForm().getFields().length).toBe(1);
+
+    const flattened = await flattenPdf(bytesWithForm, { formAppearances: true });
+    const loadedAfter = await PDFDocument.load(flattened);
+    expect(loadedAfter.getPageCount()).toBe(1);
+    expect(loadedAfter.getForm().getFields().length).toBe(0);
+  });
+
+  test("flattenPdf safely handles documents without form fields", async () => {
+    const sample = await createSamplePdf(2);
+    const flattened = await flattenPdf(sample);
+    const loaded = await PDFDocument.load(flattened);
+    expect(loaded.getPageCount()).toBe(2);
   });
 });

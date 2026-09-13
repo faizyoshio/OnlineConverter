@@ -12,6 +12,7 @@ import { createImageToPdfAdapter } from "./image-to-pdf";
 import { createTextToPdfAdapter } from "./text-to-pdf";
 import { createPdfCropAdapter } from "./pdf-crop";
 import { createPdfResizeAdapter } from "./pdf-resize";
+import { createPdfFlattenAdapter } from "./pdf-flatten";
 
 class NativeWorkerDouble {
   static latest: NativeWorkerDouble | undefined;
@@ -49,6 +50,7 @@ describe("PDF worker adapters", () => {
     ["text-to-pdf", createTextToPdfAdapter],
     ["crop", createPdfCropAdapter],
     ["resize", createPdfResizeAdapter],
+    ["flatten", createPdfFlattenAdapter],
   ])("%s uses a module browser worker", (_name, createAdapter) => {
     vi.stubGlobal("Worker", NativeWorkerDouble);
 

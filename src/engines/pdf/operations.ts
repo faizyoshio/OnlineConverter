@@ -365,3 +365,19 @@ export async function resizePdfPagesToA4(pdfBuffer: Uint8Array): Promise<Uint8Ar
 
   return output.save();
 }
+
+export async function flattenPdf(
+  pdfBuffer: Uint8Array,
+  options: { formAppearances?: boolean; annotations?: boolean } = {},
+): Promise<Uint8Array> {
+  const pdf = await PDFDocument.load(pdfBuffer);
+  if (options.formAppearances !== false) {
+    try {
+      const form = pdf.getForm();
+      form.flatten();
+    } catch {
+      // document has no form fields or form is already flat
+    }
+  }
+  return pdf.save();
+}

@@ -1,4 +1,4 @@
-import { mergePdfs, rotatePdfPages, splitPdf, deletePdfPages, extractPdfPages, organizePdf, addPageNumbers, watermarkPdf, imageWatermarkPdf, textToPdf, imagesToPdf, cropPdfPages, resizePdfPagesToA4 } from "@/engines/pdf/operations";
+import { mergePdfs, rotatePdfPages, splitPdf, deletePdfPages, extractPdfPages, organizePdf, addPageNumbers, watermarkPdf, imageWatermarkPdf, textToPdf, imagesToPdf, cropPdfPages, resizePdfPagesToA4, flattenPdf } from "@/engines/pdf/operations";
 import { createZip } from "@/engines/utility/operations";
 import type { LocalWorkerResult } from "@/features/workers/protocol";
 import type { LocalWorkerOperationContext } from "@/features/workers/local-runtime";
@@ -360,6 +360,26 @@ export async function processPdfOperation(context: LocalWorkerOperationContext):
         mode: "files",
         outputs: [{ blob: blobFromBytes(result, "application/pdf") }],
         metadata: { resultMode: "files", outputMimeTypes: ["application/pdf"], outputBytes: [result.length], pages: doc.getPageCount() },
+      };
+    }
+
+    case "pdf.flatten": {
+      reportProgress(0.1, "Loading PDF");
+      const buffer = new Uint8Array(await inputs[0]!.arrayBuffer());
+      const pdf = await (await import("pdf-lib")).PDFDocument.load(buffer);
+      const pageCount = pdf.getPageCount();
+      if (isCancelled()) return { mode: "files", outputs: [], metadata: { resultMode: "files", outputMimeTypes: [], outputBytes: [] } };
+      reportProgress(0.5, "Flattening PDF");
+      const result = await flattenPdf(buffer, {
+        formAppearances: options.formAppearances !== false,
+        annotations: options.annotations !== false,
+      });
+      if (isCancelled()) return { mode: "files", outputs: [], metadata: { resultMode: "files", outputMimeTypes: [], outputBytes: [] } };
+      reportProgress(0.9, "Finalizing");
+      return {
+        mode: "files",
+        outputs: [{ blob: blobFromBytes(result, "application/pdf") }],
+        metadata: { resultMode: "files", outputMimeTypes: ["application/pdf"], outputBytes: [result.length], pages: pageCount },
       };
     }
 

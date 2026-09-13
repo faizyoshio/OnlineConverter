@@ -12,6 +12,7 @@ const activeIds = [
   "pdf.extract-pages",
   "pdf.page-numbers",
   "pdf.watermark",
+  "pdf.flatten",
   "pdf.image-to-pdf",
   "pdf.text-to-pdf",
   "image.jpg-to-modern",

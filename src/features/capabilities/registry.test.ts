@@ -55,6 +55,7 @@ test("declares 90 unique launch capabilities with only reviewed tools active", (
     "pdf.extract-pages",
     "pdf.page-numbers",
     "pdf.watermark",
+    "pdf.flatten",
     "pdf.image-to-pdf",
     "pdf.text-to-pdf",
     "image.jpg-to-modern",
@@ -75,7 +76,7 @@ test("declares 90 unique launch capabilities with only reviewed tools active", (
     "utility.barcode",
     "utility.password",
   ]);
-  expect(capabilityRegistry.filter((item) => item.releaseStatus === "planned")).toHaveLength(61);
+  expect(capabilityRegistry.filter((item) => item.releaseStatus === "planned")).toHaveLength(60);
 });
 
 test("keeps the approved manifest order", () => {

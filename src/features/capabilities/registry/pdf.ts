@@ -145,6 +145,7 @@ export const pdfCapabilities = Object.freeze([
   }),
   definePdf({
     id: "pdf.flatten", slug: "flatten-pdf", title: "Flatten PDF",
+    releaseStatus: "active",
     description: "Flatten annotations and AcroForm appearances across all pages of a local PDF.",
     resultContract: "exact-structural", inputMode: "files", inputs: [pdfFile()], result: pdfResult(),
     optionFields: [toggleOption("annotations", "Flatten annotations", true), toggleOption("formAppearances", "Flatten form appearances", true), pageRangeOption("pages", "Pages", "all")],
