@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
+import Link from "next/link";
 import type { CapabilityManifest } from "@/features/capabilities";
 import { INITIAL_JOB_STATE } from "@/features/jobs/reducer";
 import type { JobState } from "@/features/jobs/types";
@@ -98,6 +99,9 @@ export function ToolWorkspace({ capability, runner, renderOptions }: ToolWorkspa
   return (
     <section className="tool-workspace" aria-labelledby="workspace-title">
       <header>
+        <Link className="workspace-back-link" href="/">
+          <span aria-hidden="true">←</span> Semua Alat
+        </Link>
         <p className="workspace-eyebrow">{capability.category} tool</p>
         <h1 id="workspace-title">{capability.title}</h1>
         <p>{capability.description}</p>
