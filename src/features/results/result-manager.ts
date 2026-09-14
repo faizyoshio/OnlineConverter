@@ -78,7 +78,7 @@ function sanitizeBaseName(rawName: string): string {
   if (!clean || isUnsafeName(clean) || clean === "." || clean === "..") {
     return "";
   }
-  return clean.replace(/^Scholar-/, "");
+  return clean.replace(/^(Axel-|Scholar-)+/, "");
 }
 
 export class ResultManager {
@@ -153,7 +153,7 @@ export class ResultManager {
             baseName = sanitizeBaseName(inputFiles[0]?.name ?? "");
           }
         }
-        downloadName = baseName ? `Scholar-${baseName}.${ext}` : `Scholar-output-${idx+1}.${ext}`;
+        downloadName = baseName ? `Axel-${baseName}.${ext}` : `Axel-output-${idx+1}.${ext}`;
       }
       const url = this.deps.createObjectURL(blob);
       urls.push(url);

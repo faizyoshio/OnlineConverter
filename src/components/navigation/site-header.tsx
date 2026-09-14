@@ -239,8 +239,8 @@ export function SiteHeader() {
     <header className="site-header" ref={headerRef}>
       <div className="site-header__main">
         <Link className="brand" href="/">
-          <span aria-hidden="true" className="brand__mark">SK</span>
-          <span>ScholarKit</span>
+          <span aria-hidden="true" className="brand__mark">AX</span>
+          <span>Axel Tools</span>
         </Link>
         <nav aria-label="Main Navigation" className="site-nav">
           <button
@@ -264,7 +264,15 @@ export function SiteHeader() {
             <span className="nav-btn__chevron" aria-hidden="true">{activeMenu === "image" ? "▲" : "▼"}</span>
           </button>
         </nav>
-        <p className="header-note">Private tools for research &amp; study</p>
+        <a
+          aria-label="Visit Axel Academic Studio main website"
+          className="header-studio-link"
+          href="https://axelacademicstudio.my.id/"
+          rel="noopener noreferrer"
+          target="_blank"
+        >
+          Axel Studio ↗
+        </a>
       </div>
 
       {activeMenu && (

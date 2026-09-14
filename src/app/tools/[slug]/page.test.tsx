@@ -10,13 +10,13 @@ test("generates static routes for active tools only", () => {
 
 test("emits metadata only for active tool routes", async () => {
   await expect(generateMetadata({ params: Promise.resolve({ slug: "merge-pdf" }) })).resolves.toMatchObject({
-    title: "Merge PDF | ScholarKit",
+    title: "Merge PDF | Axel Tools",
   });
   await expect(generateMetadata({ params: Promise.resolve({ slug: "compress-pdf" }) })).resolves.toMatchObject({
-    title: "Compress PDF | ScholarKit",
+    title: "Compress PDF | Axel Tools",
   });
   await expect(generateMetadata({ params: Promise.resolve({ slug: "compress-image" }) })).resolves.toMatchObject({
-    title: "Compress Image | ScholarKit",
+    title: "Compress Image | Axel Tools",
   });
   await expect(generateMetadata({ params: Promise.resolve({ slug: "scan-to-pdf" }) })).resolves.toEqual({});
   await expect(generateMetadata({ params: Promise.resolve({ slug: "barcode-generator" }) })).resolves.toEqual({});

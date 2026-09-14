@@ -10,22 +10,22 @@ export const viewport: Viewport = {
 
 export const metadata: Metadata = {
   title: {
-    default: "ScholarKit — Private Academic & Research Document Tools",
-    template: "%s | ScholarKit",
+    default: "Axel Tools — by Axel Academic Studio",
+    template: "%s | Axel Tools",
   },
-  description: "Private, local-first document tools for students and researchers. Format thesis papers, paginate manuscripts, optimize publication figures, and convert conference deadlines with 100% browser-based privacy.",
-  applicationName: "ScholarKit",
+  description: "Private, local-first academic document tools by Axel Academic Studio for students and researchers. Format thesis papers, paginate manuscripts, optimize publication figures, and convert conference deadlines with 100% browser-based privacy.",
+  applicationName: "Axel Tools",
   openGraph: {
     type: "website",
     locale: "en_US",
-    siteName: "ScholarKit",
-    title: "ScholarKit — Private Academic & Research Document Tools",
-    description: "Private, local-first document tools for students and researchers. Format thesis papers, paginate manuscripts, optimize publication figures, and convert conference deadlines with 100% browser-based privacy.",
+    siteName: "Axel Tools",
+    title: "Axel Tools — by Axel Academic Studio",
+    description: "Private, local-first academic document tools by Axel Academic Studio for students and researchers. Format thesis papers, paginate manuscripts, optimize publication figures, and convert conference deadlines with 100% browser-based privacy.",
   },
   twitter: {
     card: "summary_large_image",
-    title: "ScholarKit — Private Academic & Research Document Tools",
-    description: "Private, local-first document tools for students and researchers. Format thesis papers, paginate manuscripts, optimize publication figures, and convert conference deadlines with 100% browser-based privacy.",
+    title: "Axel Tools — by Axel Academic Studio",
+    description: "Private, local-first academic document tools by Axel Academic Studio for students and researchers. Format thesis papers, paginate manuscripts, optimize publication figures, and convert conference deadlines with 100% browser-based privacy.",
   },
 };
 
@@ -39,7 +39,18 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         <SiteHeader />
         <main className="page-shell" id="main-content">{children}</main>
         <footer className="site-footer">
-          <p>Built for local, browser-based research workflows.</p>
+          <p>
+            An official toolkit by{" "}
+            <a
+              className="footer-link"
+              href="https://axelacademicstudio.my.id/"
+              rel="noopener noreferrer"
+              target="_blank"
+            >
+              Axel Academic Studio ↗
+            </a>
+            . Built for private, local research workflows.
+          </p>
           <p>100% private. Thesis drafts and research papers never leave your device.</p>
         </footer>
       </body>
