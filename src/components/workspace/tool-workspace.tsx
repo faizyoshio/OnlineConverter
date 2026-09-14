@@ -14,8 +14,7 @@ import { JobProgress } from "./job-progress";
 import { ResultPanel } from "./result-panel";
 import { CompressionSettings } from "./compression-settings";
 import { PdfCompressSettings } from "./pdf-compress-settings";
-import { PdfPreview } from "./pdf-preview";
-import { ImagePreview } from "./image-preview";
+import { FilePreview } from "./file-preview";
 
 export type ToolWorkspaceProps = {
   capability: CapabilityManifest;
@@ -109,11 +108,7 @@ export function ToolWorkspace({ capability, runner, renderOptions }: ToolWorkspa
         <p>{capability.description}</p>
       </header>
       <DropZone capability={capability} disabled={busy} files={files} onFilesChange={selectFiles} />
-      {capability.id.startsWith("pdf.") ? (
-        <PdfPreview capability={capability} files={files} />
-      ) : capability.id.startsWith("image.") ? (
-        <ImagePreview capability={capability} files={files} />
-      ) : null}
+      <FilePreview capability={capability} files={files} />
       {capability.id === "pdf.compress" ? (
         <PdfCompressSettings
           capability={capability}
