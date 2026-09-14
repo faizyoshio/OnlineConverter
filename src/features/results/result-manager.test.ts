@@ -55,11 +55,23 @@ test("creates one managed URL per output with generated labels", () => {
   expect(managed).toEqual({
     id: "result-1",
     mode: "files",
-    outputs: [{ url: "blob:managed-1", mimeType: "application/pdf", bytes: blob.size, downloadName: "output-1.pdf" }],
+    outputs: [{ url: "blob:managed-1", mimeType: "application/pdf", bytes: blob.size, downloadName: "Scholar-output-1.pdf" }],
     metadata: { resultMode: "files", outputMimeTypes: ["application/pdf"], outputBytes: [blob.size] },
   });
   expect(createObjectURL).toHaveBeenCalledTimes(1);
   expect(JSON.stringify(managed)).not.toContain("RAW_BLOB_MARKER");
+});
+
+test("prefixes output file with Scholar- and original file name", () => {
+  const { manager } = managerHarness();
+  const blob = new Blob(["test"], { type: "application/pdf" });
+  const file = new File(["test"], "my-thesis.pdf", { type: "application/pdf" });
+  const managed = manager.create(capability("pdf.compress"), fileResult(blob), [file]);
+
+  expect(managed.mode).toBe("files");
+  if (managed.mode === "files") {
+    expect(managed.outputs[0]?.downloadName).toBe("Scholar-my-thesis.pdf");
+  }
 });
 
 test("revokes each URL exactly once across repeated disposal and disposeAll", () => {

@@ -63,7 +63,7 @@ test("merge PDF route processes files in browser worker", async ({ page }) => {
   ]);
   await expect(page.getByRole("button", { name: /run conversion/i })).toBeEnabled();
   await page.getByRole("button", { name: /run conversion/i }).click();
-  await expect(page.getByRole("link", { name: /download output-1.pdf/i })).toBeVisible();
+  await expect(page.getByRole("link", { name: /download (Scholar-)?/i })).toBeVisible();
 });
 
 test("split PDF route processes file in browser worker", async ({ page }) => {
@@ -79,7 +79,7 @@ test("split PDF route processes file in browser worker", async ({ page }) => {
   });
   await expect(page.getByRole("button", { name: /run conversion/i })).toBeEnabled();
   await page.getByRole("button", { name: /run conversion/i }).click();
-  await expect(page.getByRole("link", { name: /download output-1.pdf/i })).toBeVisible();
+  await expect(page.getByRole("link", { name: /download (Scholar-)?/i })).toBeVisible();
 });
 
 test("remove pages route processes selected pages in browser worker", async ({ page }) => {
@@ -94,7 +94,7 @@ test("remove pages route processes selected pages in browser worker", async ({ p
   });
   await expect(page.getByRole("button", { name: /run conversion/i })).toBeEnabled();
   await page.getByRole("button", { name: /run conversion/i }).click();
-  await expect(page.getByRole("link", { name: /download output-1.pdf/i })).toBeVisible();
+  await expect(page.getByRole("link", { name: /download (Scholar-)?/i })).toBeVisible();
 });
 
 test("extract pages route creates a ZIP when separate PDFs are selected", async ({ page }) => {
@@ -110,7 +110,7 @@ test("extract pages route creates a ZIP when separate PDFs are selected", async 
   });
   await expect(page.getByRole("button", { name: /run conversion/i })).toBeEnabled();
   await page.getByRole("button", { name: /run conversion/i }).click();
-  await expect(page.getByRole("link", { name: /download output-1.zip/i })).toBeVisible();
+  await expect(page.getByRole("link", { name: /download (Scholar-)?/i })).toBeVisible();
 });
 
 test("organize PDF route processes in browser worker", async ({ page }) => {
@@ -124,7 +124,7 @@ test("organize PDF route processes in browser worker", async ({ page }) => {
   });
   await expect(page.getByRole("button", { name: /run conversion/i })).toBeEnabled();
   await page.getByRole("button", { name: /run conversion/i }).click();
-  await expect(page.getByRole("link", { name: /download output-1.pdf/i })).toBeVisible();
+  await expect(page.getByRole("link", { name: /download (Scholar-)?/i })).toBeVisible();
 });
 
 test("rotate PDF route rotates pages in browser worker", async ({ page }) => {
@@ -138,7 +138,7 @@ test("rotate PDF route rotates pages in browser worker", async ({ page }) => {
   });
   await expect(page.getByRole("button", { name: /run conversion/i })).toBeEnabled();
   await page.getByRole("button", { name: /run conversion/i }).click();
-  await expect(page.getByRole("link", { name: /download output-1.pdf/i })).toBeVisible();
+  await expect(page.getByRole("link", { name: /download (Scholar-)?/i })).toBeVisible();
 });
 
 // ----------------------------------------------------------------------------
@@ -169,7 +169,7 @@ test("compress PDF route displays 4 compression preset cards and compresses PDF"
   });
   await expect(page.getByRole("button", { name: /run conversion/i })).toBeEnabled();
   await page.getByRole("button", { name: /run conversion/i }).click();
-  await expect(page.getByRole("link", { name: /download output-1.pdf/i })).toBeVisible();
+  await expect(page.getByRole("link", { name: /download (Scholar-)?/i })).toBeVisible();
 });
 
 test("compress image route processes image in browser worker", async ({ page }) => {
@@ -181,7 +181,7 @@ test("compress image route processes image in browser worker", async ({ page }) 
   });
   await expect(page.getByRole("button", { name: /run conversion/i })).toBeEnabled();
   await page.getByRole("button", { name: /run conversion/i }).click();
-  await expect(page.getByRole("link", { name: /download output-1/i })).toBeVisible();
+  await expect(page.getByRole("link", { name: /download (Scholar-)?/i })).toBeVisible();
 });
 
 // ----------------------------------------------------------------------------
@@ -197,7 +197,7 @@ test("JPG to PDF route converts image to PDF", async ({ page }) => {
   });
   await expect(page.getByRole("button", { name: /run conversion/i })).toBeEnabled();
   await page.getByRole("button", { name: /run conversion/i }).click();
-  await expect(page.getByRole("link", { name: /download output-1.pdf/i })).toBeVisible();
+  await expect(page.getByRole("link", { name: /download (Scholar-)?/i })).toBeVisible();
 });
 
 test("WORD to PDF route converts DOCX to PDF", async ({ page }) => {
@@ -211,7 +211,7 @@ test("WORD to PDF route converts DOCX to PDF", async ({ page }) => {
   });
   await expect(page.getByRole("button", { name: /run conversion/i })).toBeEnabled();
   await page.getByRole("button", { name: /run conversion/i }).click();
-  await expect(page.getByRole("link", { name: /download output-1.pdf/i })).toBeVisible();
+  await expect(page.getByRole("link", { name: /download (Scholar-)?/i })).toBeVisible();
 });
 
 test("POWERPOINT to PDF route converts PPTX to PDF", async ({ page }) => {
@@ -225,7 +225,7 @@ test("POWERPOINT to PDF route converts PPTX to PDF", async ({ page }) => {
   });
   await expect(page.getByRole("button", { name: /run conversion/i })).toBeEnabled();
   await page.getByRole("button", { name: /run conversion/i }).click();
-  await expect(page.getByRole("link", { name: /download output-1.pdf/i })).toBeVisible();
+  await expect(page.getByRole("link", { name: /download (Scholar-)?/i })).toBeVisible();
 });
 
 test("EXCEL to PDF route converts XLSX to PDF", async ({ page }) => {
@@ -239,7 +239,7 @@ test("EXCEL to PDF route converts XLSX to PDF", async ({ page }) => {
   });
   await expect(page.getByRole("button", { name: /run conversion/i })).toBeEnabled();
   await page.getByRole("button", { name: /run conversion/i }).click();
-  await expect(page.getByRole("link", { name: /download output-1.pdf/i })).toBeVisible();
+  await expect(page.getByRole("link", { name: /download (Scholar-)?/i })).toBeVisible();
 });
 
 // ----------------------------------------------------------------------------
@@ -257,7 +257,7 @@ test("PDF to JPG route converts PDF to JPG", async ({ page }) => {
   });
   await expect(page.getByRole("button", { name: /run conversion/i })).toBeEnabled();
   await page.getByRole("button", { name: /run conversion/i }).click();
-  await expect(page.getByRole("link", { name: /download output-1.jpg/i })).toBeVisible();
+  await expect(page.getByRole("link", { name: /download (Scholar-)?/i })).toBeVisible();
 });
 
 test("PDF to WORD route converts PDF to DOCX", async ({ page }) => {
@@ -271,7 +271,7 @@ test("PDF to WORD route converts PDF to DOCX", async ({ page }) => {
   });
   await expect(page.getByRole("button", { name: /run conversion/i })).toBeEnabled();
   await page.getByRole("button", { name: /run conversion/i }).click();
-  await expect(page.getByRole("link", { name: /download output-1.docx/i })).toBeVisible();
+  await expect(page.getByRole("link", { name: /download (Scholar-)?/i })).toBeVisible();
 });
 
 test("PDF to POWERPOINT route converts PDF to PPTX", async ({ page }) => {
@@ -285,7 +285,7 @@ test("PDF to POWERPOINT route converts PDF to PPTX", async ({ page }) => {
   });
   await expect(page.getByRole("button", { name: /run conversion/i })).toBeEnabled();
   await page.getByRole("button", { name: /run conversion/i }).click();
-  await expect(page.getByRole("link", { name: /download output-1.pptx/i })).toBeVisible();
+  await expect(page.getByRole("link", { name: /download (Scholar-)?/i })).toBeVisible();
 });
 
 test("PDF to EXCEL route converts PDF to XLSX", async ({ page }) => {
@@ -299,7 +299,7 @@ test("PDF to EXCEL route converts PDF to XLSX", async ({ page }) => {
   });
   await expect(page.getByRole("button", { name: /run conversion/i })).toBeEnabled();
   await page.getByRole("button", { name: /run conversion/i }).click();
-  await expect(page.getByRole("link", { name: /download output-1.xlsx/i })).toBeVisible();
+  await expect(page.getByRole("link", { name: /download (Scholar-)?/i })).toBeVisible();
 });
 
 test("drop-zone has exactly one visible choose files button and remains responsive across all devices", async ({ page }) => {

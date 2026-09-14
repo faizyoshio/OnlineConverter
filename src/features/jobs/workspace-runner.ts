@@ -106,7 +106,7 @@ export function createWorkspaceJobRunner(dependencies: {
       });
 
       // Create managed result
-      const managed = results.create(capability, localResult);
+      const managed = results.create(capability, localResult, files);
       currentResultId = managed.id;
 
       // Dispatch success with metadata only

@@ -73,12 +73,20 @@ export interface ResultManagerDeps {
 
 interface Entry { urls: string[]; revoked: boolean }
 
+function sanitizeBaseName(rawName: string): string {
+  const clean = rawName.replace(/^.*[\\\/]/, "").replace(/\.[^.]+$/, "").trim();
+  if (!clean || isUnsafeName(clean) || clean === "." || clean === "..") {
+    return "";
+  }
+  return clean.replace(/^Scholar-/, "");
+}
+
 export class ResultManager {
   readonly entries = new Map<string, Entry>();
   private readonly deps: ResultManagerDeps;
   constructor(deps: ResultManagerDeps) { this.deps = deps; }
 
-  create(capability: CapabilityManifest, result: LocalWorkerResult): ManagedResult {
+  create(capability: CapabilityManifest, result: LocalWorkerResult, inputFiles?: readonly File[]): ManagedResult {
     if (result.mode !== capability.result.mode) throw new Error("Result mode mismatch");
     if (result.metadata.resultMode !== result.mode) throw new Error("Metadata resultMode mismatch");
 
@@ -133,7 +141,19 @@ export class ResultManager {
           urls.forEach(u => this.deps.revokeObjectURL(u));
           throw new Error("Suggested download name not allowed for files mode");
         }
-        downloadName = `output-${idx+1}.${extFromMime(blob.type)}`;
+        const ext = extFromMime(blob.type);
+        let baseName = "";
+        if (inputFiles && inputFiles.length > 0) {
+          if (inputFiles.length === outputs.length) {
+            baseName = sanitizeBaseName(inputFiles[idx]?.name ?? "");
+          } else if (inputFiles.length === 1 && outputs.length > 1) {
+            const root = sanitizeBaseName(inputFiles[0]?.name ?? "");
+            baseName = root ? `${root}-${idx + 1}` : "";
+          } else {
+            baseName = sanitizeBaseName(inputFiles[0]?.name ?? "");
+          }
+        }
+        downloadName = baseName ? `Scholar-${baseName}.${ext}` : `Scholar-output-${idx+1}.${ext}`;
       }
       const url = this.deps.createObjectURL(blob);
       urls.push(url);
