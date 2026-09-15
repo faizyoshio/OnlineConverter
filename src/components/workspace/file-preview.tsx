@@ -69,7 +69,6 @@ export function FilePreview({ capability, files }: FilePreviewProps) {
           className="workspace-preview__frame"
           src={url}
           title={`${capability.title} preview`}
-          sandbox="allow-scripts"
         />
       </div>
     );
