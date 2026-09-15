@@ -347,7 +347,7 @@ export const pdfCapabilities = Object.freeze([
     aliases: ["searchable pdf", "pdf text recognition"],
     resultContract: "best-effort-semantic", inputMode: "files", inputs: [pdfFile()],
     result: filesResult(output("pdf"), output("text")),
-    optionFields: [selectOption("language", "Language", "en", ["en"])],
+    optionFields: [selectOption("language", "Language", "en", ["en", "id"])],
     limits: limits(["pdf", "ocr"], 1, 1), browserRequirements: ["wasm", "canvas"], warningCodes: ["best-effort-result"],
   }),
   definePdf({
