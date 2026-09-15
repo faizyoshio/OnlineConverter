@@ -342,6 +342,7 @@ export const pdfCapabilities = Object.freeze([
   }),
   definePdf({
     id: "pdf.ocr", slug: "ocr-pdf", title: "OCR PDF",
+    releaseStatus: "active",
     description: "Recognize text in a scanned PDF and produce a searchable PDF plus plain text.",
     aliases: ["searchable pdf", "pdf text recognition"],
     resultContract: "best-effort-semantic", inputMode: "files", inputs: [pdfFile()],
