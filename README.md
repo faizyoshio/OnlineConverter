@@ -1,151 +1,143 @@
 # OnlineConverter
 
-A fast, private, **local-first web application** for converting, editing, and transforming documents, images, and files directly inside your browser.
+**ScholarKit** — Local-first browser PDF & Document Toolkit
 
-> **Privacy Promise**: Your files **never** leave your device. All processing happens entirely client-side using Web Workers, `OffscreenCanvas`, and local WebAssembly/JavaScript engines. There are no conversion upload endpoints, no file storage servers, and no third-party telemetry tracking your content.
+🔒 **100% Privacy** — All processing runs inside your browser. Your unpublished manuscripts, thesis drafts, and confidential lab data never leave your device.
 
----
+## Features
 
-## Features & Active Capabilities (29 Tools)
+- ✅ **38 Tools** for PDF, Image, Word, PowerPoint, Excel, Text processing
+- ✅ **Live Preview** for PDF, Word, Image, PPTX, XLSX, TXT files
+- ✅ **Zero Upload** — All processing runs in browser (WASM + Canvas)
+- ✅ **Privacy First** — Files never leave your device
+- ✅ **Fast & Responsive** — Modern Next.js 15 App Router
 
-OnlineConverter currently ships with **29 fully functional, client-side tools** across 4 categories:
+## Tools Categories
 
-### 📄 PDF Tools (13)
-- **Merge PDF** (`/tools/merge-pdf`): Combine multiple PDF documents into a single document.
-- **Split PDF** (`/tools/split-pdf`): Extract page ranges or split PDFs into individual pages.
-- **Organize PDF** (`/tools/organize-pdf`): Reorder, duplicate, or delete specific pages.
-- **Rotate PDF** (`/tools/rotate-pdf`): Rotate individual pages or entire documents (90°, 180°, 270°).
-- **Crop PDF** (`/tools/crop-pdf`): Trim page margins with custom millimetre bounds.
-- **Resize PDF** (`/tools/resize-pdf`): Scale and center PDF pages into standard A4 proportions.
-- **Delete PDF Pages** (`/tools/delete-pdf-pages`): Remove unwanted pages by page numbers or ranges.
-- **Extract PDF Pages** (`/tools/extract-pdf-pages`): Save selected pages as a new combined PDF or ZIP bundle.
-- **Add Page Numbers** (`/tools/page-numbers`): Add sequential page numbers with custom position and styling.
-- **Watermark PDF** (`/tools/watermark-pdf`): Apply text or image watermarks with opacity and position controls.
-- **Flatten PDF** (`/tools/flatten-pdf`): Flatten interactive form fields and annotations permanently.
-- **Image to PDF** (`/tools/image-to-pdf`): Assemble PNG, JPEG, or WebP images into a styled PDF.
-- **Text to PDF** (`/tools/text-to-pdf`): Convert plain text documents into clean, paginated PDF files.
+### PDF Tools
+- Compress PDF
+- Merge & Split PDF
+- OCR PDF (Searchable PDF + Text)
+- PDF to Word / Word to PDF
+- PDF to PowerPoint / PowerPoint to PDF
+- PDF to Excel / Excel to PDF
+- Add watermark, page numbers, annotations
+- Unlock, encrypt, resize PDF
 
-### 🖼️ Image Tools (11)
-- **JPG to PNG / WebP** (`/tools/jpg-to-png-webp`): Convert JPEG images into modern formats.
-- **WebP to JPG** (`/tools/webp-to-jpg`): Convert WebP images to JPEG with custom matte background.
-- **WebP to PNG** (`/tools/webp-to-png`): Convert WebP images to lossless PNG preserving transparency.
-- **JFIF to PNG** (`/tools/jfif-to-png`): Convert JFIF camera images to standard PNG format.
-- **Compress JPEG** (`/tools/compress-jpeg`): Reduce JPEG file sizes with fine quality adjustments.
-- **Compress WebP** (`/tools/compress-webp`): Optimize WebP files while preserving transparent alpha channels.
-- **Resize Image** (`/tools/resize-image`): Adjust dimensions with aspect ratio lock.
-- **Crop Image** (`/tools/crop-image`): Crop images with rectangular selection bounds.
-- **Circle Crop Image** (`/tools/circle-crop-image`): Create circular avatar crops with transparent outer pixels.
-- **Rotate Image** (`/tools/rotate-image`): Rotate photos by 90, 180, or 270 degrees.
-- **Flip Image** (`/tools/flip-image`): Mirror images horizontally or vertically.
+### Image Tools
+- Compress JPG, PNG, WebP, HEIC, BMP
+- Convert between formats (JPG ↔ PNG ↔ WebP)
+- Resize, crop, optimize images
 
-### 📦 Archive Utilities (2)
-- **ZIP Maker** (`/tools/zip-maker`): Package multiple files into a compressed ZIP file locally.
-- **ZIP Extractor** (`/tools/zip-extractor`): Inspect and extract archive files safely in memory.
+### Convert Tools
+- PDF ↔ Word (DOCX)
+- PDF ↔ PowerPoint (PPTX)
+- PDF ↔ Excel (XLSX)
+- Image → PDF
+- Text → PDF
 
-### ⚙️ Everyday Utilities (3)
-- **Unit Converter** (`/tools/unit-converter`): Convert length, area, mass, speed, volume, and data sizes.
-- **Time Zone Converter** (`/tools/time-converter`): Convert timestamps between IANA global time zones.
-- **Password Generator** (`/tools/password-generator`): Generate cryptographically strong random passwords.
+## Tech Stack
 
----
-
-## Privacy Architecture
-
-1. **Zero Uploads**: File inputs are read exclusively via `FileReader` / `ArrayBuffer` in the client's browser.
-2. **Worker Isolation**: Conversion and manipulation workloads run inside isolated Web Workers (`src/features/workers/`), preventing UI freezes and ensuring clean memory garbage collection.
-3. **Automated Privacy Verification**: A strict AST verification script (`npm run check:privacy`) ensures that no server component, API route, or telemetry module ever imports binary buffers, files, or engine code.
-
----
+- **Framework:** Next.js 15 (App Router)
+- **Language:** TypeScript
+- **Styling:** Tailwind CSS
+- **Processing:** WebAssembly (WASM)
+- **Preview:** Canvas API
+- **Testing:** Vitest (608 tests, 114 test files)
 
 ## Getting Started
 
 ### Prerequisites
-- **Node.js**: `24.x` (enforced via `.node-version` and `package.json`).
-- **npm**: version 10+.
 
-### Local Development
+- Node.js 18+ or 20+
+- npm or yarn or pnpm
+
+### Installation
 
 ```bash
 # Clone the repository
-git clone https://github.com/your-org/online-converter.git
-cd online-converter
+git clone https://github.com/faizyoshio/OnlineConverter.git
+cd OnlineConverter
 
 # Install dependencies
-npm ci
+npm install
 
-# Start development server
+# Run development server
 npm run dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) in your browser.
 
----
-
-## Verification & Testing
-
-Every commit and pull request must pass the automated verification gate:
+### Build for Production
 
 ```bash
-# Run all quality checks (lint, typecheck, test, check:privacy, build)
-npm run verify
+npm run build
+npm start
 ```
 
-Individual checks:
+### Run Tests
+
 ```bash
-npm run lint          # ESLint with zero warnings
-npm run typecheck     # TypeScript strict check (exactOptionalPropertyTypes)
-npm test              # Vitest test suite (>470 unit and integration tests)
-npm run check:privacy # Zero-leak privacy boundary scanner
-npm run build         # Next.js static production build
+npm test
 ```
 
----
+## Contributing
 
-## Production Deployment
+Contributions are welcome! Please read [CONTRIBUTING.md](CONTRIBUTING.md) for details.
 
-### 1. Vercel (Recommended)
-1. Import the repository into Vercel.
-2. Set Framework Preset to **Next.js**.
-3. Set the Environment Variable:
-   - `SITE_URL`: `https://your-domain.com`
-4. Deploy. Next.js App Router will generate all static tool routes automatically.
+### Development Workflow
 
-### 2. Netlify / Cloudflare Pages
-1. Build command: `npm run build`
-2. Output directory: `.next` (or static export)
-3. Environment variables: `SITE_URL=https://your-domain.com`
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'feat: add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
 
-### 3. Docker (Self-Hosted)
-```dockerfile
-FROM node:24-alpine AS builder
-WORKDIR /app
-COPY package*.json ./
-RUN npm ci
-COPY . .
-ENV SITE_URL=https://converter.your-domain.com
-RUN npm run verify
+## Architecture
 
-FROM node:24-alpine AS runner
-WORKDIR /app
-ENV NODE_ENV=production
-ENV PORT=3000
-COPY --from=builder /app ./
-EXPOSE 3000
-CMD ["npm", "start"]
+```
+OnlineConverter/
+├── src/
+│   ├── app/                 # Next.js App Router pages
+│   ├── components/          # React components
+│   │   └── workspace/       # Tool workspace components
+│   ├── features/            # Feature modules
+│   │   ├── capabilities/    # Tool definitions
+│   │   ├── engines/         # Processing engines (WASM)
+│   │   ├── jobs/            # Job runner & state
+│   │   └── validation/      # Input validation
+│   └── lib/                 # Utilities
+├── public/                  # Static assets
+└── tests/                   # Test files
 ```
 
----
+## Browser Support
 
-## Environment Variables
+- Chrome 90+
+- Firefox 90+
+- Safari 14+
+- Edge 90+
 
-| Variable | Required | Default | Description |
-| :--- | :--- | :--- | :--- |
-| `SITE_URL` | Production | `http://localhost:3000` | Canonical HTTPS public origin for sitemap and metadata. |
-| `VERCEL_ENV` | Optional | `local` | Set to `production` or `preview`. In `preview`, search engines are disallowed via robots.txt. |
-| `CATALOG_PREVIEW` | Optional | `0` | Set to `1` in non-production environments to preview planned tools. |
-
----
+Requires WASM and Canvas support.
 
 ## License
 
-MIT License. Open source and built for privacy.
+MIT License - see [LICENSE](LICENSE) file for details.
+
+## Author
+
+**Faiz Yoshio**
+- GitHub: [@faizyoshio](https://github.com/faizyoshio)
+- Email: faizyoshio@gmail.com
+
+## Acknowledgments
+
+Built for students, researchers, and academics who need privacy-focused document processing tools.
+
+## Live Demo
+
+🚀 [https://tools.axelacademicstudio.my.id](https://tools.axelacademicstudio.my.id)
+
+---
+
+⭐ Star this repo if you find it useful!
