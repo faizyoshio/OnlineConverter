@@ -11,6 +11,7 @@ function getContentSecurityPolicy(): string {
     "connect-src 'self'",
     "worker-src 'self' blob:",
     "child-src 'self' blob:",
+    "frame-src 'self' blob:",
     "object-src 'none'",
     "base-uri 'self'",
     "form-action 'self'",

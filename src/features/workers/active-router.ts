@@ -44,6 +44,7 @@ export function createActiveEngineRouter(): EngineRouter {
   // PDF SECURITY
   router.register("pdf.unlock", async () => (await import("@/features/engines/pdf-unlock")).createPdfUnlockAdapter());
   router.register("pdf.protect", async () => (await import("@/features/engines/pdf-protect")).createPdfProtectAdapter());
+  router.register("pdf.ocr", async () => (await import("@/features/engines/pdf-ocr")).createPdfOcrAdapter());
 
   // --------------------------------------------------------------------------
   // IMAGE TOOLS (13)
