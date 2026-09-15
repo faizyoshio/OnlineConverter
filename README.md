@@ -14,7 +14,8 @@
 
 ## 🔧 Features
 
-- ✅ **Live Preview** for PDF, Word, Image, PPTX, XLSX, TXT files
+- ✅ **Live Preview** for PDF and images (Office files show local filename + hint)
+- ✅ **OCR PDF** — `/tools/ocr-pdf` turns a scanned PDF into searchable PDF + plain text, in-browser
 - ✅ **Zero Upload** — All processing runs in browser
 - ✅ **Privacy First** — Files never leave your device
 - ✅ **Fast & Responsive** — Modern Next.js 15 App Router
@@ -26,7 +27,7 @@
 ### PDF Tools
 - Compress PDF / Decompress PDF
 - Merge PDF / Split PDF / Extract pages
-- OCR PDF (Searchable PDF + Text)
+- [OCR PDF](https://tools.axelacademicstudio.my.id/tools/ocr-pdf) — scanned PDF → searchable PDF + TXT (local, English)
 - PDF to Word / Word to PDF
 - PDF to PowerPoint / PowerPoint to PDF
 - PDF to Excel / Excel to PDF

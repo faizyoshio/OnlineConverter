@@ -756,6 +756,56 @@ h3 {
   white-space: nowrap;
 }
 
+.workspace-preview {
+  width: 100%;
+  margin: 0 0 var(--space-4);
+  border: 1px solid var(--line, #d9cdc7);
+  border-radius: 12px;
+  overflow: hidden;
+  background: #f7f3f0;
+}
+
+.workspace-preview__frame {
+  display: block;
+  width: 100%;
+  height: min(70vh, 640px);
+  border: 0;
+  background: #fff;
+}
+
+.workspace-preview__image {
+  display: block;
+  width: 100%;
+  max-height: min(70vh, 640px);
+  object-fit: contain;
+  background: #111;
+}
+
+.workspace-preview__text {
+  margin: 0;
+  padding: var(--space-3);
+  max-height: 16rem;
+  overflow: auto;
+  font-size: 0.85rem;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.workspace-preview--meta {
+  padding: var(--space-3) var(--space-4);
+}
+
+.workspace-preview__name {
+  margin: 0 0 var(--space-1);
+  font-weight: 800;
+}
+
+.workspace-preview__hint {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
 .workspace-drop-zone__file-size {
   color: var(--muted);
   flex-shrink: 0;

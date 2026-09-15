@@ -44,8 +44,9 @@ const expectedIds = [
 
 function capability(id: string) {
   const manifest = capabilityRegistry.find((item) => item.id === id);
-  expect(manifest, "Missing capability " + id).toBeDefined();
-  return manifest!;
+  expect(manifest).toBeDefined();
+  if (!manifest) throw new Error(`Missing capability ${id}`);
+  return manifest;
 }
 
 test("declares 84 unique launch capabilities with only reviewed tools active", () => {
