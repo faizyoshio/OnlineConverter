@@ -1424,6 +1424,30 @@ h3 {
     width: min(calc(100% - 1rem), var(--content-width));
   }
 
+  .mega-menu {
+    padding: var(--space-4);
+    max-height: 70vh;
+  }
+
+  .mega-menu__container {
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: var(--space-3);
+  }
+
+  .workspace-preview__frame {
+    height: min(50vh, 26rem);
+    min-height: 20rem;
+  }
+
+  .workspace-preview__image {
+    max-height: 50vh;
+  }
+
+  .card,
+  .tool-card {
+    min-height: 0;
+  }
+
   .site-header__main {
     gap: var(--space-2);
     min-height: 4.25rem;
