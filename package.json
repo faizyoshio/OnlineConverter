@@ -22,10 +22,13 @@
     "@bwip-js/browser": "4.11.4",
     "client-only": "^0.0.1",
     "jszip": "^3.10.1",
+    "mammoth": "^1.12.3",
     "next": "16.3.5",
     "pdf-lib": "^1.17.1",
+    "pdfjs-dist": "^6.3.289",
     "react": "^19.3.0",
     "react-dom": "^19.3.0",
+    "tesseract.js": "^7.0.0",
     "zod": "^4.6.2"
   },
   "devDependencies": {
