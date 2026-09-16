@@ -21,7 +21,7 @@
   "dependencies": {
     "@bwip-js/browser": "4.11.4",
     "client-only": "^0.0.1",
-    "jszip": "^3.10.1",
+    "jszip": "^3.10.2",
     "mammoth": "^1.12.3",
     "next": "16.3.5",
     "pdf-lib": "^1.17.1",
