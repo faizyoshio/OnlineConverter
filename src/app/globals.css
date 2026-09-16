@@ -791,6 +791,38 @@ h3 {
   word-break: break-word;
 }
 
+.workspace-preview__docx {
+  max-height: min(70vh, 32rem);
+  overflow: auto;
+  padding: var(--space-4);
+  background: #fff;
+  color: #1a1a1a;
+  font-size: 0.9375rem;
+  line-height: 1.6;
+  text-align: left;
+}
+
+.workspace-preview__docx p {
+  margin: 0 0 0.75em;
+}
+
+.workspace-preview__docx table {
+  border-collapse: collapse;
+  margin: 0 0 1em;
+  max-width: 100%;
+}
+
+.workspace-preview__docx td,
+.workspace-preview__docx th {
+  border: 1px solid var(--line, #d9cdc7);
+  padding: 0.375rem 0.625rem;
+}
+
+.workspace-preview__docx img {
+  max-width: 100%;
+  height: auto;
+}
+
 .workspace-preview--meta {
   padding: var(--space-3) var(--space-4);
 }

@@ -3,6 +3,7 @@ import { createDocx, extractTextFromDocx, createPptx, extractTextFromPptx, creat
 import { createZip } from "@/engines/utility/operations";
 import type { LocalWorkerResult } from "@/features/workers/protocol";
 import type { LocalWorkerOperationContext } from "@/features/workers/local-runtime";
+import { extractPdfText } from "@/lib/pdf-text";
 
 import { cropMarginsToPoints, parsePdfCropOptions, validatePdfResizeOptions } from "./options";
 
@@ -578,13 +579,18 @@ export async function processPdfOperation(context: LocalWorkerOperationContext):
     }
 
     case "pdf.pdf-to-word": {
-      reportProgress(0.1, "Reading PDF");
+      reportProgress(0.1, "Extracting text from PDF");
       const buffer = new Uint8Array(await inputs[0]!.arrayBuffer());
-      const doc = await (await import("pdf-lib")).PDFDocument.load(buffer);
-      const pageCount = doc.getPageCount();
+      const paragraphs = await extractPdfText(buffer);
       if (isCancelled()) return { mode: "files", outputs: [], metadata: { resultMode: "files", outputMimeTypes: [], outputBytes: [] } };
+      if (paragraphs.length === 0) {
+        return {
+          mode: "files",
+          outputs: [{ blob: blobFromBytes(new Uint8Array([]), "application/vnd.openxmlformats-officedocument.wordprocessingml.document") }],
+          metadata: { resultMode: "files", outputMimeTypes: ["application/vnd.openxmlformats-officedocument.wordprocessingml.document"], outputBytes: [0] },
+        };
+      }
       reportProgress(0.5, "Creating Word document");
-      const paragraphs = Array.from({ length: pageCount }, (_, i) => `[Page ${i + 1} Content]`);
       const docxBytes = await createDocx(paragraphs);
       reportProgress(0.9, "Finalizing");
       return {
