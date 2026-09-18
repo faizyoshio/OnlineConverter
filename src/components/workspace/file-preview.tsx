@@ -14,7 +14,7 @@ function isPdf(file: File): boolean {
 }
 
 function isImage(file: File): boolean {
-  return file.type.startsWith("image/") || /\.(jpe?g|png|webp|gif|bmp|heic)$/i.test(file.name);
+  return file.type.startsWith("image/") || /\\.(jpe?g|png|webp|gif|bmp|heic)$/i.test(file.name);
 }
 
 function isDocx(file: File): boolean {
@@ -40,47 +40,71 @@ function isOffice(file: File): boolean {
 }
 
 function isText(file: File): boolean {
-  return file.type.startsWith("text/") || /\.(txt|csv|md)$/i.test(file.name);
+  return file.type.startsWith("text/") || /\\.(txt|csv|md)$/i.test(file.name);
 }
 
 export function FilePreview({ capability, files }: FilePreviewProps) {
   const file = files[0];
-  const [url, setUrl] = useState<string | null>(null);
+
+  if (!file) return null;
+
+  return (
+    <FilePreviewContent
+      key={`${file.name}-${file.size}-${file.lastModified}`}
+      capability={capability}
+      file={file}
+    />
+  );
+}
+
+type FilePreviewContentProps = {
+  capability: CapabilityManifest;
+  file: File;
+};
+
+function FilePreviewContent({
+  capability,
+  file,
+}: FilePreviewContentProps) {
   const [textPreview, setTextPreview] = useState<string | null>(null);
   const [docxHtml, setDocxHtml] = useState<string | null>(null);
 
+  const url = URL.createObjectURL(file);
+
   useEffect(() => {
-    if (!file) {
-      setUrl(null);
-      setTextPreview(null);
-      setDocxHtml(null);
-      return;
-    }
-    const objectUrl = URL.createObjectURL(file);
-    setUrl(objectUrl);
+    let cancelled = false;
+
     if (isText(file)) {
       void file
         .slice(0, 4000)
         .text()
-        .then(setTextPreview)
-        .catch(() => setTextPreview(null));
+        .then((text) => {
+          if (!cancelled) setTextPreview(text);
+        })
+        .catch(() => {
+          if (!cancelled) setTextPreview(null);
+        });
     } else if (isDocx(file)) {
-      setTextPreview(null);
       void file
         .arrayBuffer()
-        .then((buffer) => import("mammoth").then((m) => m.convertToHtml({ arrayBuffer: buffer })))
-        .then((result) => setDocxHtml(result.value || null))
-        .catch(() => setDocxHtml(null));
-    } else {
-      setTextPreview(null);
-      setDocxHtml(null);
+        .then((buffer) =>
+          import("mammoth").then((m) =>
+            m.convertToHtml({ arrayBuffer: buffer }),
+          ),
+        )
+        .then((result) => {
+          if (!cancelled) setDocxHtml(result.value || null);
+        })
+        .catch(() => {
+          if (!cancelled) setDocxHtml(null);
+        });
     }
-    return () => {
-      URL.revokeObjectURL(objectUrl);
-    };
-  }, [file]);
 
-  if (!file || !url) return null;
+    return () => {
+      cancelled = true;
+      URL.revokeObjectURL(url);
+    };
+  }, [file, url]);
 
   if (isPdf(file)) {
     return (
@@ -96,7 +120,13 @@ export function FilePreview({ capability, files }: FilePreviewProps) {
 
   if (isImage(file)) {
     return (
-      <div className="workspace-preview" style={{ position: "relative", height: "min(70vh, 640px)" }}>
+      <div
+        className="workspace-preview"
+        style={{
+          position: "relative",
+          height: "min(70vh, 640px)",
+        }}
+      >
         <Image
           className="workspace-preview__image"
           src={url}
@@ -119,8 +149,10 @@ export function FilePreview({ capability, files }: FilePreviewProps) {
   if (isDocx(file) && docxHtml) {
     return (
       <div className="workspace-preview">
-        {/* ponytail: sanitized at source (mammoth emits p/table/img only); add DOMPurify when styleMap passthrough grows */}
-        <div className="workspace-preview__docx" dangerouslySetInnerHTML={{ __html: docxHtml }} />
+        <div
+          className="workspace-preview__docx"
+          dangerouslySetInnerHTML={{ __html: docxHtml }}
+        />
       </div>
     );
   }
@@ -130,7 +162,8 @@ export function FilePreview({ capability, files }: FilePreviewProps) {
       <div className="workspace-preview workspace-preview--meta">
         <p className="workspace-preview__name">{file.name}</p>
         <p className="workspace-preview__hint">
-          Browser cannot render this format inline. File stays local — run conversion to download.
+          Browser cannot render this format inline. File stays local — run
+          conversion to download.
         </p>
       </div>
     );

@@ -5,5 +5,16 @@ import nextTypeScript from "eslint-config-next/typescript";
 export default defineConfig([
   ...nextCoreWebVitals,
   ...nextTypeScript,
-  globalIgnores([".next/**", "out/**", "build/**", "next-env.d.ts", ".worktrees/**"]),
+  globalIgnores([
+    ".next/**", 
+    "out/**", 
+    "build/**", 
+    "next-env.d.ts", 
+    ".worktrees/**",
+    "public/vendor/**",
+    "public/generated/**",
+    "public/pdf.worker.mjs",
+    "**/*.min.js",
+    "**/*.bundle.js",
+  ]),
 ]);
