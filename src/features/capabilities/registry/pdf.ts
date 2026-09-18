@@ -42,6 +42,7 @@ export const pdfCapabilities = Object.freeze([
     optionFields: [
       selectOption("preset", "Compression preset", "sedang", ["dasar", "sedang", "kuat", "kustom"]),
       numberOption("customQuality", "Custom quality", 80, 1, 100),
+      selectOption("dpi", "Target DPI", "150", ["72", "150", "300"]),
     ],
     limits: limits(["pdf"], 1, 1), warningCodes: ["lossy-output"],
   }),
@@ -170,7 +171,7 @@ export const pdfCapabilities = Object.freeze([
     aliases: ["photos to pdf", "png to pdf", "webp to pdf"],
     resultContract: "exact-structural", inputMode: "files",
     inputs: [input("jpeg"), input("png"), input("webp"), input("bmp")], result: pdfResult(),
-    optionFields: [selectOption("pageSize", "Page size", "a4", ["a4"]), selectOption("fit", "Image fit", "contain", ["contain"]), numberOption("marginMm", "Margin", 12, 0, 50), selectOption("order", "Input order", "input-order", ["input-order", "drag-order"])],
+    optionFields: [selectOption("pageSize", "Page size", "a4", ["a4"]), selectOption("fit", "Image fit", "contain", ["contain"]), numberOption("marginMm", "Margin", 12, 0, 50), numberOption("bleedMm", "Bleed (Crop area)", 0, 0, 20), selectOption("order", "Input order", "input-order", ["input-order", "drag-order"])],
     limits: limits(["image", "batch"], 1, 20), browserRequirements: ["canvas", "offscreen-canvas"],
   }),
   definePdf({
@@ -181,7 +182,7 @@ export const pdfCapabilities = Object.freeze([
     aliases: ["convert jpg to pdf", "jpeg to pdf"],
     resultContract: "exact-structural", inputMode: "files",
     inputs: [input("jpeg")], result: pdfResult(),
-    optionFields: [selectOption("pageSize", "Page size", "a4", ["a4"]), selectOption("fit", "Image fit", "contain", ["contain"]), numberOption("marginMm", "Margin", 12, 0, 50), selectOption("order", "Input order", "input-order", ["input-order", "drag-order"])],
+    optionFields: [selectOption("pageSize", "Page size", "a4", ["a4"]), selectOption("fit", "Image fit", "contain", ["contain"]), numberOption("marginMm", "Margin", 12, 0, 50), numberOption("bleedMm", "Bleed (Crop area)", 0, 0, 20), selectOption("order", "Input order", "input-order", ["input-order", "drag-order"])],
     limits: limits(["image", "batch"], 1, 20), browserRequirements: ["canvas", "offscreen-canvas"],
   }),
   definePdf({
@@ -239,7 +240,12 @@ export const pdfCapabilities = Object.freeze([
     aliases: ["pdf to png", "pdf to picture"],
     resultContract: "lossy-visual", inputMode: "files", inputs: [pdfFile()],
     result: filesResult(output("png", "explicit-user-choice"), output("jpeg", "explicit-user-choice"), output("zip", "listed-fallback", "png")),
-    optionFields: [selectOption("format", "Image format", "png", ["png", "jpeg"]), numberOption("dpi", "DPI", 144, 72, 300, 1)],
+    optionFields: [
+      selectOption("format", "Image format", "png", ["png", "jpeg"]),
+      numberOption("dpi", "DPI", 144, 72, 300, 1),
+      selectOption("colorSpace", "Color Space", "rgb", ["rgb", "cmyk"]),
+      toggleOption("antiAlias", "High-quality anti-aliasing", true),
+    ],
     limits: limits(["pdf"], 1, 1), browserRequirements: ["canvas", "offscreen-canvas"], warningCodes: ["lossy-output"],
   }),
   definePdf({
@@ -317,7 +323,10 @@ export const pdfCapabilities = Object.freeze([
     description: "Encrypt and secure your PDF document with a password to prevent unauthorized access.",
     aliases: ["encrypt pdf", "password protect pdf"],
     resultContract: "exact-structural", inputMode: "files", inputs: [pdfFile()], result: pdfResult(),
-    optionFields: [textOption("password", "Document password", "password", true)],
+    optionFields: [
+      textOption("password", "Document password", "password", true),
+      selectOption("permissions", "Permissions", "all", ["all", "no-print", "no-copy", "no-edit", "read-only"]),
+    ],
     limits: limits(["pdf"], 1, 1),
   }),
 

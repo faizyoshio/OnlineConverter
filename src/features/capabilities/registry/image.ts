@@ -46,7 +46,12 @@ export const imageCapabilities = Object.freeze([
     aliases: ["reduce image size", "shrink image"],
     resultContract: "lossy-visual", inputMode: "files", inputs: rasterInputs(),
     result: filesResult(output("jpeg", "listed-fallback", "webp"), output("png", "listed-fallback", "webp"), output("webp"), output("bmp", "listed-fallback", "webp")),
-    optionFields: [selectOption("preset", "Compression preset", "balanced", ["balanced"]), toggleOption("preserveDimensions", "Preserve dimensions", true)],
+    optionFields: [
+      selectOption("preset", "Compression preset", "balanced", ["balanced"]),
+      toggleOption("preserveDimensions", "Preserve dimensions", true),
+      toggleOption("stripMetadata", "Strip EXIF metadata", true),
+      selectOption("sampling", "Sampling algorithm", "bicubic", ["bilinear", "bicubic", "lanczos"]),
+    ],
     limits: limits(["image"], 1, 1), warningCodes: ["lossy-output"],
   }),
   defineImage({
@@ -278,7 +283,12 @@ export const imageCapabilities = Object.freeze([
     aliases: ["crop graph", "crop figure", "crop legend"],
     resultContract: "lossy-visual", inputMode: "files", inputs: rasterInputs(),
     result: filesResult(output("jpeg", "explicit-user-choice"), output("png", "explicit-user-choice"), output("webp", "explicit-user-choice"), output("bmp", "explicit-user-choice")),
-    optionFields: [cropBoxOption("cropBox", "Crop coordinates (x, y, width, height)", "0,0,500,500"), selectOption("target", "Target format", "png", ["jpeg", "png", "webp", "bmp"])],
+    optionFields: [
+      cropBoxOption("cropBox", "Crop coordinates (x, y, width, height)", "0,0,500,500"),
+      selectOption("target", "Target format", "png", ["jpeg", "png", "webp", "bmp"]),
+      toggleOption("feather", "Edge feathering", false),
+      numberOption("featherRadius", "Feather radius", 0, 0, 50),
+    ],
     limits: limits(["image"], 1, 1), warningCodes: ["lossy-output"],
   }),
   defineImage({

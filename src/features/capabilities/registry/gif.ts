@@ -30,14 +30,24 @@ export const gifCapabilities = Object.freeze([
     id: "gif.compress", slug: "compress-gif", title: "Compress GIF",
     description: "Compress a local GIF with a balanced palette while retaining its full animation duration.",
     inputMode: "files", inputs: [input("gif")], result: filesResult(output("gif")),
-    optionFields: [selectOption("palette", "Palette", "balanced", ["balanced"]), toggleOption("preserveDuration", "Preserve duration", true), numberOption("maxFps", "Maximum frame rate", 20, 1, 20)],
+    optionFields: [
+      selectOption("palette", "Palette", "balanced", ["balanced"]),
+      toggleOption("preserveDuration", "Preserve duration", true),
+      numberOption("maxFps", "Maximum frame rate", 20, 1, 20),
+      numberOption("dither", "Dithering intensity", 50, 0, 100),
+    ],
     limits: limits(["gif"], 1, 1),
   }),
   defineGif({
     id: "gif.make", slug: "gif-maker", title: "GIF Maker",
     description: "Build a looping GIF from two to twenty local JPEG, PNG, or WebP images.",
     inputMode: "files", inputs: [input("jpeg"), input("png"), input("webp")], result: filesResult(output("gif")),
-    optionFields: [numberOption("frameDurationMs", "Frame duration", 500, 20, 10000, 10), selectOption("loop", "Loop", "forever", ["forever"]), selectOption("fit", "Image fit", "contain", ["contain"])],
+    optionFields: [
+      numberOption("frameDurationMs", "Frame duration", 500, 20, 10000, 10),
+      selectOption("loop", "Loop", "forever", ["forever"]),
+      selectOption("fit", "Image fit", "contain", ["contain"]),
+      selectOption("palette", "Color palette", "balanced", ["balanced", "adaptive", "fixed"]),
+    ],
     limits: limits(["image", "batch", "gif"], 2, 20),
   }),
   defineGif({
