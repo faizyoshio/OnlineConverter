@@ -72,7 +72,7 @@ async function createSampleFiles(capabilityId: string): Promise<File[]> {
   return [pdfFile];
 }
 
-describe("All 38 active tools end-to-end audit", () => {
+describe("All 39 active tools end-to-end audit", () => {
   beforeEach(() => {
     vi.stubGlobal(
       "createImageBitmap",
@@ -91,8 +91,8 @@ describe("All 38 active tools end-to-end audit", () => {
   const router = createActiveEngineRouter();
   const activeTools = capabilityRegistry.filter((c) => c.releaseStatus === "active");
 
-  test("contains exactly 38 active tools across 8 groups", () => {
-    expect(activeTools).toHaveLength(38);
+  test("contains exactly 39 active tools across 8 groups", () => {
+    expect(activeTools).toHaveLength(39);
     const optimizePdfTools = activeTools.filter((c) => c.group === "optimize-pdf");
     const mergeSplitTools = activeTools.filter((c) => c.group === "merge-split");
     const viewEditTools = activeTools.filter((c) => c.group === "view-edit");
@@ -114,16 +114,13 @@ describe("All 38 active tools end-to-end audit", () => {
 
   for (const tool of activeTools) {
     test(`[${tool.id}] (${tool.slug}): validates default options and runs with sample inputs`, async () => {
-      // 1. Default options must pass schema validation
       const defaults = defaultOptions(tool);
       expect(() => validateOptionValues(tool, defaults)).not.toThrow();
 
-      // 2. Adapter must be registered and loadable
       expect(router.has(tool.adapterKey)).toBe(true);
       const adapter = await router.load(tool.adapterKey);
       expect(adapter).toBeDefined();
 
-      // 3. Inputs must pass cheap and adapter validation
       const files = await createSampleFiles(tool.id);
       const cheapIssues = await capabilityValidator.validateCheap(tool, files, defaults);
       expect(cheapIssues, `Cheap issues for ${tool.id}: ${JSON.stringify(cheapIssues)}`).toEqual([]);

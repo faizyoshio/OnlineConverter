@@ -13,7 +13,7 @@ const expectedActiveIds = [
   "pdf.rotate", "pdf.delete-pages", "pdf.extract-pages", "pdf.extract-images", "pdf.page-numbers",
   "pdf.image-to-pdf", "pdf.jpg-to-pdf", "pdf.word-to-pdf", "pdf.powerpoint-to-pdf", "pdf.excel-to-pdf",
   "pdf.text-to-pdf", "pdf.to-image", "pdf.to-jpg", "pdf.pdf-to-word", "pdf.pdf-to-powerpoint",
-  "pdf.pdf-to-excel", "pdf.to-text", "pdf.unlock", "pdf.protect",
+  "pdf.pdf-to-excel", "pdf.to-text", "pdf.unlock", "pdf.protect", "pdf.ocr",
   "image.compress", "image.compress-jpg", "image.compress-png", "image.compress-jpeg", "image.compress-webp",
   "image.compress-heic", "image.compress-bmp", "image.to-jpg", "image.to-png", "image.to-jpeg",
   "image.to-webp", "image.webp-to-jpg", "image.heic-to-jpg",
@@ -54,7 +54,7 @@ test("declares 84 unique launch capabilities with only reviewed tools active", (
   expect(new Set(capabilityRegistry.map((item) => item.id)).size).toBe(84);
   expect(new Set(capabilityRegistry.map((item) => item.slug)).size).toBe(84);
   expect(capabilityRegistry.filter((item) => item.releaseStatus === "active").map((item) => item.id)).toEqual(expectedActiveIds);
-  expect(capabilityRegistry.filter((item) => item.releaseStatus === "planned")).toHaveLength(46);
+  expect(capabilityRegistry.filter((item) => item.releaseStatus === "planned")).toHaveLength(45);
 });
 
 test("keeps the approved manifest order", () => {

@@ -28,7 +28,7 @@ test("filters by group and clears empty result", async () => {
   expect(screen.getByText(/no tools match/i)).toBeVisible();
 
   await user.click(screen.getByRole("button", { name: /clear filters/i }));
-  expect(screen.getByRole("status")).toHaveTextContent("38 tools");
+  expect(screen.getByRole("status")).toHaveTextContent("39 tools");
 });
 
 test("announces the result count", () => {

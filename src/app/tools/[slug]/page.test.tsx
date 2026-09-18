@@ -4,7 +4,7 @@ import { getActiveCapabilities } from "@/lib/site";
 
 test("generates static routes for active tools only", () => {
   const activeParams = getActiveCapabilities().map(({ slug }) => ({ slug }));
-  expect(activeParams).toHaveLength(38);
+  expect(activeParams).toHaveLength(39);
   expect(generateStaticParams()).toEqual(activeParams);
 });
 

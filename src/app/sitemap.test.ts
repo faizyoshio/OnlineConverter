@@ -16,7 +16,7 @@ test("includes home and only active capabilities", () => {
   process.env.VERCEL_ENV = "development";
   const map = sitemap();
   expect(map[0]).toEqual({ url: "http://localhost:3000/" });
-  expect(map).toHaveLength(39);
+  expect(map).toHaveLength(40);
   expect(map.some((entry) => entry.url === "http://localhost:3000/tools/merge-pdf")).toBe(true);
   expect(map.some((entry) => entry.url === "http://localhost:3000/tools/compress-pdf")).toBe(true);
   expect(map.some((entry) => entry.url === "http://localhost:3000/tools/compress-image")).toBe(true);
