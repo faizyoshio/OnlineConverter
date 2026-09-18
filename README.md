@@ -16,6 +16,7 @@
 
 - ✅ **Live Preview** for PDF and images (Office files show local filename + hint)
 - ✅ **OCR PDF** — `/tools/ocr-pdf` turns a scanned PDF into searchable PDF + plain text, in-browser
+- ✅ **Pro Mode (Advanced Settings)** — Professional-grade controls for DPI, Color Spaces, Encryption, and Compression sampling
 - ✅ **Zero Upload** — All processing runs in browser
 - ✅ **Privacy First** — Files never leave your device
 - ✅ **Fast & Responsive** — Modern Next.js 15 App Router
@@ -253,7 +254,7 @@ definePdf({
 
 ## 📈 Roadmap
 
-- [ ] Advanced Settings for all tools (Pro Mode)
+- [x] Advanced Settings for all tools (Pro Mode)
 - [ ] Better error reporting
 - [ ] Batch processing
 - [ ] Mobile optimization
