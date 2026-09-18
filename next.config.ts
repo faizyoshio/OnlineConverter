@@ -1,10 +1,9 @@
 import type { NextConfig } from "next";
 
 function getContentSecurityPolicy(): string {
-  const isDev = process.env.NODE_ENV !== "production";
   return [
     "default-src 'self'",
-    `script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ""}`,
+    "script-src 'self' 'unsafe-inline' 'unsafe-eval'",
     "style-src 'self' 'unsafe-inline'",
     "img-src 'self' blob: data:",
     "font-src 'self' data:",
