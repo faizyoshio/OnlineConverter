@@ -6,7 +6,7 @@
 
 ## 📊 Project Overview
 
-- **Tools Available:** 38 document processing tools
+- **Tools Available:** 39 document processing tools
 - **Architecture:** Static Next.js 15 export (SSG + serverless functions)
 - **Processing Engine:** WebAssembly (WASM) + Canvas API
 - **Output:** Preview before download (PDF, Word, PPTX, Excel, Image)
@@ -52,7 +52,7 @@
 
 ### Prerequisites
 
-- **Node.js 18+:** Required for development
+- **Node.js 22.13+:** Required for development
 - **npm / yarn / pnpm:** Package manager
 - **Modern Browser:** Chrome 90+, Firefox 90+, Safari 14+, Edge 90+
 
@@ -239,20 +239,21 @@ All processing happens in browser using:
 
 ```typescript
 definePdf({
-  id: "pdf.compress",
-  slug: "compress",
-  title: "Compress PDF",
-  description: "Reduce PDF file size",
-  resultContract: "exact-structural",
-  inputMode: "files",
+  id: \"pdf.compress\",
+  slug: \"compress\",
+  title: \"Compress PDF\",
+  description: \"Reduce PDF file size\",
+  resultContract: \"exact-structural\",
+  inputMode: \"files\",
   inputs: [pdfFile()],
   result: pdfResult(),
-  limits: limits(["pdf"], 1, 1),
+  limits: limits([\"pdf\"], 1, 1),
 })
 ```
 
 ## 📈 Roadmap
 
+- [ ] Advanced Settings for all tools (Pro Mode)
 - [ ] Better error reporting
 - [ ] Batch processing
 - [ ] Mobile optimization
