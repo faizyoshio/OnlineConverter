@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Image from "next/image";
 import type { CapabilityManifest } from "@/features/capabilities";
 
 type FilePreviewProps = {
@@ -95,8 +96,14 @@ export function FilePreview({ capability, files }: FilePreviewProps) {
 
   if (isImage(file)) {
     return (
-      <div className="workspace-preview">
-        <img className="workspace-preview__image" src={url} alt={`${file.name} preview`} />
+      <div className="workspace-preview" style={{ position: "relative", height: "min(70vh, 640px)" }}>
+        <Image
+          className="workspace-preview__image"
+          src={url}
+          alt={`${file.name} preview`}
+          fill
+          style={{ objectFit: "contain" }}
+        />
       </div>
     );
   }
