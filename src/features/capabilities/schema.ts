@@ -10,6 +10,7 @@ const optionFieldSchema = z.object({
   control: z.enum(["select", "number", "range", "toggle", "text", "color", "page-range", "crop-box"]),
   defaultValue: optionValueSchema,
   required: z.boolean(),
+  isAdvanced: z.boolean().optional().default(false),
   minimum: z.number().optional(),
   maximum: z.number().optional(),
   step: z.number().positive().optional(),
@@ -232,8 +233,9 @@ export function selectOption(
   defaultValue: string | null,
   values: readonly string[],
   required = true,
+  isAdvanced = false,
 ): OptionField {
-  return { key, label, control: "select", defaultValue, required, choices: values.map((value) => ({ label: value, value })) };
+  return { key, label, control: "select", defaultValue, required, isAdvanced, choices: values.map((value) => ({ label: value, value })) };
 }
 
 export function numberOption(
@@ -244,8 +246,9 @@ export function numberOption(
   maximum: number,
   step = 1,
   required = true,
+  isAdvanced = false,
 ): OptionField {
-  return { key, label, control: "number", defaultValue, required, minimum, maximum, step };
+  return { key, label, control: "number", defaultValue, required, isAdvanced, minimum, maximum, step };
 }
 
 export function rangeOption(
@@ -255,28 +258,29 @@ export function rangeOption(
   minimum: number,
   maximum: number,
   step = 1,
+  isAdvanced = false,
 ): OptionField {
-  return { key, label, control: "range", defaultValue, required: true, minimum, maximum, step };
+  return { key, label, control: "range", defaultValue, required: true, isAdvanced, minimum, maximum, step };
 }
 
-export function toggleOption(key: string, label: string, defaultValue: boolean): OptionField {
-  return { key, label, control: "toggle", defaultValue, required: true };
+export function toggleOption(key: string, label: string, defaultValue: boolean, isAdvanced = false): OptionField {
+  return { key, label, control: "toggle", defaultValue, required: true, isAdvanced };
 }
 
-export function textOption(key: string, label: string, defaultValue: string | null, required = true): OptionField {
-  return { key, label, control: "text", defaultValue, required };
+export function textOption(key: string, label: string, defaultValue: string | null, required = true, isAdvanced = false): OptionField {
+  return { key, label, control: "text", defaultValue, required, isAdvanced };
 }
 
-export function pageRangeOption(key: string, label: string, defaultValue: string | null): OptionField {
-  return { key, label, control: "page-range", defaultValue, required: true };
+export function pageRangeOption(key: string, label: string, defaultValue: string | null, isAdvanced = false): OptionField {
+  return { key, label, control: "page-range", defaultValue, required: true, isAdvanced };
 }
 
-export function cropBoxOption(key: string, label: string, defaultValue: string | null): OptionField {
-  return { key, label, control: "crop-box", defaultValue, required: true };
+export function cropBoxOption(key: string, label: string, defaultValue: string | null, isAdvanced = false): OptionField {
+  return { key, label, control: "crop-box", defaultValue, required: true, isAdvanced };
 }
 
-export function colorOption(key: string, label: string, defaultValue: string): OptionField {
-  return { key, label, control: "color", defaultValue, required: true };
+export function colorOption(key: string, label: string, defaultValue: string, isAdvanced = false): OptionField {
+  return { key, label, control: "color", defaultValue, required: true, isAdvanced };
 }
 
 type CommonManifestFields =

@@ -35,6 +35,7 @@ export function ToolWorkspace({ capability, runner, renderOptions }: ToolWorkspa
   const [result, setResult] = useState<ManagedResult | null>(null);
   const [validating, setValidating] = useState(false);
   const [running, setRunning] = useState(false);
+  const [isAdvancedMode, setIsAdvancedMode] = useState(false);
   const currentResultId = useRef<string | null>(null);
   const validationSequence = useRef(0);
   const errorSummary = useRef<HTMLDivElement>(null);
@@ -115,6 +116,8 @@ export function ToolWorkspace({ capability, runner, renderOptions }: ToolWorkspa
           disabled={busy || validating}
           options={options}
           setOption={setOption}
+          isAdvancedMode={isAdvancedMode}
+          setIsAdvancedMode={setIsAdvancedMode}
         />
       ) : capability.id === "image.compress-jpeg" || capability.id === "image.compress-webp" ? (
         <CompressionSettings
@@ -122,22 +125,36 @@ export function ToolWorkspace({ capability, runner, renderOptions }: ToolWorkspa
           disabled={busy || validating}
           options={options}
           setOption={setOption}
+          isAdvancedMode={isAdvancedMode}
+          setIsAdvancedMode={setIsAdvancedMode}
         />
       ) : (
         <fieldset className="workspace-options" disabled={busy || validating}>
           <legend>Options</legend>
-          {capability.optionFields.map((field) => {
-            const id = `option-${field.key}`;
-            const value = options[field.key];
-            if (field.control === "toggle") {
-              return <label key={field.key} htmlFor={id}><input checked={value === true} id={id} onChange={(event) => setOption(field.key, event.target.checked)} type="checkbox" /> {field.label}</label>;
-            }
-            if (field.control === "select") {
-              return <label key={field.key} htmlFor={id}>{field.label}<select id={id} onChange={(event) => setOption(field.key, event.target.value)} value={typeof value === "string" ? value : ""}>{field.choices?.map((choice) => <option key={String(choice.value)} value={String(choice.value)}>{choice.label}</option>)}</select></label>;
-            }
-            const numeric = field.control === "number" || field.control === "range";
-            return <label key={field.key} htmlFor={id}>{field.label}<input id={id} max={field.maximum} min={field.minimum} onChange={(event) => setOption(field.key, numeric ? Number(event.target.value) : event.target.value)} step={field.step} type={numeric ? field.control : "text"} value={value == null ? "" : String(value)} /></label>;
-          })}
+          <div className="workspace-options__advanced-toggle">
+            <label className="advanced-toggle">
+              <input 
+                type="checkbox" 
+                checked={isAdvancedMode} 
+                onChange={(e) => setIsAdvancedMode(e.target.checked)} 
+              />
+              <span>Advanced Settings</span>
+            </label>
+          </div>
+          {capability.optionFields
+            .filter((field) => !field.isAdvanced || isAdvancedMode)
+            .map((field) => {
+              const id = `option-${field.key}`;
+              const value = options[field.key];
+              if (field.control === "toggle") {
+                return <label key={field.key} htmlFor={id}><input checked={value === true} id={id} onChange={(event) => setOption(field.key, event.target.checked)} type="checkbox" /> {field.label}</label>;
+              }
+              if (field.control === "select") {
+                return <label key={field.key} htmlFor={id}>{field.label}<select id={id} onChange={(event) => setOption(field.key, event.target.value)} value={typeof value === "string" ? value : ""}>{field.choices?.map((choice) => <option key={String(choice.value)} value={String(choice.value)}>{choice.label}</option>)}</select></label>;
+              }
+              const numeric = field.control === "number" || field.control === "range";
+              return <label key={field.key} htmlFor={id}>{field.label}<input id={id} max={field.maximum} min={field.minimum} onChange={(event) => setOption(field.key, numeric ? Number(event.target.value) : event.target.value)} step={field.step} type={numeric ? field.control : "text"} value={value == null ? "" : String(value)} /></label>;
+            })}
         </fieldset>
       )}
       {renderOptions ? <div className="workspace-options">{renderOptions({ disabled: busy || validating })}</div> : null}
