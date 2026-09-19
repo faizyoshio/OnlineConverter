@@ -16,11 +16,11 @@ const mergeManifest = pdfCapabilities.find((c) => c.id === "pdf.merge")!;
 const splitManifest = pdfCapabilities.find((c) => c.id === "pdf.split")!;
 const organizeManifest = pdfCapabilities.find((c) => c.id === "pdf.organize")!;
 const validateCapabilityExecution = (
-  manifest: CapabilityManifest,
+  manifest: (typeof pdfCapabilities)[number],
   adapter: ProbeAndValidateAdapter<Readonly<Record<string, unknown>>>,
   files: readonly File[],
   options: Readonly<Record<string, unknown>>,
-) => capabilityValidator.validateWithAdapter(manifest, files, options, adapter);
+) => capabilityValidator.validateWithAdapter(manifest as CapabilityManifest, files, options, adapter);
 
 describe("PDF Core Audit: Capability Manifests & Limits", () => {
   test("pdf.merge manifest defines proper limits (min 2, max 20)", () => {

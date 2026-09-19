@@ -16,8 +16,8 @@ describe("PdfCompressSettings", () => {
       />
     );
 
-    expect(screen.getByText("Kompres PDF")).toBeInTheDocument();
-    expect(screen.getByText("Pilih tingkat kompresi yang Anda butuhkan untuk file PDF Anda.")).toBeInTheDocument();
+    expect(screen.getByText(compressCapability.title)).toBeInTheDocument();
+    expect(screen.getByText(compressCapability.description)).toBeInTheDocument();
 
     expect(screen.getByText("Dasar")).toBeInTheDocument();
     expect(screen.getByText("Kompresi dasar, kualitas tinggi")).toBeInTheDocument();
