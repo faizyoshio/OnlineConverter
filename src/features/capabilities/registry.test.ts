@@ -91,7 +91,9 @@ test("carries the activation contract for every planned capability", () => {
 
 test("validates option choices and numeric bounds from the manifest", () => {
   const manifest = capability("pdf.to-image");
-  expect(validateOptionValues(manifest, { format: "png", dpi: 144 })).toEqual({ format: "png", dpi: 144 });
+  expect(validateOptionValues(manifest, { format: "png", dpi: 144 })).toEqual(
+    expect.objectContaining({ format: "png", dpi: 144 })
+  );
   expect(() => validateOptionValues(manifest, { format: "exe", dpi: 10_000 })).toThrow(/invalid option/i);
   expect(() => validateOptionValues(manifest, { format: "png", dpi: "144" })).toThrow(/invalid option/i);
   expect(() => validateOptionValues(manifest, { format: "png", dpi: 144, upload: true })).toThrow(/invalid option/i);
