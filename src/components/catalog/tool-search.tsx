@@ -10,6 +10,7 @@ export function ToolSearch({ value, onChange }: ToolSearchProps) {
       <span className="tool-search__control">
         <span aria-hidden="true" className="tool-search__icon">⌕</span>
         <input
+          id="tool-search-input"
           autoComplete="off"
           inputMode="search"
           onChange={(event) => onChange(event.currentTarget.value)}

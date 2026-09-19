@@ -133,10 +133,11 @@ export function ToolWorkspace({ capability, runner, renderOptions }: ToolWorkspa
           <legend>Options</legend>
           <div className="workspace-options__advanced-toggle">
             <label className="advanced-toggle">
-              <input 
-                type="checkbox" 
-                checked={isAdvancedMode} 
-                onChange={(e) => setIsAdvancedMode(e.target.checked)} 
+              <input
+                id="advanced-settings-toggle"
+                type="checkbox"
+                checked={isAdvancedMode}
+                onChange={(e) => setIsAdvancedMode(e.target.checked)}
               />
               <span>Advanced Settings</span>
             </label>
