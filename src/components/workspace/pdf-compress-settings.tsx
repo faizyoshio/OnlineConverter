@@ -32,7 +32,6 @@ export function PdfCompressSettings({
   setOption,
   disabled = false,
   isAdvancedMode = false,
-  setIsAdvancedMode,
 }: PdfCompressSettingsProps) {
   const baseId = useId();
   const selectedPreset = typeof options.preset === "string" && ["dasar", "sedang", "kuat", "kustom"].includes(options.preset) ? options.preset : "sedang";
@@ -81,10 +80,10 @@ export function PdfCompressSettings({
             <input type="range" id={`${baseId}-custom-quality`} min="1" max="100" step="1" value={customQuality} onChange={(e) => setOption("customQuality", Number(e.target.value))} disabled={disabled} className="pdf-compress-slider" />
           </label>
           {isAdvancedMode && (
-            <div className="pdf-compress-advanced-option" style={{ marginTop: '1rem', fontSize: '0.875rem' }}>
+            <div className="pdf-compress-advanced-option" style={{ marginTop: "1rem", fontSize: "0.875rem" }}>
               <label htmlFor={`${baseId}-dpi`} className="pdf-compress-custom-label">
-                <span>Target DPI: <strong>{options.dpi || '150'}</strong></span>
-                <select id={`${baseId}-dpi`} value={options.dpi || '150'} onChange={(e) => setOption('dpi', e.target.value)} disabled={disabled}>
+                <span>Target DPI: <strong>{String(options.dpi || "150")}</strong></span>
+                <select id={`${baseId}-dpi`} value={String(options.dpi || "150")} onChange={(e) => setOption("dpi", e.target.value)} disabled={disabled}>
                   <option value="72">72 (Web)</option>
                   <option value="150">150 (Standard)</option>
                   <option value="300">300 (Print)</option>

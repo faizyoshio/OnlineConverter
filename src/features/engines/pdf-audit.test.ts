@@ -16,7 +16,7 @@ const mergeManifest = pdfCapabilities.find((c) => c.id === "pdf.merge")!;
 const splitManifest = pdfCapabilities.find((c) => c.id === "pdf.split")!;
 const organizeManifest = pdfCapabilities.find((c) => c.id === "pdf.organize")!;
 const validateCapabilityExecution = (
-  manifest: CapabilityManifest,
+  manifest: any,
   adapter: ProbeAndValidateAdapter<Readonly<Record<string, unknown>>>,
   files: readonly File[],
   options: Readonly<Record<string, unknown>>,
@@ -121,7 +121,7 @@ describe("PDF Core Audit: Corrupt and Truncated Bytes", () => {
   });
 
   test("probe treats garbage bytes with %PDF- header as unknown when loading fails", async () => {
-    const garbageFile = new File([new TextEncoder().encode("%PDF-9.9\ngarbage content not a valid pdf")], "garbage.pdf", { type: "application/pdf" });
+    const garbageFile = new File([new TextEncoder().encode("%PDF-9.9\\ngarbage content not a valid pdf")], "garbage.pdf", { type: "application/pdf" });
     const mergeAdapter = createPdfMergeAdapter();
     await expect(mergeAdapter.probe(garbageFile)).resolves.toEqual({ kind: "unknown", probeRule: "unknown", bytes: 0 });
   });
@@ -174,21 +174,17 @@ describe("PDF Core Audit: Split Edge Cases and Page Ranges", () => {
     const adapter = createPdfSplitAdapter();
     const file = await createValidPdfFile(2);
 
-    // malformed letters
     const issueLetters = await adapter.validate([file], { ranges: "page 1" });
     expect(issueLetters).toHaveLength(1);
     expect(issueLetters[0]?.code).toBe("malformed-input");
 
-    // negative ranges
     const issueNegative = await adapter.validate([file], { ranges: "-1-2" });
     expect(issueNegative).toHaveLength(1);
     expect(issueNegative[0]?.code).toBe("malformed-input");
 
-    // special characters
     const issueSpecial = await adapter.validate([file], { ranges: "1;2" });
     expect(issueSpecial).toHaveLength(1);
 
-    // valid patterns pass adapter regex
     expect(await adapter.validate([file], { ranges: "1, 2-3, 5" })).toEqual([]);
     expect(await adapter.validate([file], { ranges: "" })).toEqual([]);
   });
@@ -339,6 +335,7 @@ describe("PDF Core Audit: Organize Edge Cases (Duplicate, Reversed, Invalid Indi
       isCancelled: () => false,
       reportProgress: () => undefined,
     });
+
     if (result.mode !== "files") throw new Error();
     const doc = await PDFDocument.load(await result.outputs[0]!.blob.arrayBuffer());
     expect(doc.getPageCount()).toBe(1);
