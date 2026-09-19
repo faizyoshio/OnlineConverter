@@ -18,7 +18,6 @@ export function CompressionSettings({
   setOption,
   disabled = false,
   isAdvancedMode = false,
-  setIsAdvancedMode,
 }: CompressionSettingsProps) {
   const [isOpen, setIsOpen] = useState(true);
   const baseId = useId();

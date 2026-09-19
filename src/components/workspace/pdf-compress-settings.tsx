@@ -49,8 +49,8 @@ export function PdfCompressSettings({
           </svg>
         </div>
         <div className="pdf-compress-heading-text">
-          <h2 id={`${baseId}-title`} className="pdf-compress-title">Kompres PDF</h2>
-          <p className="pdf-compress-subtitle">Pilih tingkat kompresi yang Anda butuhkan untuk file PDF Anda.</p>
+          <h2 id={`${baseId}-title`} className="pdf-compress-title">{capability.title}</h2>
+          <p className="pdf-compress-subtitle">{capability.description}</p>
         </div>
       </div>
 

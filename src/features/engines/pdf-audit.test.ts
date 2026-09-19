@@ -16,7 +16,7 @@ const mergeManifest = pdfCapabilities.find((c) => c.id === "pdf.merge")!;
 const splitManifest = pdfCapabilities.find((c) => c.id === "pdf.split")!;
 const organizeManifest = pdfCapabilities.find((c) => c.id === "pdf.organize")!;
 const validateCapabilityExecution = (
-  manifest: any,
+  manifest: CapabilityManifest,
   adapter: ProbeAndValidateAdapter<Readonly<Record<string, unknown>>>,
   files: readonly File[],
   options: Readonly<Record<string, unknown>>,
