@@ -244,6 +244,7 @@ export function SiteHeader() {
         </Link>
         <nav aria-label="Main Navigation" className="site-nav">
           <button
+            aria-controls="mega-menu-pdf"
             aria-expanded={activeMenu === "pdf"}
             aria-haspopup="true"
             className={`nav-btn ${activeMenu === "pdf" ? "nav-btn--active" : ""}`}
@@ -254,6 +255,7 @@ export function SiteHeader() {
             <span className="nav-btn__chevron" aria-hidden="true">{activeMenu === "pdf" ? "▲" : "▼"}</span>
           </button>
           <button
+            aria-controls="mega-menu-image"
             aria-expanded={activeMenu === "image"}
             aria-haspopup="true"
             className={`nav-btn ${activeMenu === "image" ? "nav-btn--active" : ""}`}
@@ -276,7 +278,12 @@ export function SiteHeader() {
       </div>
 
       {activeMenu && (
-        <div className="mega-menu" role="region" aria-label={`${activeMenu.toUpperCase()} Tools Navigation`}>
+        <div
+          className="mega-menu"
+          id={activeMenu === "pdf" ? "mega-menu-pdf" : "mega-menu-image"}
+          role="region"
+          aria-label={`${activeMenu.toUpperCase()} Tools Navigation`}
+        >
           <div className="mega-menu__container">
             {(activeMenu === "pdf" ? PDF_GROUPS : IMAGE_GROUPS).map((group) => (
               <div className="mega-menu__column" key={group.title}>

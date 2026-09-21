@@ -1505,6 +1505,7 @@ h3 {
     font-size: 0.82rem;
     gap: 0.25rem;
     box-shadow: 1.5px 1.5px 0 var(--ink);
+    min-height: 2.5rem;
   }
 
   .header-note,
@@ -1591,6 +1592,11 @@ h3 {
     font-size: 0.72rem;
     gap: 0.15rem;
     box-shadow: 1px 1px 0 var(--ink);
+    min-height: 2.25rem;
+  }
+
+  .tool-grid {
+    grid-template-columns: 1fr;
   }
 }
 
