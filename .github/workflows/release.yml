@@ -16,7 +16,7 @@ jobs:
         PACKAGE_NAME="${{ github.event.release.name }}"
         zip -r "${PACKAGE_NAME}.zip" ./ -x "*.git*" -x "node_modules/*" -x ".next/*" -x "*.DS_Store"
     - name: Upload archive
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v7
       with:
         name: release-${{ github.event.release.version }}
         path: "*.zip"
