@@ -15,10 +15,14 @@ type ToolCardProps = {
 };
 
 const groupNames: Record<string, string> = {
-  organize: "Organize",
-  optimize: "Optimize",
+  "optimize-pdf": "Optimize PDF",
+  "optimize-image": "Optimize Image",
+  "merge-split": "Merge & Split",
+  "view-edit": "View & Edit",
   "to-pdf": "To PDF",
   "from-pdf": "From PDF",
+  "pdf-security": "PDF Security",
+  "convert-image": "Convert Image",
 };
 
 function CardBody({ capability, previewMode }: ToolCardProps) {
