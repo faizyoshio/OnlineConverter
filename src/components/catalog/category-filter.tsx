@@ -12,8 +12,6 @@ const filterLabels: Record<string, string> = {
   "pdf-security": "PDF Security",
   "optimize-image": "Optimize Image",
   "convert-image": "Convert Image",
-  organize: "Organize PDF",
-  optimize: "Optimize PDF",
 };
 
 type CategoryFilterProps = {
