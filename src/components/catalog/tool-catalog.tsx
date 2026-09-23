@@ -17,8 +17,6 @@ const groupOrder = [
   { id: "pdf-security", title: "PDF SECURITY" },
   { id: "optimize-image", title: "OPTIMIZE IMAGE" },
   { id: "convert-image", title: "CONVERT IMAGE" },
-  { id: "organize", title: "ORGANIZE PDF" },
-  { id: "optimize", title: "OPTIMIZE PDF" },
 ] as const;
 
 type ToolCatalogProps = {
