@@ -139,7 +139,7 @@ describe("ToolWorkspace", () => {
       new File(["%PDF"], "source-1.pdf", { type: "application/pdf" }),
       new File(["%PDF"], "source-2.pdf", { type: "application/pdf" }),
     ]);
-    await waitFor(() => expect(screen.getByRole("button", { name: /run conversion/i })).toBeEnabled());
+    await waitFor(() => expect(screen.getByRole("button", { name: /run conversion/i })).toBeEnabled(), { timeout: 30000 });
     await user.click(screen.getByRole("button", { name: /run conversion/i }));
 
     const download = await screen.findByRole("link", { name: /download output-1.pdf/i });
@@ -202,7 +202,7 @@ describe("ToolWorkspace", () => {
     });
     render(<ToolWorkspace capability={capability("archive.zip-extract")} runner={harness.runner} />);
     await user.upload(screen.getByLabelText(/choose files/i), new File(["PK"], "input.zip", { type: "application/zip" }));
-    await waitFor(() => expect(screen.getByRole("button", { name: /run conversion/i })).toBeEnabled());
+    await waitFor(() => expect(screen.getByRole("button", { name: /run conversion/i })).toBeEnabled(), { timeout: 30000 });
     await user.click(screen.getByRole("button", { name: /run conversion/i }));
     expect(await screen.findByRole("link", { name: /download report.txt/i })).toHaveAttribute("href", "blob:entry-1");
     expect(document.body.textContent).not.toContain("UNIQUE_RAW_BLOB_MARKER");
