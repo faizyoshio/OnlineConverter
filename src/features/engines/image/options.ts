@@ -160,7 +160,7 @@ function targetFileSize(options: Readonly<Record<string, unknown>>): number {
       maxFileSizeMb: isMaxFileSize ? targetFileSize(options) : undefined,
     };
   }
-  if (capabilityId === "image.compress-heic") {
+  if (capabilityId === "image.compress-png") {
     return { mimeType: "image/png" };
   }
   if (capabilityId === "image.compress-webp") {

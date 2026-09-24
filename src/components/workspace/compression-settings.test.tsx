@@ -99,7 +99,7 @@ describe("CompressionSettings", () => {
     expect(input).toHaveValue(null);
 
     await user.type(input, "350");
-    expect(setOption).toHaveBeenCalledWith("maxFileSizeKb", 3);
+    expect(setOption).toHaveBeenCalledWith("maxFileSizeMb", 3);
   });
 
   test("renders secondary academic options for JPEG and WebP", async () => {
