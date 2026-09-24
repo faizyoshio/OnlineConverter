@@ -31,7 +31,7 @@ function deduplicate(issues: readonly ValidationIssue[]): readonly ValidationIss
 export function validateBatch(files: readonly Pick<File, "size">[]): readonly ValidationIssue[] {
   const issues: ValidationIssue[] = [];
   if (files.length > UNIVERSAL_LIMITS.batch.files) {
-    issues.push(issue("limit-exceeded", "files", "A batch can contain at most 20 files.", files.length, UNIVERSAL_LIMITS.batch.files));
+    issues.push(issue("limit-exceeded", "files", `A batch can contain at most ${UNIVERSAL_LIMITS.batch.files.toLocaleString()} files.`, files.length, UNIVERSAL_LIMITS.batch.files));
   }
   const totalBytes = files.reduce((sum, file) => sum + file.size, 0);
   if (totalBytes > UNIVERSAL_LIMITS.batch.bytes) {

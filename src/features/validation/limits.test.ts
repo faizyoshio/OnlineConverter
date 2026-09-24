@@ -32,9 +32,9 @@ test("enforces image byte and pixel boundaries", () => {
 });
 
 test("enforces batch count and aggregate byte boundaries", () => {
-  const atLimit = Array.from({ length: UNIVERSAL_LIMITS.batch.files }, () => ({ size: UNIVERSAL_LIMITS.batch.bytes / UNIVERSAL_LIMITS.batch.files }));
+  const atLimit = Array.from({ length: UNIVERSAL_LIMITS.batch.files }, () => ({ size: Math.floor(UNIVERSAL_LIMITS.batch.bytes / UNIVERSAL_LIMITS.batch.files) }));
   expect(validateBatch(atLimit)).toEqual([]);
-  expect(validateBatch([...atLimit, { size: 0 }])).toEqual(expect.arrayContaining([expect.objectContaining({ field: "files", limit: 20 })]));
+  expect(validateBatch([...atLimit, { size: 0 }])).toEqual(expect.arrayContaining([expect.objectContaining({ field: "files", limit: UNIVERSAL_LIMITS.batch.files })]));
   expect(validateBatch([{ size: UNIVERSAL_LIMITS.batch.bytes + 1 }])).toEqual(expect.arrayContaining([expect.objectContaining({ field: "batchBytes" })]));
 });
 

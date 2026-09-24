@@ -203,7 +203,7 @@ test("matches the approved compatibility projection", () => {
         ],
         "limits": {
           "allowMixedKinds": false,
-          "maximumFiles": 20,
+          "maximumFiles": 100,
           "minimumFiles": 2,
           "profiles": [
             "pdf",
@@ -270,7 +270,7 @@ test("matches the approved compatibility projection", () => {
         ],
         "limits": {
           "allowMixedKinds": true,
-          "maximumFiles": 20,
+          "maximumFiles": 100,
           "minimumFiles": 2,
           "profiles": [
             "pdf",
@@ -630,7 +630,7 @@ test("matches the approved compatibility projection", () => {
         ],
         "limits": {
           "allowMixedKinds": false,
-          "maximumFiles": 20,
+          "maximumFiles": 100,
           "minimumFiles": 1,
           "profiles": [
             "image",
@@ -667,7 +667,7 @@ test("matches the approved compatibility projection", () => {
         ],
         "limits": {
           "allowMixedKinds": false,
-          "maximumFiles": 20,
+          "maximumFiles": 100,
           "minimumFiles": 1,
           "profiles": [
             "image",
@@ -1170,7 +1170,7 @@ test("matches the approved compatibility projection", () => {
         ],
         "limits": {
           "allowMixedKinds": false,
-          "maximumFiles": 20,
+          "maximumFiles": 100,
           "minimumFiles": 1,
           "profiles": [
             "image",
@@ -1754,7 +1754,7 @@ test("matches the approved compatibility projection", () => {
         ],
         "limits": {
           "allowMixedKinds": false,
-          "maximumFiles": 20,
+          "maximumFiles": 100,
           "minimumFiles": 1,
           "profiles": [
             "image",

@@ -23,9 +23,9 @@ const validateCapabilityExecution = (
 ) => capabilityValidator.validateWithAdapter(manifest as CapabilityManifest, files, options, adapter);
 
 describe("PDF Core Audit: Capability Manifests & Limits", () => {
-  test("pdf.merge manifest defines proper limits (min 2, max 20)", () => {
+  test("pdf.merge manifest defines proper limits (min 2, max 100)", () => {
     expect(mergeManifest.limits.minimumFiles).toBe(2);
-    expect(mergeManifest.limits.maximumFiles).toBe(20);
+    expect(mergeManifest.limits.maximumFiles).toBe(100);
     expect(mergeManifest.inputMode).toBe("files");
   });
 

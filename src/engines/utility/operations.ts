@@ -176,7 +176,7 @@ export function normalizeArchiveName(name: string): string {
 }
 
 export async function createZip(files: readonly ZipEntryData[], options: { deflateLevel?: number } = {}): Promise<Uint8Array> {
-  if (files.length === 0 || files.length > UNIVERSAL_LIMITS.batch.files) throw new Error("ZIP creation accepts between 1 and 20 files");
+  if (files.length === 0 || files.length > UNIVERSAL_LIMITS.batch.files) throw new Error(`ZIP creation accepts between 1 and ${UNIVERSAL_LIMITS.batch.files} files`);
   if (files.reduce((total, file) => total + file.bytes.byteLength, 0) > UNIVERSAL_LIMITS.batch.bytes) throw new Error("ZIP input exceeds the aggregate byte limit");
   const level = options.deflateLevel ?? 6;
   if (!Number.isInteger(level) || level < 0 || level > 9) throw new Error("Deflate level must be between 0 and 9");

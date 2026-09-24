@@ -169,14 +169,14 @@ describe("Utility Operations Engine", () => {
       },
     );
 
-    test("rejects duplicate normalized names and more than twenty inputs", async () => {
+    test("rejects duplicate normalized names and exceeds batch limit", async () => {
       await expect(createZip([
         { name: "folder\\same.txt", bytes: new Uint8Array([1]) },
         { name: "folder/same.txt", bytes: new Uint8Array([2]) },
       ])).rejects.toThrow("Duplicate archive name");
 
-      const tooMany = Array.from({ length: 21 }, (_, index) => ({ name: `${index}.txt`, bytes: new Uint8Array() }));
-      await expect(createZip(tooMany)).rejects.toThrow("20 files");
+      const tooMany = Array.from({ length: 10001 }, (_, index) => ({ name: `${index}.txt`, bytes: new Uint8Array() }));
+      await expect(createZip(tooMany)).rejects.toThrow("10000 files");
     });
 
     test("reports safe ZIP metadata without exposing an entry early", async () => {
