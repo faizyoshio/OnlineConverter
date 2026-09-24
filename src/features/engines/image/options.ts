@@ -26,7 +26,7 @@ export type ImageCodecCapabilityId = ImageCapabilityId;
 export type ImageEncodeOptions = {
   mimeType: "image/jpeg" | "image/png" | "image/webp";
   quality?: number | undefined;
-  maxFileSizeKb?: number | undefined;
+  maxFileSizeMb?: number | undefined;
   background?: string | undefined;
   rotationDegrees?: 90 | 180 | 270 | undefined;
   flipDirection?: "horizontal" | "vertical" | undefined;
@@ -142,9 +142,9 @@ export function resolveImageEncodeOptions(
     };
   }
 function targetFileSize(options: Readonly<Record<string, unknown>>): number {
-  const raw = options.maxFileSizeKb ?? 500;
+  const raw = options.maxFileSizeMb ?? 500;
   if (typeof raw !== "number" || !Number.isFinite(raw) || raw < 1 || raw > 50000) {
-    throw new Error("maxFileSizeKb must be between 1 and 50000");
+    throw new Error("maxFileSizeMb must be between 1 and 50000");
   }
   return raw;
 }
@@ -157,10 +157,10 @@ function targetFileSize(options: Readonly<Record<string, unknown>>): number {
     return {
       mimeType: "image/jpeg",
       quality: isMaxFileSize ? undefined : percentage(options, "quality", 75),
-      maxFileSizeKb: isMaxFileSize ? targetFileSize(options) : undefined,
+      maxFileSizeMb: isMaxFileSize ? targetFileSize(options) : undefined,
     };
   }
-  if (capabilityId === "image.compress-png") {
+  if (capabilityId === "image.compress-heic") {
     return { mimeType: "image/png" };
   }
   if (capabilityId === "image.compress-webp") {

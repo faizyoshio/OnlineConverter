@@ -384,7 +384,7 @@ export async function flattenPdf(
 
 export type PdfCompressOptions = {
   preset?: "dasar" | "sedang" | "kuat" | "kustom" | string;
-  customQuality?: number;
+  maxFileSizeMb?: number;
 };
 
 export async function compressPdf(

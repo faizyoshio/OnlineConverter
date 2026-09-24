@@ -41,7 +41,7 @@ export const pdfCapabilities = Object.freeze([
     resultContract: "lossy-visual", inputMode: "files", inputs: [pdfFile()], result: pdfResult(),
     optionFields: [
       selectOption("preset", "Compression preset", "sedang", ["dasar", "sedang", "kuat", "kustom"]),
-      numberOption("customQuality", "Custom quality", 80, 1, 100),
+      numberOption("maxFileSizeMb", "Target max file size", 10, 1, 500),
       selectOption("dpi", "Target DPI", "150", ["72", "150", "300"], true, true),
     ],
     limits: limits(["pdf"], 1, 1), warningCodes: ["lossy-output"],

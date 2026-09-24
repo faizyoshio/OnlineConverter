@@ -24,7 +24,7 @@ export function CompressionSettings({
 
   const mode = options.compressionMode === "maxFileSize" ? "maxFileSize" : "quality";
   const quality = typeof options.quality === "number" ? Math.max(1, Math.min(100, options.quality)) : 75;
-  const maxFileSizeKb = options.maxFileSizeKb == null ? "" : String(options.maxFileSizeKb);
+  const maxFileSizeMb = options.maxFileSizeMb == null ? "" : String(options.maxFileSizeMb);
 
   const secondaryField = capability.optionFields.find(
     (field) => field.key === "stripMetadata" || field.key === "preserveAlpha",
@@ -68,8 +68,8 @@ export function CompressionSettings({
               <label htmlFor={maxFileRadioId} className={`compression-radio-label ${mode === "maxFileSize" ? "is-selected" : ""}`}>
                 <input type="radio" id={maxFileRadioId} name={`${baseId}-compression-mode`} value="maxFileSize" checked={mode === "maxFileSize"} onChange={() => setOption("compressionMode", "maxFileSize")} disabled={disabled} className="compression-radio-input" />
                 <span className="compression-radio-custom" />
-                <span className="compression-radio-text">Max File Size (KB)</span>
-                <span className="compression-help-icon" title="Target maximum output file size in kilobytes (KB)" aria-label="Target maximum output file size in kilobytes">?</span>
+                <span className="compression-radio-text">Max File Size (MB)</span>
+                <span className="compression-help-icon" title="Target maximum output file size in megabytes (MB)" aria-label="Target maximum output file size in megabytes">?</span>
               </label>
               <label htmlFor={qualityRadioId} className={`compression-radio-label ${mode === "quality" ? "is-selected" : ""}`}>
                 <input type="radio" id={qualityRadioId} name={`${baseId}-compression-mode`} value="quality" checked={mode === "quality"} onChange={() => setOption("compressionMode", "quality")} disabled={disabled} className="compression-radio-input" />
@@ -82,14 +82,14 @@ export function CompressionSettings({
             <div className="compression-settings__control-area">
               {mode === "maxFileSize" ? (
                 <div className="compression-max-size-container">
-                  <input type="number" id={maxFileInputId} className="compression-text-input" placeholder="Enter Max File Size" min="1" max="50000" step="1" value={maxFileSizeKb} onChange={(e) => {
+                  <input type="number" id={maxFileInputId} className="compression-text-input" placeholder="Enter Max File Size" min="1" max="50000" step="1" value={maxFileSizeMb} onChange={(e) => {
                       const val = e.target.value.trim();
-                      if (val === "") setOption("maxFileSizeKb", null);
+                      if (val === "") setOption("maxFileSizeMb", null);
                       else {
                         const num = Number(val);
-                        if (!Number.isNaN(num)) setOption("maxFileSizeKb", num);
+                        if (!Number.isNaN(num)) setOption("maxFileSizeMb", num);
                       }
-                    }} disabled={disabled} aria-label="Enter maximum file size in KB" />
+                    }} disabled={disabled} aria-label="Enter maximum file size in MB" />
                 </div>
               ) : (
                 <div className="compression-slider-container">

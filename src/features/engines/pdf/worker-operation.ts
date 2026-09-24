@@ -410,8 +410,8 @@ export async function processPdfOperation(context: LocalWorkerOperationContext):
       if (isCancelled()) return { mode: "files", outputs: [], metadata: { resultMode: "files", outputMimeTypes: [], outputBytes: [] } };
       reportProgress(0.4, "Compressing PDF");
       const preset = typeof options.preset === "string" ? options.preset : "sedang";
-      const customQuality = typeof options.customQuality === "number" ? options.customQuality : 80;
-      const compressed = await compressPdf(buffer, { preset, customQuality });
+      const maxFileSizeMb = typeof options.maxFileSizeMb === "number" ? options.maxFileSizeMb : 10;
+      const compressed = await compressPdf(buffer, { preset, maxFileSizeMb });
       if (isCancelled()) return { mode: "files", outputs: [], metadata: { resultMode: "files", outputMimeTypes: [], outputBytes: [] } };
       reportProgress(0.9, "Finalizing");
       const doc = await (await import("pdf-lib")).PDFDocument.load(compressed);

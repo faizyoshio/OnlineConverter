@@ -23,7 +23,7 @@ const PRESETS: readonly PresetOption[] = [
   { id: "dasar", title: "Dasar", description: "Kompresi dasar, kualitas tinggi" },
   { id: "sedang", title: "Sedang", description: "Kompresi baik, kualitas baik" },
   { id: "kuat", title: "Kuat", description: "Kompresi tinggi, kualitas lebih rendah", badge: "Terkecil" },
-  { id: "kustom", title: "Kustom", description: "Ukuran file terkecil, kualitas gambar kustom" },
+  { id: "kustom", title: "Kustom", description: "Target ukuran file (MB), kualitas gambar disesuaikan" },
 ];
 
 export function PdfCompressSettings({
@@ -35,7 +35,7 @@ export function PdfCompressSettings({
 }: PdfCompressSettingsProps) {
   const baseId = useId();
   const selectedPreset = typeof options.preset === "string" && ["dasar", "sedang", "kuat", "kustom"].includes(options.preset) ? options.preset : "sedang";
-  const customQuality = typeof options.customQuality === "number" ? options.customQuality : 80;
+  const maxFileSizeMb = typeof options.maxFileSizeMb === "number" ? options.maxFileSizeMb : 10;
 
   return (
     <div className="pdf-compress-panel" aria-labelledby={`${baseId}-title`}>
@@ -75,9 +75,9 @@ export function PdfCompressSettings({
 
       {selectedPreset === "kustom" && (
         <div className="pdf-compress-custom-area">
-          <label htmlFor={`${baseId}-custom-quality`} className="pdf-compress-custom-label">
-            <span>Kualitas Gambar Kustom: <strong>{customQuality}%</strong></span>
-            <input type="range" id={`${baseId}-custom-quality`} min="1" max="100" step="1" value={customQuality} onChange={(e) => setOption("customQuality", Number(e.target.value))} disabled={disabled} className="pdf-compress-slider" />
+          <label htmlFor={`${baseId}-max-file-size-mb`} className="pdf-compress-custom-label">
+            <span>Target Ukuran File Maksimal: <strong>{maxFileSizeMb} MB</strong></span>
+            <input type="range" id={`${baseId}-max-file-size-mb`} min="1" max="500" step="1" value={maxFileSizeMb} onChange={(e) => setOption("maxFileSizeMb", Number(e.target.value))} disabled={disabled} className="pdf-compress-slider" />
           </label>
           {isAdvancedMode && (
             <div className="pdf-compress-advanced-option" style={{ marginTop: "1rem", fontSize: "0.875rem" }}>

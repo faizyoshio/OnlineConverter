@@ -125,8 +125,8 @@ export async function processImageOperation(
     ensureActive(context);
     context.reportProgress(0.8, "Encoding local image");
     let blob: Blob;
-    if (outputOptions.maxFileSizeKb !== undefined && outputOptions.maxFileSizeKb > 0) {
-      const maxTargetBytes = outputOptions.maxFileSizeKb * 1024;
+    if (outputOptions.maxFileSizeMb !== undefined && outputOptions.maxFileSizeMb > 0) {
+      const maxTargetBytes = outputOptions.maxFileSizeMb * 1024 * 1024;
       let low = 0.05;
       let high = 0.95;
       let bestBlob: Blob | null = null;
