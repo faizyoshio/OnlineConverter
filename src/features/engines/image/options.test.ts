@@ -37,13 +37,13 @@ describe("image codec options", () => {
       mimeType: "image/jpeg",
       quality: 0.8,
     });
-    expect(resolveImageEncodeOptions("image.compress-jpeg", { compressionMode: "maxFileSize", maxFileSizeKb: 300 })).toEqual({
+    expect(resolveImageEncodeOptions("image.compress-jpeg", { compressionMode: "maxFileSize", maxFileSizeMb: 300 })).toEqual({
       mimeType: "image/jpeg",
-      maxFileSizeKb: 300,
+      maxFileSizeMb: 300,
     });
-    expect(resolveImageEncodeOptions("image.compress-webp", { compressionMode: "maxFileSize", maxFileSizeKb: 150 })).toEqual({
+    expect(resolveImageEncodeOptions("image.compress-webp", { compressionMode: "maxFileSize", maxFileSizeMb: 150 })).toEqual({
       mimeType: "image/webp",
-      maxFileSizeKb: 150,
+      maxFileSizeMb: 150,
     });
   });
 });

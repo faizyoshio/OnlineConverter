@@ -30,7 +30,7 @@ describe("PdfCompressSettings", () => {
     expect(screen.getByText("Terkecil")).toBeInTheDocument();
 
     expect(screen.getByText("Kustom")).toBeInTheDocument();
-    expect(screen.getByText("Ukuran file terkecil, kualitas gambar kustom")).toBeInTheDocument();
+    expect(screen.getByText("Target ukuran file (MB), kualitas gambar disesuaikan")).toBeInTheDocument();
   });
 
   test("allows selecting a preset card", async () => {
@@ -55,12 +55,12 @@ describe("PdfCompressSettings", () => {
     render(
       <PdfCompressSettings
         capability={compressCapability}
-        options={{ preset: "kustom", customQuality: 65 }}
+        options={{ preset: "kustom", maxFileSizeMb: 65 }}
         setOption={() => {}}
       />
     );
 
-    expect(screen.getByText("65%")).toBeInTheDocument();
+    expect(screen.getByText("65 MB")).toBeInTheDocument();
     expect(screen.getByRole("slider")).toBeInTheDocument();
   });
 });
