@@ -63,14 +63,14 @@ describe("CompressionSettings", () => {
       />,
     );
 
-    const maxFileRadio = screen.getByRole("radio", { name: /max file size \(kb\)/i });
+    const maxFileRadio = screen.getByRole("radio", { name: /max file size \(mb\)/i });
     await user.click(maxFileRadio);
     expect(setOption).toHaveBeenCalledWith("compressionMode", "maxFileSize");
 
     rerender(
       <CompressionSettings
         capability={jpegCompress}
-        options={{ compressionMode: "maxFileSize", maxFileSizeKb: 200, stripMetadata: true }}
+        options={{ compressionMode: "maxFileSize", maxFileSizeMb: 200, stripMetadata: true }}
         setOption={setOption}
       />,
     );
