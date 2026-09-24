@@ -42,18 +42,18 @@ test("enforces GIF byte, duration, and dimension boundaries", () => {
   const base = { kind: "gif" as const, probeRule: "gif-header" as const, bytes: UNIVERSAL_LIMITS.gif.bytes, durationSeconds: 30, width: 1280, height: 720 };
   expectAtLimit("gif.compress", base);
   expectOverLimit("gif.compress", { ...base, bytes: base.bytes + 1 }, "bytes");
-  expectOverLimit("gif.compress", { ...base, durationSeconds: 31 }, "durationSeconds");
-  expectOverLimit("gif.compress", { ...base, width: 1281 }, "width");
-  expectOverLimit("gif.compress", { ...base, height: 721 }, "height");
+  expectOverLimit("gif.compress", { ...base, durationSeconds: 601 }, "durationSeconds");
+  expectOverLimit("gif.compress", { ...base, width: 8193 }, "width");
+  expectOverLimit("gif.compress", { ...base, height: 8193 }, "height");
 });
 
 test("enforces ZIP compressed, expanded, entry, and depth boundaries", () => {
-  const base = { kind: "zip" as const, probeRule: "zip-header" as const, bytes: UNIVERSAL_LIMITS.zip.compressedBytes, expandedBytes: UNIVERSAL_LIMITS.zip.expandedBytes, archiveEntries: 1000, archiveDepth: 10 };
+  const base = { kind: "zip" as const, probeRule: "zip-header" as const, bytes: UNIVERSAL_LIMITS.zip.compressedBytes, expandedBytes: UNIVERSAL_LIMITS.zip.expandedBytes, archiveEntries: UNIVERSAL_LIMITS.zip.entries, archiveDepth: UNIVERSAL_LIMITS.zip.depth };
   expectAtLimit("archive.zip-extract", base);
   expectOverLimit("archive.zip-extract", { ...base, bytes: base.bytes + 1 }, "compressedBytes");
   expectOverLimit("archive.zip-extract", { ...base, expandedBytes: base.expandedBytes + 1 }, "expandedBytes");
-  expectOverLimit("archive.zip-extract", { ...base, archiveEntries: 1001 }, "archiveEntries");
-  expectOverLimit("archive.zip-extract", { ...base, archiveDepth: 11 }, "archiveDepth");
+  expectOverLimit("archive.zip-extract", { ...base, archiveEntries: UNIVERSAL_LIMITS.zip.entries + 1 }, "archiveEntries");
+  expectOverLimit("archive.zip-extract", { ...base, archiveDepth: UNIVERSAL_LIMITS.zip.depth + 1 }, "archiveDepth");
 });
 
 test("enforces OCR item boundaries", () => {
