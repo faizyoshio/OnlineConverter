@@ -59,7 +59,7 @@ export const pdfCapabilities = Object.freeze([
     resultContract: "exact-structural", inputMode: "files",
     inputs: [pdfFile()], result: pdfResult(),
     optionFields: [selectOption("order", "Page order", "input-order", ["input-order", "drag-order"]), pageRangeOption("pages", "Included pages", "all")],
-    limits: limits(["pdf", "batch"], 2, 20),
+    limits: limits(["pdf", "batch"], 2, 100),
   }),
   definePdf({
     id: "pdf.merge-image", slug: "merge-pdf-and-image", title: "Merge PDF and Image",
@@ -70,7 +70,7 @@ export const pdfCapabilities = Object.freeze([
     resultContract: "exact-structural", inputMode: "files",
     inputs: [pdfFile(), input("jpeg"), input("png"), input("webp")], result: pdfResult(),
     optionFields: [selectOption("order", "Item order", "input-order", ["input-order", "drag-order"]), selectOption("pageSize", "Page size", "a4", ["a4"]), selectOption("fit", "Image fit", "contain", ["contain"]), numberOption("marginMm", "Margin", 12, 0, 50)],
-    limits: limits(["pdf", "image", "batch"], 2, 20, true),
+    limits: limits(["pdf", "image", "batch"], 2, 100, true),
   }),
   definePdf({
     id: "pdf.split", slug: "split-pdf", title: "Split PDF",
@@ -178,7 +178,7 @@ export const pdfCapabilities = Object.freeze([
       numberOption("bleedMm", "Bleed (Crop area)", 0, 0, 20, 1, true, true),
       selectOption("order", "Input order", "input-order", ["input-order", "drag-order"]),
     ],
-    limits: limits(["image", "batch"], 1, 20), browserRequirements: ["canvas", "offscreen-canvas"],
+    limits: limits(["image", "batch"], 1, 100), browserRequirements: ["canvas", "offscreen-canvas"],
   }),
   definePdf({
     id: "pdf.jpg-to-pdf", slug: "jpg-to-pdf", title: "JPG to PDF",
@@ -195,7 +195,7 @@ export const pdfCapabilities = Object.freeze([
       numberOption("bleedMm", "Bleed (Crop area)", 0, 0, 20, 1, true, true),
       selectOption("order", "Input order", "input-order", ["input-order", "drag-order"]),
     ],
-    limits: limits(["image", "batch"], 1, 20), browserRequirements: ["canvas", "offscreen-canvas"],
+    limits: limits(["image", "batch"], 1, 100), browserRequirements: ["canvas", "offscreen-canvas"],
   }),
   definePdf({
     id: "pdf.word-to-pdf", slug: "word-to-pdf", title: "Word to PDF",
@@ -351,7 +351,7 @@ export const pdfCapabilities = Object.freeze([
     resultContract: "lossy-visual", inputMode: "camera-or-files",
     inputs: [input("jpeg"), input("png"), input("webp")], result: pdfResult(),
     optionFields: [selectOption("pageSize", "Page size", "a4", ["a4"]), selectOption("orientation", "Orientation", "auto", ["auto"]), numberOption("jpegQuality", "JPEG quality", 85, 1, 100)],
-    limits: limits(["image", "batch"], 1, 20), browserRequirements: ["camera", "canvas"], warningCodes: ["lossy-output"],
+    limits: limits(["image", "batch"], 1, 100), browserRequirements: ["camera", "canvas"], warningCodes: ["lossy-output"],
   }),
   definePdf({
     id: "pdf.repair", slug: "repair-pdf", title: "Repair PDF",
@@ -447,6 +447,6 @@ export const pdfCapabilities = Object.freeze([
     description: "Convert local HEIC images to an A4 PDF with fitted pages and controlled JPEG quality.",
     resultContract: "lossy-visual", inputMode: "files", inputs: [input("heic")], result: pdfResult(),
     optionFields: [selectOption("pageSize", "Page size", "a4", ["a4"]), selectOption("fit", "Image fit", "contain", ["contain"]), numberOption("marginMm", "Margin", 12, 0, 50), numberOption("jpegQuality", "JPEG quality", 90, 1, 100)],
-    limits: limits(["image", "batch"], 1, 20), browserRequirements: ["canvas"], warningCodes: ["lossy-output"],
+    limits: limits(["image", "batch"], 1, 100), browserRequirements: ["canvas"], warningCodes: ["lossy-output"],
   }),
 ]);
