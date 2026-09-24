@@ -168,7 +168,7 @@ function targetFileSize(options: Readonly<Record<string, unknown>>): number {
     return {
       mimeType: "image/webp",
       quality: isMaxFileSize ? undefined : percentage(options, "quality", 75),
-      maxFileSizeKb: isMaxFileSize ? targetFileSize(options) : undefined,
+      maxFileSizeMb: isMaxFileSize ? targetFileSize(options) : undefined,
     };
   }
   if (capabilityId === "image.compress-heic" || capabilityId === "image.heic-to-jpg") {
