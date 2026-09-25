@@ -111,11 +111,11 @@ function ToolGlyph({ type }: { type: ToolItem["icon"] }) {
         </svg>
       );
     case "word":
-      return <span style={{ fontWeight: 800, fontSize: "11px", color: "#fff" }}>W</span>;
+      return <span style={{ fontWeight: 800, fontSize: "11px", color: "var(--paper)" }}>W</span>;
     case "powerpoint":
-      return <span style={{ fontWeight: 800, fontSize: "11px", color: "#fff" }}>P</span>;
+      return <span style={{ fontWeight: 800, fontSize: "11px", color: "var(--paper)" }}>P</span>;
     case "excel":
-      return <span style={{ fontWeight: 800, fontSize: "11px", color: "#fff" }}>X</span>;
+      return <span style={{ fontWeight: 800, fontSize: "9px", color: "var(--paper)" }}>TXT</span>;
     case "text":
       return <span style={{ fontWeight: 800, fontSize: "9px", color: "#fff" }}>TXT</span>;
     case "lock":
