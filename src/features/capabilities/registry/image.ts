@@ -63,7 +63,7 @@ export const imageCapabilities = Object.freeze([
     resultContract: "lossy-visual", inputMode: "files", inputs: [input("jpeg")], result: filesResult(output("jpeg")),
     optionFields: [
       selectOption("compressionMode", "Compression mode", "quality", ["quality", "maxFileSize"]),
-      numberOption("maxFileSizeKb", "Max file size in KB", null, 1, 50000, 1, false),
+      numberOption("maxFileSizeMb", "Max file size in MB", null, 1, 500, 1, false),
       numberOption("quality", "JPEG quality", 75, 1, 100),
       toggleOption("stripMetadata", "Strip nonessential metadata", true),
     ],
@@ -88,7 +88,7 @@ export const imageCapabilities = Object.freeze([
     resultContract: "lossy-visual", inputMode: "files", inputs: [input("jpeg"), input("jfif")], result: filesResult(output("jpeg")),
     optionFields: [
       selectOption("compressionMode", "Compression mode", "quality", ["quality", "maxFileSize"]),
-      numberOption("maxFileSizeKb", "Max file size in KB", null, 1, 50000, 1, false),
+      numberOption("maxFileSizeMb", "Max file size in MB", null, 1, 500, 1, false),
       numberOption("quality", "JPEG quality", 75, 1, 100),
       toggleOption("stripMetadata", "Strip nonessential metadata", true),
     ],
@@ -103,7 +103,7 @@ export const imageCapabilities = Object.freeze([
     resultContract: "lossy-visual", inputMode: "files", inputs: [input("webp")], result: filesResult(output("webp")),
     optionFields: [
       selectOption("compressionMode", "Compression mode", "quality", ["quality", "maxFileSize"]),
-      numberOption("maxFileSizeKb", "Max file size in KB", null, 1, 50000, 1, false),
+      numberOption("maxFileSizeMb", "Max file size in MB", null, 1, 500, 1, false),
       numberOption("quality", "WebP quality", 75, 1, 100),
       toggleOption("preserveAlpha", "Preserve alpha", true),
     ],
