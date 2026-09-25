@@ -56,7 +56,7 @@ export function DropZone({ capability, disabled, files, onFilesChange }: DropZon
         onChange={onChange}
         type="file"
       />
-      <label className="workspace-drop-zone__label" htmlFor="workspace-files">
+      <label className="workspace-drop-zone__label" htmlFor="workspace-files" aria-label={`Choose ${capability.title} files`}>
         Choose files
       </label>
       <p className="workspace-drop-zone__hint">Drop files here or use file picker. Files stay on device.</p>

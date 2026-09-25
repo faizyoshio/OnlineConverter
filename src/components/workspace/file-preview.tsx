@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Image from "next/image";
+import DOMPurify from "dompurify";
 import type { CapabilityManifest } from "@/features/capabilities";
 
 type FilePreviewProps = {
@@ -151,7 +152,7 @@ function FilePreviewContent({
       <div className="workspace-preview">
         <div
           className="workspace-preview__docx"
-          dangerouslySetInnerHTML={{ __html: docxHtml }}
+          dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(docxHtml) }}
         />
       </div>
     );

@@ -17,6 +17,7 @@ export function ToolSearch({ value, onChange }: ToolSearchProps) {
           placeholder="Try “PDF to JPG” or “compress image”"
           type="search"
           value={value}
+          aria-label="Search tools"
         />
       </span>
     </label>

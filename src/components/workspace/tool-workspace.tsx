@@ -138,6 +138,7 @@ export function ToolWorkspace({ capability, runner, renderOptions }: ToolWorkspa
                 type="checkbox"
                 checked={isAdvancedMode}
                 onChange={(e) => setIsAdvancedMode(e.target.checked)}
+                aria-label="Toggle advanced settings"
               />
               <span>Advanced Settings</span>
             </label>
