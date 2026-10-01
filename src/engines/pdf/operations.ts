@@ -265,16 +265,33 @@ export async function textToPdf(
   return pdf.save();
 }
 
+export type ImageToPdfOptions = {
+  pageSize?: "a4" | "letter" | "legal";
+  orientation?: "portrait" | "landscape";
+  fit?: "contain" | "cover" | "fill";
+  marginMm?: number;
+  applyExifOrientation?: boolean;
+};
+
 export async function imagesToPdf(
-  images: readonly { bytes: Uint8Array; format: "jpeg" | "png" }[],
-  options: { fit?: "contain" | "cover" | "fill"; marginMm?: number } = {},
+  images: readonly { bytes: Uint8Array; format: "jpeg" | "png"; orientation?: 1 | 3 | 6 | 8 }[],
+  options: ImageToPdfOptions = {},
 ): Promise<Uint8Array> {
   const pdf = await PDFDocument.create();
-  const pageWidth = 595.28;
-  const pageHeight = 841.89;
-  const margin = (options.marginMm ?? 12) * (72 / 25.4);
-  const availableWidth = pageWidth - 2 * margin;
-  const availableHeight = pageHeight - 2 * margin;
+  const { pageSize, orientation, marginMm = 12, fit = "contain" } = options;
+
+  const portraitSizes: Record<string, [number, number]> = {
+    a4: [595.28, 841.89],
+    letter: [612, 792],
+    legal: [612, 1008],
+  };
+  const key = pageSize ?? "a4";
+  const size = portraitSizes[key] as [number, number];
+  const baseW = orientation === "landscape" ? size[1] : size[0];
+  const baseH = orientation === "landscape" ? size[0] : size[1];
+  const margin = marginMm * (72 / 25.4);
+  const availableWidth = baseW - 2 * margin;
+  const availableHeight = baseH - 2 * margin;
 
   for (const img of images) {
     const embedded =
@@ -282,19 +299,20 @@ export async function imagesToPdf(
         ? await pdf.embedJpg(img.bytes)
         : await pdf.embedPng(img.bytes);
 
-    const page = pdf.addPage([pageWidth, pageHeight]);
     let width = availableWidth;
     let height = availableHeight;
-    if (options.fit !== "fill") {
-      const scale = options.fit === "cover"
+    if (fit !== "fill") {
+      const scale = fit === "cover"
         ? Math.max(availableWidth / embedded.width, availableHeight / embedded.height)
         : Math.min(availableWidth / embedded.width, availableHeight / embedded.height);
       width = embedded.width * scale;
       height = embedded.height * scale;
     }
+
+    const page = pdf.addPage([baseW, baseH]);
     page.drawImage(embedded, {
-      x: (pageWidth - width) / 2,
-      y: (pageHeight - height) / 2,
+      x: (baseW - width) / 2,
+      y: (baseH - height) / 2,
       width,
       height,
     });

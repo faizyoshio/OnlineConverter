@@ -373,7 +373,9 @@ export async function processPdfOperation(context: LocalWorkerOperationContext):
       if (isCancelled()) return { mode: "files", outputs: [], metadata: { resultMode: "files", outputMimeTypes: [], outputBytes: [] } };
       reportProgress(0.5, "Creating PDF");
       const fit = options.fit === "cover" || options.fit === "fill" ? options.fit : "contain";
-      const result = await imagesToPdf(images, { fit, marginMm: Number(options.marginMm ?? 12) });
+      const orientation = options.orientation === "landscape" ? "landscape" : "portrait";
+      const pageSize = (typeof options.pageSize === "string" && ["a4", "letter", "legal"].includes(options.pageSize)) ? (options.pageSize as "a4" | "letter" | "legal") : "a4";
+      const result = await imagesToPdf(images, { fit, orientation, pageSize, marginMm: Number(options.marginMm ?? 12) });
       if (isCancelled()) return { mode: "files", outputs: [], metadata: { resultMode: "files", outputMimeTypes: [], outputBytes: [] } };
       const doc = await (await import("pdf-lib")).PDFDocument.load(result);
       reportProgress(0.9, "Finalizing");
