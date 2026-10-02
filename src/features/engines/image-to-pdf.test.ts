@@ -16,7 +16,7 @@ describe("Image to PDF adapter", () => {
       pageSize: "a4",
       fit: "contain",
       marginMm: 12,
-      order: "input-order",
+      orientation: "portrait",
     });
 
     expect(issues).toEqual([]);

@@ -1610,3 +1610,55 @@ h3 {
     animation-iteration-count: 1 !important;
   }
 }
+
+/* Orientation Picker */
+.orientation-picker {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.orientation-option {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 16px 24px;
+  border: 2px solid var(--muted);
+  border-radius: 12px;
+  background: var(--paper);
+  cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease, box-shadow 0.15s ease;
+  min-width: 120px;
+}
+
+.orientation-option:hover:not(:disabled) {
+  border-color: var(--ink);
+}
+
+.orientation-option:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px var(--ring);
+}
+
+.orientation-option.selected {
+  border-color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 8%, var(--paper));
+  box-shadow: 0 0 0 1px var(--accent);
+}
+
+.orientation-option:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.orientation-icon {
+  font-size: 28px;
+  line-height: 1;
+}
+
+.orientation-label {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--ink);
+}

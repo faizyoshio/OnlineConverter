@@ -15,6 +15,7 @@ import { ResultPanel } from "./result-panel";
 import { CompressionSettings } from "./compression-settings";
 import { PdfCompressSettings } from "./pdf-compress-settings";
 import { FilePreview } from "./file-preview";
+import { OrientationPicker } from "./orientation-picker";
 
 export type ToolWorkspaceProps = {
   capability: CapabilityManifest;
@@ -157,6 +158,15 @@ export function ToolWorkspace({ capability, runner, renderOptions }: ToolWorkspa
               const numeric = field.control === "number" || field.control === "range";
               return <label key={field.key} htmlFor={id}>{field.label}<input id={id} max={field.maximum} min={field.minimum} onChange={(event) => setOption(field.key, numeric ? Number(event.target.value) : event.target.value)} step={field.step} type={numeric ? field.control : "text"} value={value == null ? "" : String(value)} /></label>;
             })}
+          {capability.id === "image.to-pdf" && (
+            <div key="orientation-picker" className="orientation-picker-section">
+              <OrientationPicker
+                value={options.orientation as "portrait" | "landscape"}
+                onChange={(v) => setOption("orientation", v)}
+                disabled={busy || validating}
+              />
+            </div>
+          )}
         </fieldset>
       )}
       {renderOptions ? <div className="workspace-options">{renderOptions({ disabled: busy || validating })}</div> : null}
