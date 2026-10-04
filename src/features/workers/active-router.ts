@@ -10,6 +10,7 @@ export function createActiveEngineRouter(): EngineRouter {
   // --------------------------------------------------------------------------
   // OPTIMIZE PDF
   router.register("pdf.compress", async () => (await import("@/features/engines/pdf-compress")).createPdfCompressAdapter());
+  router.register("pdf.compress-batch", async () => (await import("@/features/engines/pdf-compress")).createPdfCompressAdapter());
 
   // MERGE & SPLIT
   router.register("pdf.merge", async () => (await import("@/features/engines/pdf-merge")).createPdfMergeAdapter());
@@ -57,6 +58,7 @@ export function createActiveEngineRouter(): EngineRouter {
   router.register("image.compress-webp", async () => (await import("@/features/engines/image/adapter")).createImageAdapter("image.compress-webp"));
   router.register("image.compress-heic", async () => (await import("@/features/engines/image/adapter")).createImageAdapter("image.compress-heic"));
   router.register("image.compress-bmp", async () => (await import("@/features/engines/image/adapter")).createImageAdapter("image.compress-bmp"));
+  router.register("image.compress-batch", async () => (await import("@/features/engines/image-batch-compress")).createImageBatchCompressAdapter());
 
   // CONVERT IMAGE
   router.register("image.to-jpg", async () => (await import("@/features/engines/image/adapter")).createImageAdapter("image.to-jpg"));
