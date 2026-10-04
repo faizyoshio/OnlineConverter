@@ -46,6 +46,20 @@ export const pdfCapabilities = Object.freeze([
     ],
     limits: limits(["pdf"], 1, 1), warningCodes: ["lossy-output"],
   }),
+  definePdf({
+    id: "pdf.compress-batch", slug: "compress-pdf-batch", title: "Compress PDF (Batch)",
+    group: "optimize-pdf",
+    releaseStatus: "active",
+    description: "Compress multiple PDFs at once using a selected compression preset while preserving page size.",
+    aliases: ["batch pdf compression", "reduce pdf size batch", "compress many pdf"],
+    resultContract: "lossy-visual", inputMode: "files", inputs: [pdfFile()], result: pdfResult(),
+    optionFields: [
+      selectOption("preset", "Compression preset", "sedang", ["dasar", "sedang", "kuat", "kustom"]),
+      numberOption("maxFileSizeMb", "Target max file size", 10, 1, 500),
+      selectOption("dpi", "Target DPI", "150", ["72", "150", "300"], true, true),
+    ],
+    limits: limits(["pdf", "batch"], 1, 100), warningCodes: ["lossy-output"],
+  }),
 
   // --------------------------------------------------------------------------
   // 2. MERGE & SPLIT (3 tools)

@@ -55,6 +55,22 @@ export const imageCapabilities = Object.freeze([
     limits: limits(["image"], 1, 1), warningCodes: ["lossy-output"],
   }),
   defineImage({
+    id: "image.compress-batch", slug: "compress-image-batch", title: "Compress Image (Batch)",
+    group: "optimize-image",
+    releaseStatus: "active",
+    description: "Compress multiple images at once using a balanced preset and stable dimensions.",
+    aliases: ["batch image compression", "reduce image size batch", "compress many images"],
+    resultContract: "lossy-visual", inputMode: "files", inputs: rasterInputs(),
+    result: filesResult(output("jpeg", "listed-fallback", "webp"), output("png", "listed-fallback", "webp"), output("webp"), output("bmp", "listed-fallback", "webp")),
+    optionFields: [
+      selectOption("preset", "Compression preset", "sedang", ["dasar", "sedang", "kuat", "kustom"]),
+      toggleOption("preserveDimensions", "Preserve dimensions", true),
+      toggleOption("stripMetadata", "Strip EXIF metadata", true, true),
+      selectOption("sampling", "Sampling algorithm", "bicubic", ["bilinear", "bicubic", "lanczos"], true, true),
+    ],
+    limits: limits(["image", "batch"], 1, 100), warningCodes: ["lossy-output"],
+  }),
+  defineImage({
     id: "image.compress-jpg", slug: "compress-jpg", title: "Compress JPG",
     group: "optimize-image",
     releaseStatus: "active",
