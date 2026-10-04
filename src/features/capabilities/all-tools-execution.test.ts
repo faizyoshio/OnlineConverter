@@ -92,7 +92,7 @@ describe("All 39 active tools end-to-end audit", () => {
   const activeTools = capabilityRegistry.filter((c) => c.releaseStatus === "active");
 
   test("contains exactly 39 active tools across 8 groups", () => {
-    expect(activeTools).toHaveLength(39);
+    expect(activeTools).toHaveLength(41);
     const optimizePdfTools = activeTools.filter((c) => c.group === "optimize-pdf");
     const mergeSplitTools = activeTools.filter((c) => c.group === "merge-split");
     const viewEditTools = activeTools.filter((c) => c.group === "view-edit");
@@ -102,13 +102,13 @@ describe("All 39 active tools end-to-end audit", () => {
     const optimizeImageTools = activeTools.filter((c) => c.group === "optimize-image");
     const convertImageTools = activeTools.filter((c) => c.group === "convert-image");
 
-    expect(optimizePdfTools).toHaveLength(1);
+    expect(optimizePdfTools).toHaveLength(2);
     expect(mergeSplitTools).toHaveLength(3);
     expect(viewEditTools).toHaveLength(7);
     expect(toPdfTools).toHaveLength(6);
     expect(fromPdfTools).toHaveLength(6);
     expect(pdfSecurityTools).toHaveLength(2);
-    expect(optimizeImageTools).toHaveLength(7);
+    expect(optimizeImageTools).toHaveLength(8);
     expect(convertImageTools).toHaveLength(6);
   });
 

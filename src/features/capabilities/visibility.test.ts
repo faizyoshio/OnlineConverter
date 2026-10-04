@@ -6,7 +6,7 @@ const activeIds = capabilityRegistry
   .map((item) => item.id);
 
 test("has exactly 38 active tools in capabilityRegistry", () => {
-  expect(activeIds).toHaveLength(39);
+  expect(activeIds).toHaveLength(41);
 });
 
 test("production hides planned capabilities while keeping active capabilities", () => {
