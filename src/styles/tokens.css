@@ -13,7 +13,7 @@
   --radius-sm: 0.75rem;
   --radius-md: 1rem;
   --shadow-hard: 4px 4px 0 var(--ink);
-  --focus-ring: 0 0 0 3px #ffffff, 0 0 0 6px #236da6;
+  --focus-ring: 0 0 0 3px var(--surface), 0 0 0 6px var(--blue);
   --content-width: 76rem;
   --space-1: 0.25rem;
   --space-2: 0.5rem;

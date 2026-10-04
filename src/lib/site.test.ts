@@ -7,7 +7,7 @@ const active = { ...capabilityRegistry[0]!, releaseStatus: "active" as const };
 describe("site helpers", () => {
   test("returns only active capabilities for route lookup", () => {
     const activeCapabilities = getActiveCapabilities(capabilityRegistry);
-    expect(activeCapabilities).toHaveLength(39);
+    expect(activeCapabilities).toHaveLength(41);
     expect(getActiveCapabilityBySlug("merge-pdf", capabilityRegistry)?.id).toBe("pdf.merge");
     expect(getActiveCapabilityBySlug("compress-pdf", capabilityRegistry)?.id).toBe("pdf.compress");
     expect(getActiveCapabilityBySlug("compress-image", capabilityRegistry)?.id).toBe("image.compress");

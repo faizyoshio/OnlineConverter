@@ -117,7 +117,7 @@ function ToolGlyph({ type }: { type: ToolItem["icon"] }) {
     case "excel":
       return <span style={{ fontWeight: 800, fontSize: "9px", color: "var(--paper)" }}>TXT</span>;
     case "text":
-      return <span style={{ fontWeight: 800, fontSize: "9px", color: "#fff" }}>TXT</span>;
+      return <span style={{ fontWeight: 800, fontSize: "9px", color: "var(--paper)" }}>TXT</span>;
     case "lock":
       return (
         <svg fill="none" height="16" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24" width="16">
