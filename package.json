@@ -21,7 +21,7 @@
   "dependencies": {
     "@bwip-js/browser": "4.11.4",
     "client-only": "^0.0.1",
-    "dompurify": "3.4.16",
+    "dompurify": "3.4.17",
     "jszip": "^3.10.2",
     "mammoth": "^1.13.0",
     "next": "16.4.0",
